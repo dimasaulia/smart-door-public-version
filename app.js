@@ -15,6 +15,10 @@ app.set("view engine", "hbs");
 const PORT = process.env.PORT || 8080;
 const ROUTER = require("./router");
 
+app.get("/", (req, res) => {
+    res.status(200).send({ msg: "Server is work 🤘" });
+});
+
 app.use("/", ROUTER);
 
 io.on("connection", (socket) => {

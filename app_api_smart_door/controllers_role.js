@@ -11,12 +11,20 @@ exports.list = async (req, res) => {
 };
 
 exports.detail = async (req, res) => {
-    const role = await prisma.role.findUnique({
-        where: {
-            id: Number(req.params.id),
-        },
-    });
-    res.json(role);
+    try {
+        const role = await prisma.role.findUnique({
+            where: {
+                id: Number(req.params.id),
+            },
+        });
+        if (role === null) throw "Role not found";
+        res.json(role);
+    } catch (err) {
+        res.status(422).json({
+            code: 422,
+            msg: err,
+        });
+    }
 };
 
 exports.create = async (req, res) => {
@@ -29,29 +37,46 @@ exports.create = async (req, res) => {
 };
 
 exports.delete = async (req, res) => {
-    const deleted_role = await prisma.role.delete({
-        where: {
-            id: Number(req.params.id),
-        },
-    });
-    res.json(deleted_role);
+    try {
+        const deleted_role = await prisma.role.delete({
+            where: {
+                id: Number(req.params.id),
+            },
+        });
+        res.json(deleted_role);
+    } catch (err) {
+        res.status(422).json({
+            code: 422,
+            title: err.meta.cause || null,
+            msg: err,
+        });
+    }
 };
 
 exports.update = async (req, res) => {
-    //provide default or unupdated value
-    const role = await prisma.role.findUnique({
-        where: {
-            id: Number(req.params.id),
-        },
-    });
+    try {
+        //provide default or unupdated value
+        const role = await prisma.role.findUnique({
+            where: {
+                id: Number(req.params.id),
+            },
+        });
 
-    const updated_role = await prisma.role.update({
-        where: {
-            id: Number(req.params.id),
-        },
-        data: {
-            name: req.body.name || role.name,
-        },
-    });
-    res.json(updated_role);
+        const updated_role = await prisma.role.update({
+            where: {
+                id: Number(req.params.id),
+            },
+            data: {
+                name: req.body.name || role.name,
+            },
+        });
+
+        if (role === null) throw "Role not found";
+        res.json(updated_role);
+    } catch (err) {
+        res.status(422).json({
+            code: 422,
+            msg: err,
+        });
+    }
 };
