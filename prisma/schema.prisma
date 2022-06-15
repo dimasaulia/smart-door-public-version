@@ -13,15 +13,15 @@ datasource db {
 model Role {
   id   Int    @id @default(autoincrement())
   name String @unique
-  user User?
+  user User[]
 }
 
 model User {
   id       Int     @id @default(autoincrement())
-  username String
+  username String  @unique
   password String
   role     Role    @relation(fields: [roleId], references: [id])
-  roleId   Int     @unique
+  roleId   Int
   profil   Profil?
   card     Card[]
   room     Room[]
@@ -37,8 +37,8 @@ model Profil {
 
 model Card {
   id          Int         @id @default(autoincrement())
-  card_number String
-  pin         Int
+  card_number String      @unique
+  pin         String
   card_status CARD_STATUS @default(UNREGISTER)
   user        User?       @relation(fields: [userId], references: [id])
   userId      Int?

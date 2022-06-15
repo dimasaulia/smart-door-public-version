@@ -1,12 +1,14 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 app.io = io;
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cors());
 app.use(express.static("public"));
 app.use("/static", express.static("public"));
 app.set("views", "views");

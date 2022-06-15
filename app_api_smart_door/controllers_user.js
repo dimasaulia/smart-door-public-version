@@ -3,12 +3,12 @@ const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 
 exports.list = async (req, res) => {
-    const role_list = await prisma.user.findMany({
+    const roleList = await prisma.user.findMany({
         orderBy: {
             id: "asc",
         },
     });
-    res.json(role_list);
+    res.json(roleList);
 };
 
 exports.register = async (req, res) => {
@@ -19,25 +19,25 @@ exports.register = async (req, res) => {
     const hashPassword = bcrypt.hashSync(plaintextPassword, salt);
 
     try {
-        const default_role = await prisma.role.findUnique({
+        const defaultRole = await prisma.role.findUnique({
             where: {
                 name: "USER",
             },
         });
-        if (default_role === null) throw "DEFAULT ROLE CANT FIND";
+        if (defaultRole === null) throw "DEFAULT ROLE CANT FIND";
 
-        const new_user = await prisma.user.create({
+        const newUser = await prisma.user.create({
             data: {
                 username: username,
                 password: hashPassword,
-                roleId: Number(default_role.id),
+                roleId: Number(defaultRole.id),
             },
         });
 
         res.status(201).json({
             status: 201,
             title: "Successfully created",
-            msg: new_user,
+            msg: newUser,
         });
     } catch (err) {
         res.status(422).json({
@@ -66,12 +66,12 @@ exports.detail = async (req, res) => {
 
 exports.delete = async (req, res) => {
     try {
-        const deleted_user = await prisma.user.delete({
+        const deletedUser = await prisma.user.delete({
             where: {
                 id: Number(req.params.id),
             },
         });
-        res.json(deleted_user);
+        res.json(deletedUser);
     } catch (err) {
         res.status(422).json({
             code: 422,
@@ -86,7 +86,7 @@ exports.update = async (req, res) => {
         //provide default or unupdated value
         const user = await prisma.user.findUnique({
             where: {
-                id: Number(req.params.id),
+                username: req.body.username,
             },
         });
 
@@ -104,7 +104,7 @@ exports.update = async (req, res) => {
 
         const updatedUser = await prisma.user.update({
             where: {
-                id: Number(req.params.id),
+                id: Number(user.id),
             },
             data: {
                 username: req.body.name,
@@ -124,4 +124,32 @@ exports.update = async (req, res) => {
             msg: err,
         });
     }
+};
+
+exports.pairUserToCard = async (req, res) => {
+    const userId = Number(req.body.userId);
+    const cardNumber = req.body.cardNumber;
+
+    const user = await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            card: {
+                connect: {
+                    card_number: cardNumber,
+                },
+                update: {
+                    where: {
+                        card_number: cardNumber,
+                    },
+                    data: {
+                        card_status: "REGISTER",
+                    },
+                },
+            },
+        },
+    });
+
+    res.json(user);
 };
