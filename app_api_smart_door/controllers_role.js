@@ -2,12 +2,12 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 exports.list = async (req, res) => {
-    const role_list = await prisma.role.findMany({
+    const roleList = await prisma.role.findMany({
         orderBy: {
             id: "asc",
         },
     });
-    res.json(role_list);
+    res.json(roleList);
 };
 
 exports.detail = async (req, res) => {
@@ -28,22 +28,22 @@ exports.detail = async (req, res) => {
 };
 
 exports.create = async (req, res) => {
-    const new_role = await prisma.role.create({
+    const newRole = await prisma.role.create({
         data: {
             name: req.body.name,
         },
     });
-    res.json(new_role);
+    res.json(newRole);
 };
 
 exports.delete = async (req, res) => {
     try {
-        const deleted_role = await prisma.role.delete({
+        const deletedRole = await prisma.role.delete({
             where: {
                 id: Number(req.params.id),
             },
         });
-        res.json(deleted_role);
+        res.json(deletedRole);
     } catch (err) {
         res.status(422).json({
             code: 422,
@@ -62,7 +62,7 @@ exports.update = async (req, res) => {
             },
         });
 
-        const updated_role = await prisma.role.update({
+        const updatedRole = await prisma.role.update({
             where: {
                 id: Number(req.params.id),
             },
@@ -72,7 +72,7 @@ exports.update = async (req, res) => {
         });
 
         if (role === null) throw "Role not found";
-        res.json(updated_role);
+        res.json(updatedRole);
     } catch (err) {
         res.status(422).json({
             code: 422,

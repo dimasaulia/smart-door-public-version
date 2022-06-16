@@ -3,6 +3,7 @@ const router = express.Router();
 const role = require("./controllers_role");
 const user = require("./controllers_user");
 const card = require("./controllers_card");
+const room = require("./controllers_room");
 // ROLE ROUTER
 router.get("/role/list", role.list);
 router.get("/role/detail/:id", role.detail);
@@ -23,5 +24,12 @@ router.get("/card/list", card.list);
 router.get("/card/detail/:cardNumber", card.detail);
 router.post("/card/register", card.register);
 router.post("/card/validate", card.validateCard);
+
+// ROOM ROUTER
+router.get("/room/list", room.list);
+router.get("/room/detail/:ruid", room.detail);
+router.post("/room/get-or-create", room.getOrCreateRoom);
+router.post("/room/update/:ruid", room.update);
+router.post("/room/delete/:ruid", room.delete);
 
 module.exports = router;

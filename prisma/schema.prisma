@@ -11,28 +11,34 @@ datasource db {
 }
 
 model Role {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-  user User[]
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  user      User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model User {
-  id       Int     @id @default(autoincrement())
-  username String  @unique
-  password String
-  role     Role    @relation(fields: [roleId], references: [id])
-  roleId   Int
-  profil   Profil?
-  card     Card[]
-  room     Room[]
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      Role     @relation(fields: [roleId], references: [id])
+  roleId    Int
+  profil    Profil?
+  card      Card[]
+  room      Room[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Profil {
-  id        Int     @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   full_name String?
   photo     String?
-  user      User    @relation(fields: [userId], references: [id])
-  userId    Int     @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Card {
@@ -42,14 +48,18 @@ model Card {
   card_status CARD_STATUS @default(UNREGISTER)
   user        User?       @relation(fields: [userId], references: [id])
   userId      Int?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 }
 
 model Room {
-  id     Int     @id @default(autoincrement())
-  ruid   String
-  name   String?
-  user   User?   @relation(fields: [userId], references: [id])
-  userId Int?
+  id         Int       @id @default(autoincrement())
+  ruid       String    @unique
+  name       String?
+  user       User[]
+  lastOnline DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 enum CARD_STATUS {
