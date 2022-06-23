@@ -3,12 +3,21 @@ const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 
 exports.list = async (req, res) => {
+    const numberOfCard = await prisma.card.count({
+        where: {
+            card_status: "UNREGISTER",
+        },
+    });
+    const cardSection = Math.ceil(numberOfCard / 6);
     const cardList = await prisma.card.findMany({
         orderBy: {
             id: "asc",
         },
+        where: {
+            card_status: "UNREGISTER",
+        },
     });
-    res.json(cardList);
+    res.json({ cardList, numberOfCard, cardSection });
 };
 
 exports.register = async (req, res) => {

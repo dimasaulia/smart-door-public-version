@@ -1,5 +1,5 @@
 Arguments: 
-  C:\Program Files\nodejs\node.exe C:\Users\dimas\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add cors
+  C:\Program Files\nodejs\node.exe C:\Users\dimas\AppData\Roaming\npm\node_modules\yarn\bin\yarn.js add expres-handlebars
 
 PATH: 
   C:\Program Files (x86)\Common Files\Intel\Shared Libraries\redist\intel64\compiler;C:\Program Files\PostgreSQL\14\bin;C:\Python310\;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;C:\WINDOWS\System32\OpenSSH\;C:\Program Files\nodejs\;C:\ProgramData\chocolatey\bin;C:\Program Files\Git\cmd;C:\Program Files\dotnet\;D:\PEMROGRAMAN\WEB DEVELOPMENT\PHP\Server\mysql\bin;C:\Program Files\MongoDB\Server\5.0\bin;;C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common;C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR;C:\Program Files\LLVM\bin;C:\Users\dimas\AppData\Local\Programs\Python\Python310\Scripts\;C:\Users\dimas\AppData\Local\Programs\Python\Python310\;C:\Users\dimas\AppData\Local\Microsoft\WindowsApps;C:\Users\dimas\AppData\Local\Programs\Microsoft VS Code\bin;C:\Users\dimas\AppData\Roaming\npm;C:\Program Files (x86)\Nmap;E:\PEMROGRAMAN\WEB DEVELOPMENT\PHP\Server\mysql\bin;C:\Program Files\PostgreSQL\14\bin;C:\Program Files\MongoDB\Server\5.0\bin;C:\Program Files\heroku\bin
@@ -14,7 +14,17 @@ Platform:
   win32 x64
 
 Trace: 
-  Error: EPERM: operation not permitted, unlink 'E:\PEMROGRAMAN\WEB DEVELOPMENT\PROJECT\SMART-DOOR\node_modules\prisma\engines\461d6a05159055555eb7dfb337c9fb271cbd4d7e\query_engine-windows.dll.node'
+  Error: https://registry.yarnpkg.com/expres-handlebars: Not found
+      at Request.params.callback [as _callback] (C:\Users\dimas\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:66138:18)
+      at Request.self.callback (C:\Users\dimas\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:140883:22)
+      at Request.emit (node:events:520:28)
+      at Request.<anonymous> (C:\Users\dimas\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141855:10)
+      at Request.emit (node:events:520:28)
+      at IncomingMessage.<anonymous> (C:\Users\dimas\AppData\Roaming\npm\node_modules\yarn\lib\cli.js:141777:12)
+      at Object.onceWrapper (node:events:639:28)
+      at IncomingMessage.emit (node:events:532:35)
+      at endReadableNT (node:internal/streams/readable:1346:12)
+      at processTicksAndRejections (node:internal/process/task_queues:83:21)
 
 npm manifest: 
   {

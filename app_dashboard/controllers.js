@@ -2,28 +2,65 @@ const { PrismaClient } = require("@prisma/client");
 
 const prisma = new PrismaClient();
 
-exports.list = async (req, res) => {
-    const unregisterCardList = await prisma.card.findMany({
-        orderBy: {
-            id: "asc",
-        },
-        where: {
-            card_status: "UNREGISTER",
-        },
-    });
-
+exports.dashboard = async (req, res) => {
     const data = {
-        unregisterCardList,
+        dashboard: "bg-neutral-4",
+        styles: ["list.css"],
+        scripts: ["/js/gatewayList.js"],
     };
 
-    res.render("list", data);
+    res.render("index", data);
 };
 
 exports.userPairingToDashboard = async (req, res) => {
-    const cardNumber = req.query.card;
-    const data = {
-        cardNumber,
+    const cardId = req.query.cardId;
+    const cardCreatedAt = await prisma.card.findUnique({
+        where: {
+            card_number: cardId,
+        },
+        select: {
+            createdAt: true,
+        },
+    });
+
+    const options = {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
     };
-    console.log(cardNumber);
+
+    const cardCreationTime = new Intl.DateTimeFormat("id-ID", options).format(
+        new Date(cardCreatedAt.createdAt)
+    );
+
+    const data = {
+        card: "bg-neutral-4",
+        styles: [
+            "/style/pairUser.css",
+            "https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css",
+        ],
+        scripts: [
+            "https://code.jquery.com/jquery-3.6.0.js",
+            "https://code.jquery.com/ui/1.13.1/jquery-ui.js",
+            "/js/pairUser.js",
+        ],
+        cardId,
+        cardCreationTime,
+    };
     res.render("pair", data);
+};
+
+exports.cardList = async (req, res) => {
+    const data = {
+        card: "bg-neutral-4",
+        styles: ["/js/splide/css/splide.min.css", "/style/cardList.css"],
+        scripts: [
+            "/js/splide/js/splide.min.js",
+            "/js/cardList.js",
+            "/js/mountCardList.js",
+        ],
+    };
+
+    res.render("list", data);
 };

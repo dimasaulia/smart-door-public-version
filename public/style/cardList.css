@@ -1,0 +1,68 @@
+.splide__pagination__page {
+    background: rgb(var(--color-neutral-7)) !important;
+}
+
+.splide__pagination__page.is-active {
+    background: rgb(var(--color-blue-3)) !important;
+}
+
+.splide__pagination {
+    bottom: -1.5em;
+    justify-content: flex-start !important;
+    left: 2em;
+}
+
+.splide__arrow.splide__arrow--next>svg>path,
+.splide__arrow.splide__arrow--prev>svg>path {
+    fill: rgb(var(--color-blue-4)) !important;
+}
+
+.splide__slide {
+    margin: 10px 60px !important;
+}
+
+.main--table {
+    box-shadow: -1px 2px 8px rgba(0, 0, 0, 0.25);
+    width: 92%;
+}
+
+.table-item:first-child {
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+.table-item:last-child {
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+}
+
+.table-item:nth-child(even) {
+    background: rgb(var(--color-neutral-5));
+}
+
+.table-item:nth-child(odd) {
+    background: rgb(var(--color-neutral-7));
+}
+
+@media only screen and (max-width: 1200px) {
+    .main--table {
+        background: pink;
+        width: 89%;
+    }
+}
+
+
+@media only screen and (max-width: 992px) {
+    .main--table {
+        background: blue;
+        width: 84%;
+    }
+}
+
+
+@media only screen and (max-width: 576px) {
+    .main--table {
+        background: aquamarine;
+        width: 76%;
+    }
+}

@@ -4,6 +4,7 @@ const role = require("./controllers_role");
 const user = require("./controllers_user");
 const card = require("./controllers_card");
 const room = require("./controllers_room");
+
 // ROLE ROUTER
 router.get("/role/list", role.list);
 router.get("/role/detail/:id", role.detail);
@@ -18,6 +19,7 @@ router.post("/user/register", user.register);
 router.post("/user/update", user.update);
 router.post("/user/delete/:id", user.delete);
 router.post("/user/pair", user.pairUserToCard);
+router.get("/user/search", user.search);
 
 // CARD ROUTER
 router.get("/card/list", card.list);
