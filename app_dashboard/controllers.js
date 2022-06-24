@@ -57,8 +57,8 @@ exports.cardList = async (req, res) => {
         styles: ["/js/splide/css/splide.min.css", "/style/cardList.css"],
         scripts: [
             "/js/splide/js/splide.min.js",
+            // "/js/mountCardList.js",
             "/js/cardList.js",
-            "/js/mountCardList.js",
         ],
     };
 

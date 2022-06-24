@@ -17,7 +17,10 @@ exports.list = async (req, res) => {
             card_status: "UNREGISTER",
         },
     });
-    res.json({ cardList, numberOfCard, cardSection });
+
+    setTimeout(() => {
+        // res.json({ cardList, numberOfCard, cardSection });
+    }, 3000);
 };
 
 exports.register = async (req, res) => {
