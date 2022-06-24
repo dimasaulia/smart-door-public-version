@@ -12,6 +12,12 @@
     --color-neutral-5: 237, 238, 240;
     --color-neutral-6: 226, 226, 226;
     --color-neutral-7: 250, 251, 255;
+    --color-success-1: 39, 211, 117;
+    --color-success-2: 215, 253, 232;
+    --color-warning-1: 249, 199, 25;
+    --color-warning-2: 254, 250, 163;
+    --color-danger-1: 252, 57, 57;
+    --color-danger-2: 255, 210, 210;
     --shadowLow: 0px 0px 4px rgba(0, 0, 0, 0.15);
     --shadowHigh: 0px 0px 10px rgba(0, 0, 0, 0.15);
     --navHeight: 75px;
@@ -22,6 +28,30 @@
 * {
     /* box-sizing: content-box !important; */
     margin: 0;
+}
+
+.bg-danger-1 {
+    background: rgb(var(--color-danger-1)) !important;
+}
+
+.bg-danger-2 {
+    background: rgb(var(--color-danger-2)) !important;
+}
+
+.bg-success-1 {
+    background: rgb(var(--color-success-1)) !important;
+}
+
+.bg-success-2 {
+    background: rgb(var(--color-success-2)) !important;
+}
+
+.bg-warning-1 {
+    background: rgb(var(--color-warning-1)) !important;
+}
+
+.bg-warning-2 {
+    background: rgb(var(--color-warning-2)) !important;
 }
 
 .bg-blue-4 {
@@ -114,6 +144,30 @@
     color: rgb(var(--color-neutral-1)) !important;
 }
 
+.text-danger-1 {
+    color: rgb(var(--color-success-1)) !important;
+}
+
+.text-danger-2 {
+    color: rgb(var(--color-danger-2)) !important;
+}
+
+.text-success-1 {
+    color: rgb(var(--color-success-1)) !important;
+}
+
+.text-success-2 {
+    color: rgb(var(--color-success-2)) !important;
+}
+
+.text-warning-1 {
+    color: rgb(var(--color-warning-1)) !important;
+}
+
+.text-warning-2 {
+    color: rgb(var(--color-warning-2)) !important;
+}
+
 .rounded-5 {
     border-radius: 5px;
 }
@@ -181,6 +235,7 @@ body {
     background: rgb(var(--color-neutral-4));
     font-family: 'Source Sans Pro', sans-serif;
     margin: 0;
+    overflow-x: hidden;
 }
 
 ::-webkit-scrollbar {

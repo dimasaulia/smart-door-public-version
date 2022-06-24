@@ -6,8 +6,19 @@ const cors = require("cors");
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const expbs = require("express-handlebars");
+const livereload = require("livereload");
+const connectLiveReload = require("connect-livereload");
 app.io = io;
 
+const liveReloadServer = livereload.createServer();
+liveReloadServer.watch(path.join(__dirname, "views"));
+liveReloadServer.server.once("connection", () => {
+    setTimeout(() => {
+        liveReloadServer.refresh("/");
+    }, 50);
+});
+
+app.use(connectLiveReload());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cors());

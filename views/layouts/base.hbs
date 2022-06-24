@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/style/three-dots.css">
     <link rel="stylesheet" href="/style/base.css">
     <link rel="stylesheet" href="/style/navbar.css">
+    <link rel="stylesheet" href="/style/notify.css">
     <link rel="stylesheet" href="/style/index.css">
     {{#if styles}}
         {{#each styles}}
@@ -23,7 +24,7 @@
 
 <body>
     <section class="section--conatiner">
-        <section class="notify">
+        <section class="notify">        
             <div class="loading" id="loading">
                 <div class="dot-falling" ></div>
             </div>
@@ -102,6 +103,8 @@
 </script>
 <script src="/js/scripts.js"></script>
 <script src="/js/loader.js"></script>
+<script src="/js/alert.js"></script>
+<script src="/js/toast.js"></script>
 {{#if scripts}}
     {{#each scripts}}
         <script src="{{this}}"></script>

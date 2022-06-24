@@ -3,27 +3,6 @@
     position: relative;
 }
 
-.notify {
-    display: none;
-    height: 100%;
-    position: fixed;
-    width: 100%;
-    z-index: 10;
-}
-
-.notify .loading {
-    align-items: center;
-    background: rgba(var(--color-neutral-5), .5);
-    display: none;
-    height: 100%;
-    justify-content: center;
-    width: 100%;
-}
-
-.active {
-    display: flex !important;
-}
-
 .nav {
     box-sizing: border-box !important;
     height: 100ch !important;

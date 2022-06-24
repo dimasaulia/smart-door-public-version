@@ -19,7 +19,7 @@ exports.list = async (req, res) => {
     });
 
     setTimeout(() => {
-        // res.json({ cardList, numberOfCard, cardSection });
+        res.json({ cardList, numberOfCard, cardSection });
     }, 3000);
 };
 
