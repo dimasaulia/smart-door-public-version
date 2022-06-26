@@ -29,10 +29,10 @@ $("#username").autocomplete({
 });
 
 btn.addEventListener("click", async (e) => {
+    startLoader();
     e.preventDefault();
     const username = form.username.value;
     const cardValue = cardId.getAttribute("data-card");
-    console.log(cardValue);
     try {
         const res = await fetch("/api/v1/user/pair", {
             method: "POST",
@@ -44,9 +44,16 @@ btn.addEventListener("click", async (e) => {
                 cardNumber: cardValue,
             }),
         }).then(() => {
-            alert("Sukses menambahkan data");
+            closeLoader();
+            Cookies.set("toast", "success", { path: "/list" });
+            window.location = "/list";
         });
     } catch (error) {
-        console.log(error);
+        closeLoader();
+        showToast({
+            theme: "danger",
+            title: "Gagal pairing",
+            desc: "Gagal menautkan user dan card",
+        });
     }
 });

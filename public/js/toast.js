@@ -8,7 +8,7 @@ const toastTemplate = (title, desc, color, icon) => {
                 <p>${desc}</p>
             </div>
         </div>
-        <img src="image/icon_x.svg" alt="" class="toast--icon-close">
+        <img src="/image/icon_x.svg" alt="" class="toast--icon-close">
     `;
 };
 let closeToast;
@@ -57,6 +57,7 @@ const showToast = ({ theme, desc, title }) => {
     }, 500);
 };
 
+/*
 showToast({
     theme: "success",
     title: "Berhasil pairing",
@@ -74,3 +75,4 @@ showToast({
     title: "Internal error",
     desc: "Berhasil menautkan user dan card",
 });
+*/

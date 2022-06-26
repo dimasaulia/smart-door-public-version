@@ -36,6 +36,9 @@ const PORT = process.env.PORT || 8080;
 const ROUTER = require("./router");
 
 app.use("/", ROUTER);
+app.get("/js.cookie.js", function (req, res) {
+    res.sendFile(__dirname + "/node_modules/js-cookie/dist/js.cookie.js");
+});
 
 io.on("connection", (socket) => {
     console.log("A client connected 🚀");

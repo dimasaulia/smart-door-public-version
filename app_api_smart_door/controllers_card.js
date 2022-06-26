@@ -18,9 +18,7 @@ exports.list = async (req, res) => {
         },
     });
 
-    setTimeout(() => {
-        res.json({ cardList, numberOfCard, cardSection });
-    }, 3000);
+    res.json({ cardList, numberOfCard, cardSection });
 };
 
 exports.register = async (req, res) => {

@@ -127,12 +127,11 @@ exports.update = async (req, res) => {
 };
 
 exports.pairUserToCard = async (req, res) => {
-    const userId = Number(req.body.userId);
+    const userId = req.body.userId;
     const cardNumber = req.body.cardNumber;
-    console.log(userId, cardNumber);
     const user = await prisma.user.update({
         where: {
-            id: userId,
+            username: userId,
         },
         data: {
             card: {
@@ -151,7 +150,7 @@ exports.pairUserToCard = async (req, res) => {
         },
     });
 
-    res.json(user);
+    setTimeout(() => res.json(user), 1500);
 };
 
 exports.search = async (req, res) => {
@@ -171,7 +170,7 @@ exports.search = async (req, res) => {
 
     searchResult.forEach((user) => {
         let { username, id } = user;
-        results.push({ value: id, label: username });
+        results.push({ value: username, label: username });
     });
 
     res.status(200).json(results);
