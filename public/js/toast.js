@@ -1,7 +1,7 @@
 const toastTemplate = (title, desc, color, icon) => {
     return `
-        <div class="toastNotif--color ${color}2 rounded-13"></div>
-        <div class="toastMsg d-flex align-items-center">
+        <div class="toastNotif--color ${color}2 rounded-13 me-3"></div>
+        <div class="toastMsg d-flex align-items-center me-5">
             <img src="${icon}" alt="" class="toast--icon me-2">
             <div>
                 <h4 class="fw-bold">${title}</h4>
@@ -30,7 +30,7 @@ const showToast = ({ theme, desc, title }) => {
     div.classList.add(
         "toastNotif",
         "d-flex",
-        "justify-content-between",
+        "justify-content-end",
         "align-items-start",
         "bg-neutral-7",
         "shadow-c-1",

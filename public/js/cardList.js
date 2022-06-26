@@ -52,7 +52,10 @@ const loadCard = (container) => {
     const timer = setTimeout(() => controller.abort(), 5000);
     // get Data
     fetch("/api/v1/card/list", { signal: controller.signal })
-        .then((res) => res.json())
+        .then((res) => {
+            if (res.ok) return res.json();
+            throw "Can't get server response";
+        })
         .then((data) => {
             cardId = 0;
             for (let section = 0; section < data.cardSection; section++) {
@@ -77,10 +80,14 @@ const loadCard = (container) => {
             new Splide("#slider1").mount();
             new Splide("#slider2").mount();
         })
-        .catch((err) => {
+        .catch((error) => {
             closeLoader();
-            alert("gagal memuat data");
             clearTimeout(timer);
+            showToast({
+                theme: "danger",
+                title: "Something wrong",
+                desc: error,
+            });
             new Splide("#slider1").mount();
             new Splide("#slider2").mount();
         });

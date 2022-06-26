@@ -53,7 +53,7 @@
     right: -30em;
     top: 1em;
     transition: all .75s ease;
-    width: 25em !important;
+    width: auto !important;
     z-index: 10;
 }
 
