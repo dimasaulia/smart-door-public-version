@@ -10,6 +10,12 @@ const {
     loginRequired,
     allowedRole,
 } = require("../middlewares/authMiddlewares");
+const {
+    cardIsExist,
+    cardIsPair,
+    isUserCard,
+} = require("../middlewares/cardMiddlewares");
+const { roomIsExist } = require("../middlewares/roomMiddlewares");
 
 // ROLE ROUTER
 router.get("/role/list", loginRequired, allowedRole("ADMIN"), role.list);
@@ -72,7 +78,7 @@ router.post(
 );
 
 // CARD ROUTER
-router.get("/card/list", loginRequired, allowedRole("ADMIN"), card.list);
+router.get("/card/available", loginRequired, allowedRole("ADMIN"), card.list);
 router.get(
     "/card/detail/:cardNumber",
     loginRequired,
@@ -108,5 +114,17 @@ router.post(
     allowedRole("ADMIN"),
     room.delete
 );
+router.post(
+    "/room/pair",
+    loginRequired,
+    allowedRole("ADMIN"),
+    body("roomId").notEmpty(),
+    body("cardNumber").notEmpty(),
+    cardIsExist,
+    cardIsPair,
+    formChacker,
+    room.pairRoomToCard
+);
+router.post("/room/check-in/:ruid", roomIsExist, cardIsExist, room.roomCheckIn);
 
 module.exports = router;

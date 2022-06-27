@@ -145,7 +145,7 @@
 }
 
 .text-danger-1 {
-    color: rgb(var(--color-success-1)) !important;
+    color: rgb(var(--color-danger-1)) !important;
 }
 
 .text-danger-2 {

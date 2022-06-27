@@ -46,7 +46,7 @@ btn.addEventListener("click", async (e) => {
         }).then(() => {
             closeLoader();
             Cookies.set("toast", "success", { path: "/list" });
-            window.location = "/list";
+            window.location = "/dashboard/card/list";
         });
     } catch (error) {
         closeLoader();

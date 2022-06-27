@@ -1,9 +1,20 @@
 const express = require("express");
 const router = express.Router();
-const controllers = require("./controllers");
+const dashboard = require("./dashboardControllers");
+const { loginRequired, allowedRole } = require("../middlewares/uiMiddlewares");
 
-router.get("/", controllers.dashboard);
-router.get("/list", controllers.cardList);
-router.get("/pair", controllers.userPairingToDashboard);
+router.get("/", loginRequired, allowedRole("ADMIN"), dashboard.dashboard);
+router.get(
+    "/card/list",
+    loginRequired,
+    allowedRole("ADMIN"),
+    dashboard.cardList
+);
+router.get(
+    "/card/pair",
+    loginRequired,
+    allowedRole("ADMIN"),
+    dashboard.userPairingToDashboard
+);
 
 module.exports = router;

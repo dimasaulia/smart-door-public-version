@@ -42,26 +42,37 @@ model Profil {
 }
 
 model Card {
-  id          Int         @id @default(autoincrement())
-  card_number String      @unique
+  id          Int             @id @default(autoincrement())
+  card_number String          @unique
   pin         String
-  card_status CARD_STATUS @default(UNREGISTER)
-  user        User?       @relation(fields: [userId], references: [id])
+  card_status CARD_STATUS     @default(UNREGISTER)
+  user        User?           @relation(fields: [userId], references: [id])
   userId      String?
   room        Room[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  records     Rooms_Records[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 }
 
 model Room {
-  id         Int       @id @default(autoincrement())
-  ruid       String    @unique
+  id         Int             @id @default(autoincrement())
+  ruid       String          @unique
   name       String?
   card       Card[]
+  records    Rooms_Records[]
   lastOnline DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+}
+
+model Rooms_Records {
+  id        Int      @id @default(autoincrement())
+  room      Room     @relation(fields: [roomId], references: [id])
+  roomId    Int
+  Card      Card     @relation(fields: [cardId], references: [id])
+  cardId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum CARD_STATUS {

@@ -9,12 +9,7 @@ const loginRequired = (req, res, next) => {
     const token = getToken(req);
 
     // check if token exits
-    if (!token)
-        return resError({
-            res,
-            title: "Login Requires! Please Login",
-            code: 401,
-        });
+    if (!token) return res.redirect("/auth/login");
 
     // verify token
     jwt.verify(token, process.env.SECRET, async (err, decode) => {
@@ -31,18 +26,9 @@ const loginRequired = (req, res, next) => {
             });
             if (user) return next();
 
-            if (!user)
-                return resError({
-                    res,
-                    title: "Cant find the user",
-                    code: 401,
-                });
+            if (!user) return res.redirect("/auth/login");
         } else {
-            return resError({
-                res,
-                title: "Token is not valid",
-                code: 401,
-            });
+            return res.redirect("/auth/login");
         }
     });
 };
@@ -61,12 +47,10 @@ const allowedRole = (...roles) => {
                 },
             },
         });
-        if (!roles.includes(user.role.name))
-            return resError({
-                res,
-                title: `${user.role.name} not allow to perform this action`,
-                code: 401,
-            });
+        if (!roles.includes(user.role.name)) {
+            if (user.role.name === "ADMIN") return res.redirect("/dashboard");
+            if (user.role.name === "USER") return res.redirect("/");
+        }
 
         if (roles.includes(user.role.name)) return next();
     };

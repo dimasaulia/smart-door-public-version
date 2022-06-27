@@ -42,7 +42,7 @@ const loadCard = (container) => {
         return `
         <div class="col-12 table-item py-2 ps-3 d-flex justify-content-between">
             <p>${id}</p>
-            <a href="/pair/?cardId=${id}" class="d-flex align-items-center pair--link">Pair to user</a>
+            <a href="/dashboard/card/pair/?cardId=${id}" class="d-flex align-items-center pair--link">Pair to user</a>
         </div>
     `;
     };
@@ -51,7 +51,7 @@ const loadCard = (container) => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
     // get Data
-    fetch("/api/v1/card/list", { signal: controller.signal })
+    fetch("/api/v1/card/available", { signal: controller.signal })
         .then((res) => {
             if (res.ok) return res.json();
             throw "Can't get server response";
@@ -103,5 +103,5 @@ if (Cookies.get("toast")) {
             desc: "Berhasil menautkan user dan card",
         });
     }, 300);
-    Cookies.remove("toast", { path: "/list" });
+    Cookies.remove("toast", { path: "/dashboard/card/list" });
 }

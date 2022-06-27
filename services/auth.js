@@ -38,6 +38,11 @@ const setAuthCookie = ({ res, uuid }) => {
     });
 };
 
+function ErrorException(type, msg) {
+    this.type = type;
+    this.msg = msg;
+}
+
 module.exports = {
     createToken,
     expTime,
@@ -45,4 +50,5 @@ module.exports = {
     getUser,
     setCookie,
     setAuthCookie,
+    ErrorException,
 };

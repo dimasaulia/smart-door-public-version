@@ -1,6 +1,7 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-
+const bcrypt = require("bcrypt");
+const { resError, resSuccess } = require("../services/error");
 exports.getOrCreateRoom = async (req, res) => {
     const ruid = req.body.ruid; // stands for room unique id
     try {
@@ -112,6 +113,76 @@ exports.delete = async (req, res) => {
         res.status(500).json({
             title: "Something wrong",
             msg: err,
+        });
+    }
+};
+
+exports.pairRoomToCard = async (req, res) => {
+    const { roomId, cardNumber } = req.body;
+    try {
+        const updatedRoom = await prisma.room.update({
+            where: {
+                ruid: roomId,
+            },
+            data: {
+                card: {
+                    connect: {
+                        card_number: cardNumber,
+                    },
+                },
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Sukses memberi akses",
+            data: updatedRoom,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Gagal memberi akses ruangan",
+            errors: error,
+        });
+    }
+};
+
+exports.roomCheckIn = async (req, res) => {
+    const { ruid } = req.params;
+    const { cardNumber, pin } = req.body;
+    try {
+        const room = await prisma.room.findUnique({
+            where: {
+                ruid,
+            },
+            include: {
+                card: {
+                    select: {
+                        card_number: true,
+                        pin: true,
+                        userId: true,
+                    },
+                },
+            },
+        });
+
+        // check card can access the room
+        const findedCard = room.card.find(
+            (card) => card.card_number === cardNumber
+        );
+        if (!findedCard) throw "You can't access this room";
+
+        const matchPin = await bcrypt.compareSync(pin, findedCard.pin);
+        if (!matchPin) throw "Your pin is incorrect, try again";
+
+        return resSuccess({
+            res,
+            title: `Berhasil membuka ruangan ${room.ruid}`,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Gagal membuka ruangan",
+            errors: error,
         });
     }
 };
