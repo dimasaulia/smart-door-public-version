@@ -1,4 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
+const { getUser } = require("../services/auth");
+const { resSuccess, resError } = require("../services/error");
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 
@@ -92,6 +94,28 @@ exports.detail = async (req, res) => {
         res.status(500).json({
             code: 500,
             title: err,
+        });
+    }
+};
+
+exports.userCards = async (req, res) => {
+    try {
+        const uuid = getUser(req);
+        const cards = await prisma.card.findMany({
+            where: {
+                userId: uuid,
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success get user's cards list",
+            data: cards,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get user's cards list",
+            errors: error,
         });
     }
 };

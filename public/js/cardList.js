@@ -95,13 +95,4 @@ const loadCard = (container) => {
 
 loadCard(splideContainer);
 
-if (Cookies.get("toast")) {
-    setTimeout(() => {
-        showToast({
-            theme: "success",
-            title: "Berhasil pairing",
-            desc: "Berhasil menautkan user dan card",
-        });
-    }, 300);
-    Cookies.remove("toast", { path: "/dashboard/card/list" });
-}
+showFlashToast();

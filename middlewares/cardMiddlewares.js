@@ -54,6 +54,7 @@ const isUserCard = async (req, res, next) => {
                 userId: true,
             },
         });
+
         if (card.userId !== userId) throw "This is not your card";
         return next();
     } catch (error) {

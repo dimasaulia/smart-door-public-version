@@ -50,9 +50,9 @@
 .toastNotif {
     height: 100px !important;
     position: fixed;
-    right: -30em;
+    right: -110%;
     top: 1em;
-    transition: all .75s ease;
+    transition: all 1s ease;
     width: auto !important;
     z-index: 10;
 }

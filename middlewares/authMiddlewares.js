@@ -72,4 +72,23 @@ const allowedRole = (...roles) => {
     };
 };
 
-module.exports = { loginRequired, allowedRole };
+const setUser = async (req, res, next) => {
+    try {
+        const uuid = getUser(req);
+        const user = await prisma.user.findUnique({
+            where: {
+                id: uuid,
+            },
+            select: {
+                username: true,
+            },
+        });
+        res.locals.user = user.username;
+        next();
+    } catch (error) {
+        res.locals.user = "";
+        next();
+    }
+};
+
+module.exports = { loginRequired, allowedRole, setUser };

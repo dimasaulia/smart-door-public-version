@@ -96,6 +96,11 @@ exports.register = async (req, res) => {
     }
 };
 
+module.exports.logout = (req, res) => {
+    res.cookie("jwt", "", { maxAge: 1 });
+    res.redirect("/auth/login");
+};
+
 exports.list = async (req, res) => {
     const roleList = await prisma.user.findMany({
         orderBy: {
@@ -218,6 +223,9 @@ exports.search = async (req, res) => {
         where: {
             username: {
                 contains: searchArg,
+            },
+            role: {
+                name: "USER",
             },
         },
         select: {

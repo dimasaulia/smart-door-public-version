@@ -6,7 +6,7 @@ exports.dashboard = async (req, res) => {
     const data = {
         dashboard: "bg-neutral-4",
         styles: ["list.css"],
-        scripts: ["/js/gatewayList.js"],
+        scripts: ["/js/gatewayList.js", "/js/dashboard.js"],
     };
 
     res.render("index", data);

@@ -1,7 +1,17 @@
 module.exports.login = (req, res) => {
-    res.render("login", { layout: false });
+    const data = {
+        styles: ["/style/auth.css"],
+        scripts: ["/js/login.js"],
+        layout: "auth.hbs",
+    };
+    res.render("login", data);
 };
 
 module.exports.register = (req, res) => {
-    res.render("register", { layout: false });
+    const data = {
+        styles: ["/style/auth.css"],
+        scripts: ["/js/register.js"],
+        layout: "auth.hbs",
+    };
+    res.render("register", data);
 };

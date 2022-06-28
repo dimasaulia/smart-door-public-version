@@ -45,7 +45,11 @@ btn.addEventListener("click", async (e) => {
             }),
         }).then(() => {
             closeLoader();
-            Cookies.set("toast", "success", { path: "/list" });
+            setToast({
+                status: "success",
+                title: "Berhasil Pairing",
+                msg: "Berhasil menautkan user dan kartu",
+            });
             window.location = "/dashboard/card/list";
         });
     } catch (error) {

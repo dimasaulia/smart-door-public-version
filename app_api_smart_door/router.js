@@ -40,6 +40,7 @@ router.post(
 );
 
 // USER ROUTER
+router.get("/user/logout", user.logout);
 router.get("/user/list", loginRequired, allowedRole("ADMIN"), user.list);
 router.get(
     "/user/detail/:id",
@@ -78,6 +79,12 @@ router.post(
 );
 
 // CARD ROUTER
+router.get(
+    "/u/card/available",
+    loginRequired,
+    allowedRole("USER"),
+    card.userCards
+);
 router.get("/card/available", loginRequired, allowedRole("ADMIN"), card.list);
 router.get(
     "/card/detail/:cardNumber",
@@ -95,6 +102,18 @@ router.get(
     loginRequired,
     allowedRole("ADMIN"),
     room.detail
+);
+router.post(
+    "/u/room/request",
+    body("cardNumber").notEmpty(),
+    body("ruid").notEmpty(),
+    formChacker,
+    loginRequired,
+    allowedRole("USER"),
+    cardIsExist,
+    isUserCard,
+    roomIsExist,
+    room.roomRequest
 );
 router.post(
     "/room/get-or-create",

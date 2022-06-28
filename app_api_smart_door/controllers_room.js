@@ -1,7 +1,9 @@
+const { resError, resSuccess } = require("../services/error");
+const { getUser } = require("../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
-const { resError, resSuccess } = require("../services/error");
+
 exports.getOrCreateRoom = async (req, res) => {
     const ruid = req.body.ruid; // stands for room unique id
     try {
@@ -182,6 +184,43 @@ exports.roomCheckIn = async (req, res) => {
         return resError({
             res,
             title: "Gagal membuka ruangan",
+            errors: error,
+        });
+    }
+};
+
+exports.roomRequest = async (req, res) => {
+    try {
+        const { ruid, cardNumber } = req.body;
+        const uuid = getUser(req);
+        const request = await prisma.room_Request.create({
+            data: {
+                user: {
+                    connect: {
+                        id: uuid,
+                    },
+                },
+                room: {
+                    connect: {
+                        ruid,
+                    },
+                },
+                card: {
+                    connect: {
+                        card_number: cardNumber,
+                    },
+                },
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success request room access",
+            data: request,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Gagal meminta ruangan",
             errors: error,
         });
     }

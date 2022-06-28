@@ -3,7 +3,7 @@ const { resError } = require("../services/error");
 const prisma = new PrismaClient();
 
 const roomIsExist = async (req, res, next) => {
-    const { ruid } = req.params;
+    const ruid = req.params.ruid || req.body.ruid;
     try {
         const room = await prisma.room.findUnique({
             where: {

@@ -1,11 +1,13 @@
 const express = require("express");
 const router = express.Router();
 
+const { setUser } = require("./middlewares/authMiddlewares");
 const API_V1 = require("./app_api_smart_door/router");
 const DASHBOARD = require("./app_dashboard/router");
 const AUTH = require("./app_auth/router");
 const USER = require("./app_user/router");
 
+router.get("*", setUser);
 router.use("/api/v1", API_V1);
 router.use("/dashboard", DASHBOARD);
 router.use("/auth", AUTH);

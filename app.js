@@ -26,7 +26,11 @@ app.use(cookieParser());
 app.use(cors());
 app.use(express.static("public"));
 app.use("/static", express.static("public"));
-
+// app.use(
+//     express.session({
+//         secret: "somethingtobesecret",
+//     })
+// );
 app.engine(
     "handlebars",
     expbs.engine({ extname: ".hbs", defaultLayout: "base" })
