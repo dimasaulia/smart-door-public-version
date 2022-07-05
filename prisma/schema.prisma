@@ -45,8 +45,10 @@ model Profil {
 model Card {
   id          Int             @id @default(autoincrement())
   card_number String          @unique
+  card_name   String?
   pin         String
   card_status CARD_STATUS     @default(UNREGISTER)
+  type        CARD_TYPE       @default(card_id)
   user        User?           @relation(fields: [userId], references: [id])
   userId      String?
   room        Room[]
@@ -90,4 +92,12 @@ model Rooms_Records {
 enum CARD_STATUS {
   REGISTER
   UNREGISTER
+}
+
+enum CARD_TYPE {
+  card_id
+  card_atm
+  card_driver
+  card_emoney
+  card_studentid
 }
