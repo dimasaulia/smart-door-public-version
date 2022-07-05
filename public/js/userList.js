@@ -75,7 +75,8 @@ fetch("/api/v1/user/list")
         });
         closeLoader();
         document.querySelectorAll(".user--list-item").forEach((d) => {
-            d.addEventListener("click", (e) => {
+            const del_btn = d.children[1].children[1];
+            del_btn.addEventListener("click", (e) => {
                 e.preventDefault();
                 const uuid = d.getAttribute("data-uuid");
                 const username = d.getAttribute("data-username");

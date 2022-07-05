@@ -74,3 +74,13 @@ exports.userList = async (req, res) => {
 
     res.render("userList", data);
 };
+
+exports.roomList = async (req, res) => {
+    const data = {
+        room: "bg-neutral-4",
+        styles: ["/style/userList.css"],
+        scripts: ["/js/roomList.js"],
+    };
+
+    res.render("roomList", data);
+};

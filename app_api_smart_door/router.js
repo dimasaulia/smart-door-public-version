@@ -135,10 +135,11 @@ router.post(
     allowedRole("ADMIN"),
     room.update
 );
-router.post(
+router.delete(
     "/room/delete/:ruid",
     loginRequired,
     allowedRole("ADMIN"),
+    roomIsExist,
     room.delete
 );
 router.post(

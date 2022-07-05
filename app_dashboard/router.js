@@ -22,5 +22,11 @@ router.get(
     allowedRole("ADMIN"),
     dashboard.userList
 );
+router.get(
+    "/room/list",
+    loginRequired,
+    allowedRole("ADMIN"),
+    dashboard.roomList
+);
 
 module.exports = router;

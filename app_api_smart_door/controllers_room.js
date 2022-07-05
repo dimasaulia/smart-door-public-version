@@ -18,6 +18,7 @@ exports.getOrCreateRoom = async (req, res) => {
             const newRoom = await prisma.room.create({
                 data: {
                     ruid: ruid,
+                    name: ruid,
                 },
             });
             res.status(201).json({
@@ -62,7 +63,7 @@ exports.list = async (req, res) => {
     try {
         const roomList = await prisma.room.findMany({
             orderBy: {
-                id: "asc",
+                name: "asc",
             },
         });
         res.status(200).json(roomList);
@@ -107,9 +108,10 @@ exports.delete = async (req, res) => {
                 ruid: ruid,
             },
         });
-        res.status(202).json({
-            title: "successfully deleted the room",
-            msg: deletedRoom,
+        return resSuccess({
+            res,
+            data: deletedRoom,
+            title: "Successfull delete the room",
         });
     } catch (err) {
         res.status(500).json({
