@@ -1,4 +1,4 @@
-require("dotenv").config;
+if (process.env.NODE_ENV !== "PRODUCTION") require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { resError } = require("../services/error");
 const { getToken, getUser } = require("../services/auth");

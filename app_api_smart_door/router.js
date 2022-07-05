@@ -16,6 +16,7 @@ const {
     isUserCard,
 } = require("../middlewares/cardMiddlewares");
 const { roomIsExist } = require("../middlewares/roomMiddlewares");
+const { userIsExist } = require("../middlewares/userMiddlewares");
 
 // ROLE ROUTER
 router.get("/role/list", loginRequired, allowedRole("ADMIN"), role.list);
@@ -65,10 +66,11 @@ router.post(
     user.login
 );
 router.post("/user/update", loginRequired, allowedRole("ADMIN"), user.update);
-router.post(
+router.delete(
     "/user/delete/:id",
     loginRequired,
     allowedRole("ADMIN"),
+    userIsExist,
     user.delete
 );
 router.post(
@@ -86,6 +88,12 @@ router.get(
     card.userCards
 );
 router.get("/card/available", loginRequired, allowedRole("ADMIN"), card.list);
+router.get(
+    "/card/unavailable",
+    loginRequired,
+    allowedRole("ADMIN"),
+    card.registeredCards
+);
 router.get(
     "/card/detail/:cardNumber",
     loginRequired,

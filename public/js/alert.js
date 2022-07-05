@@ -11,9 +11,23 @@ const alertTemplate = (icon, title, desc, color) => {
     `;
 };
 
-const showAlert = ({ theme, title, desc }) => {
-    // showNotify();
+const alertConfirmTemplate = (icon, title, desc, color, link, btn) => {
+    return `
+        <div class="alert--icon ${color}2 p-4 ro rounded-13">
+            <img src="${icon}" alt="">
+        </div>
+        <h3 class="fw-bold mt-4">${title}</h3>
+        <p class="mt-2">${desc}</p>
+        <div>
+            <a class="mt-5 mb-4 shadow-c-1 fw-bolder text-neutral-7 btn ${color}1 py-2 px-4 rounded-13 link" data-link="${link}" href=${link}>${
+        btn || "Done"
+    }</a>
+            <p class="ms-3 mt-5 mb-4 shadow-c-1 fw-bolder text-neutral-7 btn bg-danger-2 py-2 px-4 rounded-13 close-alert">Cancel</p>
+        </div>
+    `;
+};
 
+const showAlert = ({ theme, title, desc }) => {
     const icons = {
         success: "/image/icon_success.svg",
         warning: "/image/icon_warning.svg",
@@ -61,6 +75,77 @@ const showAlert = ({ theme, title, desc }) => {
             });
         });
     }, 500);
+};
+
+const showAlertConfirm = ({ theme, title, desc, link, exec, btn }) => {
+    const icons = {
+        success: "/image/icon_success.svg",
+        warning: "/image/icon_warning.svg",
+        danger: "/image/icon_error.svg",
+    };
+
+    const colors = {
+        success: "bg-success-",
+        warning: "bg-warning-",
+        danger: "bg-danger-",
+    };
+
+    const div = document.createElement("div");
+    div.classList.add(
+        "alert",
+        "shadow-c-1",
+        "d-flex",
+        "flex-column",
+        "align-items-center",
+        "bg-neutral-7",
+        "p-3",
+        "rounded-13"
+    );
+    div.insertAdjacentHTML(
+        "afterbegin",
+        alertConfirmTemplate(
+            icons[theme],
+            title,
+            desc,
+            colors[theme],
+            link,
+            btn
+        )
+    );
+    notifyContainer.appendChild(div);
+    const activateAlert = () => {
+        div.classList.add("active");
+    };
+
+    const deActivateAlert = () => {
+        div.classList.remove("active");
+    };
+
+    // exec
+    const tergetLink = document.querySelectorAll(".link");
+    tergetLink.forEach((d) => {
+        const href = d.getAttribute("data-link");
+        if (href === "#") {
+            d.addEventListener("click", (e) => {
+                e.preventDefault();
+                exec();
+                d.parentElement.parentElement.classList.remove("active");
+                return true;
+            });
+        }
+    });
+
+    setTimeout(() => {
+        activateAlert();
+        closeAlert = document.querySelectorAll(".close-alert");
+        closeAlert.forEach((item) => {
+            item.addEventListener("click", (e) => {
+                e.preventDefault();
+                item.parentElement.parentElement.classList.remove("active");
+                return false;
+            });
+        });
+    }, 200);
 };
 
 // showAlert({

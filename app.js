@@ -1,25 +1,25 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-// const connectLiveReload = require("connect-livereload");
+const connectLiveReload = require("connect-livereload");
 const cookieParser = require("cookie-parser");
 const app = express();
 const path = require("path");
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const expbs = require("express-handlebars");
-// const livereload = require("livereload");
+const livereload = require("livereload");
 app.io = io;
 
-// const liveReloadServer = livereload.createServer();
-// liveReloadServer.watch(path.join(__dirname, "views"));
-// liveReloadServer.server.once("connection", () => {
-//     setTimeout(() => {
-//         liveReloadServer.refresh("/");
-//     }, 50);
-// });
+const liveReloadServer = livereload.createServer();
+liveReloadServer.watch(path.join(__dirname, "views"));
+liveReloadServer.server.once("connection", () => {
+    setTimeout(() => {
+        liveReloadServer.refresh("/");
+    }, 50);
+});
 
-// app.use(connectLiveReload());
+app.use(connectLiveReload());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());

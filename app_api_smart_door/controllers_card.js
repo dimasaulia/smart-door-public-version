@@ -23,6 +23,25 @@ exports.list = async (req, res) => {
     res.json({ cardList, numberOfCard, cardSection });
 };
 
+exports.registeredCards = async (req, res) => {
+    const numberOfCard = await prisma.card.count({
+        where: {
+            card_status: "REGISTER",
+        },
+    });
+    const cardSection = Math.ceil(numberOfCard / 6);
+    const cardList = await prisma.card.findMany({
+        orderBy: {
+            id: "asc",
+        },
+        where: {
+            card_status: "REGISTER",
+        },
+    });
+
+    res.json({ cardList, numberOfCard, cardSection });
+};
+
 exports.register = async (req, res) => {
     const saltRounds = 10;
     const pin = req.body.pin;

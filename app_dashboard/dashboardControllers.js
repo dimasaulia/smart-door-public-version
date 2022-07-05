@@ -64,3 +64,13 @@ exports.cardList = async (req, res) => {
 
     res.render("list", data);
 };
+
+exports.userList = async (req, res) => {
+    const data = {
+        users: "bg-neutral-4",
+        styles: ["/style/userList.css"],
+        scripts: ["/js/userList.js"],
+    };
+
+    res.render("userList", data);
+};

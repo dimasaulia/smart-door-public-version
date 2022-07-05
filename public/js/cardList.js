@@ -1,4 +1,4 @@
-const splideContainer = document.querySelector(".splide__list");
+const splideContainer = document.querySelectorAll(".splide__list");
 const cardMounting = () => {
     document.addEventListener("DOMContentLoaded", function (event) {
         window.addEventListener("load", function () {
@@ -25,17 +25,17 @@ const cardMounting = () => {
         });
     });
 };
-const loadCard = (container) => {
+const loadCard = (container, url) => {
     startLoader();
 
     const splideContainerTemplate = (content) => {
         return `
-    <li class="splide__slide">
-        <div class="row main--table rounded-13">
-            ${content}
-        </div>
-    </li>
-    `;
+        <li class="splide__slide">
+            <div class="row main--table rounded-13">
+                ${content}
+            </div>
+        </li>
+        `;
     };
 
     const slideItemTemplate = (id) => {
@@ -51,7 +51,7 @@ const loadCard = (container) => {
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
     // get Data
-    fetch("/api/v1/card/available", { signal: controller.signal })
+    fetch(url, { signal: controller.signal })
         .then((res) => {
             if (res.ok) return res.json();
             throw "Can't get server response";
@@ -93,6 +93,7 @@ const loadCard = (container) => {
         });
 };
 
-loadCard(splideContainer);
+loadCard(splideContainer[0], "/api/v1/card/available");
+loadCard(splideContainer[1], "/api/v1/card/unavailable");
 
 showFlashToast();

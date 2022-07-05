@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { setAuthCookie, ErrorException } = require("../services/auth");
+const { setAuthCookie, ErrorException, getUser } = require("../services/auth");
 const { resError, resSuccess } = require("../services/error");
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
@@ -106,6 +106,18 @@ exports.list = async (req, res) => {
         orderBy: {
             id: "asc",
         },
+        include: {
+            role: {
+                select: {
+                    name: true,
+                },
+            },
+            profil: {
+                select: {
+                    full_name: true,
+                },
+            },
+        },
     });
     res.json(roleList);
 };
@@ -114,7 +126,7 @@ exports.detail = async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
             where: {
-                id: Number(req.params.id),
+                id: req.params.id,
             },
         });
         if (user === null) throw "User not found";
@@ -131,10 +143,14 @@ exports.delete = async (req, res) => {
     try {
         const deletedUser = await prisma.user.delete({
             where: {
-                id: Number(req.params.id),
+                id: req.params.id,
             },
         });
-        res.json(deletedUser);
+        return resSuccess({
+            res,
+            title: "Success delete user",
+            data: deletedUser,
+        });
     } catch (err) {
         res.status(422).json({
             code: 422,
@@ -149,7 +165,7 @@ exports.update = async (req, res) => {
         //provide default or unupdated value
         const user = await prisma.user.findUnique({
             where: {
-                username: req.body.username,
+                id: getUser(req),
             },
         });
 
@@ -167,7 +183,7 @@ exports.update = async (req, res) => {
 
         const updatedUser = await prisma.user.update({
             where: {
-                id: Number(user.id),
+                id: getUser(req),
             },
             data: {
                 username: req.body.name,
@@ -182,6 +198,7 @@ exports.update = async (req, res) => {
             updatedUser,
         });
     } catch (err) {
+        console.log(err);
         res.status(422).json({
             code: 422,
             msg: err,

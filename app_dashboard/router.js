@@ -16,5 +16,11 @@ router.get(
     allowedRole("ADMIN"),
     dashboard.userPairingToDashboard
 );
+router.get(
+    "/user/list",
+    loginRequired,
+    allowedRole("ADMIN"),
+    dashboard.userList
+);
 
 module.exports = router;
