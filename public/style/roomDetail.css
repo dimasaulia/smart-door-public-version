@@ -1,0 +1,51 @@
+.room-icon {
+    width: 10em;
+}
+
+.room-info {
+    height: 100% !important;
+}
+
+.activity-icon {
+    width: 30px;
+}
+
+.room-activity {
+    background: rgb(var(--color-neutral-7));
+    color: rgb(var(--color-blue-3));
+}
+
+.room-activity.active {
+    background: rgb(var(--color-blue-3));
+    color: rgb(var(--color-neutral-7));
+}
+
+.activity-logs {
+    height: 25rem;
+    overflow-y: scroll;
+}
+
+#logs-show-more,
+#user-show-more {
+    cursor: pointer;
+}
+
+/* Track */
+.activity-logs::-webkit-scrollbar-track {
+    border-radius: 13px;
+}
+
+/* Handle */
+.activity-logs::-webkit-scrollbar-thumb {
+    border-radius: 13px;
+}
+
+@media only screen and (max-width: 576px) {
+    .room-icon {
+        width: 7em;
+    }
+
+    .activity-icon {
+        width: 18px;
+    }
+}

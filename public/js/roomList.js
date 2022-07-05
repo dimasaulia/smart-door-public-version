@@ -65,7 +65,7 @@ const roomListTemplate = ({ name, ruid }) => {
             </a>
         </div>
 
-        <a href="" class="bg-blue-3 text-neutral-7 py-2 px-4 rounded-13">Detail</a>
+        <a href="/dashboard/room/detail/${ruid}" class="bg-blue-3 text-neutral-7 py-2 px-4 rounded-13">Detail</a>
 
     </div>
         `;

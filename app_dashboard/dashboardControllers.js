@@ -84,3 +84,15 @@ exports.roomList = async (req, res) => {
 
     res.render("roomList", data);
 };
+
+exports.roomDetail = (req, res) => {
+    const { ruid } = req.params;
+    const data = {
+        room: "bg-neutral-4",
+        styles: ["/style/roomDetail.css"],
+        scripts: ["/js/roomDetail.js"],
+        ruid,
+    };
+
+    res.render("roomDetail", data);
+};

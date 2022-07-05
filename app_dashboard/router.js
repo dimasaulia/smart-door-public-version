@@ -22,11 +22,20 @@ router.get(
     allowedRole("ADMIN"),
     dashboard.userList
 );
+
+// ROOM
 router.get(
     "/room/list",
     loginRequired,
     allowedRole("ADMIN"),
     dashboard.roomList
+);
+
+router.get(
+    "/room/detail/:ruid",
+    loginRequired,
+    allowedRole("ADMIN"),
+    dashboard.roomDetail
 );
 
 module.exports = router;
