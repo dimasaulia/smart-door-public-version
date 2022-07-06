@@ -3,6 +3,7 @@ const { getUser } = require("../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
+const { request } = require("express");
 
 exports.getOrCreateRoom = async (req, res) => {
     const ruid = req.body.ruid; // stands for room unique id
@@ -193,7 +194,7 @@ exports.roomCheckIn = async (req, res) => {
 
 exports.roomRequest = async (req, res) => {
     try {
-        const { ruid, cardNumber } = req.body;
+        const { ruid, cardNumber } = req.query;
         const uuid = getUser(req);
         const request = await prisma.room_Request.create({
             data: {
@@ -223,6 +224,38 @@ exports.roomRequest = async (req, res) => {
         return resError({
             res,
             title: "Gagal meminta ruangan",
+            errors: error,
+        });
+    }
+};
+
+exports.userAccessableRoom = async (req, res) => {
+    try {
+        const { cardNumber: card_number } = req.params;
+        const accessAbleRoom = await prisma.room.findMany({
+            where: {
+                card: {
+                    some: {
+                        card_number,
+                    },
+                },
+            },
+            select: {
+                name: true,
+                ruid: true,
+            },
+        });
+        console.log(accessAbleRoom);
+        return resSuccess({
+            res,
+            title: "Successful listed room",
+            data: accessAbleRoom,
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            title: "Gagal memuat ruangan",
             errors: error,
         });
     }

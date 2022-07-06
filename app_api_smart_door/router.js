@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 const role = require("./controllers_role");
 const user = require("./controllers_user");
 const card = require("./controllers_card");
@@ -131,6 +131,14 @@ router.post("/card/validate", card.validateCard); // HW API
 
 // ROOM ROUTER
 router.get("/room/list", loginRequired, allowedRole("ADMIN"), room.list);
+router.get("/u/room/list", loginRequired, allowedRole("USER"), room.list);
+router.get(
+    "/u/room/accesable/:cardNumber",
+    loginRequired,
+    cardIsExist,
+    allowedRole("USER"),
+    room.userAccessableRoom
+);
 router.get(
     "/room/detail/:ruid",
     loginRequired,
@@ -139,8 +147,8 @@ router.get(
 );
 router.post(
     "/u/room/request",
-    body("cardNumber").notEmpty(),
-    body("ruid").notEmpty(),
+    query("cardNumber").notEmpty(),
+    query("ruid").notEmpty(),
     formChacker,
     loginRequired,
     allowedRole("USER"),

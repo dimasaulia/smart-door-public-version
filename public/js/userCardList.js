@@ -18,7 +18,7 @@ const cardListTemplate = ({ card_name, card_number, type }) => {
             </div>
         </div>
 
-        <a href="" class="text-blue-3 fw-bold d-flex align-items-center">
+        <a href="/room/${card_number}" class="text-blue-3 fw-bold d-flex align-items-center">
             <img src="/image/icon_room.svg" alt="" class="room-icons">
             <p class="ms-2">Room Settings</p>
         </a>

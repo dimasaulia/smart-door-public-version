@@ -4,7 +4,8 @@ const { getUser } = require("../services/auth");
 const prisma = new PrismaClient();
 
 const cardIsExist = async (req, res, next) => {
-    const cardNumber = req.body.cardNumber || req.params.cardNumber;
+    const cardNumber =
+        req.body.cardNumber || req.params.cardNumber || req.query.cardNumber;
     try {
         const card = await prisma.card.findUnique({
             where: {
@@ -62,7 +63,9 @@ const cardNotPair = async (req, res, next) => {
 };
 
 const isUserCard = async (req, res, next) => {
-    const cardNumber = req.body.cardNumber;
+    const cardNumber =
+        req.body.cardNumber || req.params.cardNumber || req.query.cardNumber;
+
     const userId = getUser(req);
     try {
         const card = await prisma.card.findUnique({

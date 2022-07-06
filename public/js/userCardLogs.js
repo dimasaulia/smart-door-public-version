@@ -19,6 +19,7 @@ const times = (date) => {
         minute: "numeric",
     }).format(new Date(date));
 };
+
 const logsTemplate = ({ createdAt, name, card_name, number }) => {
     return `
     <div class="log-info row p-2">
@@ -37,6 +38,7 @@ const logsTemplate = ({ createdAt, name, card_name, number }) => {
     </div>
     `;
 };
+
 // Basic Info
 fetch(`/api/v1/u/card/${cardNumber}`)
     .then((res) => {
@@ -56,8 +58,12 @@ fetch(`/api/v1/u/card/${cardNumber}`)
         closeLoader();
     })
     .catch((err) => {
-        console.log(err);
         closeLoader();
+        showToast({
+            theme: "danger",
+            title: "Server error",
+            desc: "Gagal memuat data, coba lagi!",
+        });
     });
 
 // fetch logs

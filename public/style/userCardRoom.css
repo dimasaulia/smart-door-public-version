@@ -1,0 +1,37 @@
+.accessable-room {
+    width: 70%;
+}
+
+.accessable-table-container {
+    border-radius: 13px !important;
+    height: 20em !important;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+.col-12.room-item {
+    height: 45px !important;
+    margin-bottom: 0px !important;
+    padding: 10px !important;
+}
+
+.room-item:nth-child(odd) {
+    background: rgb(var(--color-neutral-7));
+}
+
+.room-item:nth-child(even) {
+    background: rgb(var(--color-neutral-4));
+}
+
+.request-room {
+    box-sizing: content-box;
+    height: 20em;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+@media only screen and (max-width: 576px) {
+    .accessable-table-container {
+        width: 25em !important;
+    }
+}

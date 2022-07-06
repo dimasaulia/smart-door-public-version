@@ -21,3 +21,15 @@ module.exports.cardLogs = (req, res) => {
     };
     res.render("userCardLogs", data);
 };
+
+module.exports.cardRoom = (req, res) => {
+    const { card: id } = req.params;
+    const data = {
+        layout: "userBase",
+        card: "bg-neutral-4",
+        styles: ["/style/userCardLogs.css", "/style/userCardRoom.css"],
+        scripts: ["/js/userCardRoom.js"],
+        id,
+    };
+    res.render("userCardRoom", data);
+};
