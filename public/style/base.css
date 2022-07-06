@@ -176,6 +176,10 @@
     border-radius: 13px;
 }
 
+.rounded-10 {
+    border-radius: 10px;
+}
+
 .rounded-15 {
     border-radius: 15px !important;
 }

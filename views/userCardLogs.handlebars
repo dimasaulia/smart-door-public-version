@@ -1,3 +1,55 @@
-<h1>
-{{id}}
-</h1>
+<h2 class="fw-bolder card-id" data-card="{{id}}">Card {{id}} details</h2>
+
+<div
+    class="card-info d-flex flex-column-reverse flex-sm-row justify-content-between align-items-center align-items-sm-start mt-5">
+    <form method="post" class="card-form">
+        <div class="form-group d-flex align-items-center justify-content-between">
+            <label for="card-number" class="fw-bold text-neutral-2">Card Number</label>
+            <input type="text" class="form-control rounded-13 shadow-c-1" name="cardNumber" disabled
+                id="card-number">
+        </div>
+
+        <div class="form-group d-flex align-items-center justify-content-between mt-3">
+            <label for="card-name" class="fw-bold text-neutral-2">Card Name</label>
+            <input type="text" class="form-control rounded-13" name="cardName" id="card-name">
+        </div>
+
+        <div class="form-group d-flex align-items-center justify-content-between mt-3">
+            <label for="card-type" class="fw-bold text-neutral-2">Card Type</label>
+            <select class="form-control rounded-13" id="card-type">
+                <option value="card_atm">Bank</option>
+                <option value="card_id">ID Card</option>
+                <option value="card_studentid">Student Card</option>
+                <option value="card_emoney">E Money</option>
+                <option value="card_driver">Driver License</option>
+            </select>
+        </div>
+
+        <div class="form-group d-flex align-items-center justify-content-end mt-3">
+            <a href="" class="text-center text-blue-3">Change Pin</a>
+        </div>
+
+    </form>
+    <img src="" alt="" class="card-icon mb-5 mb-sm-0">
+</div>
+
+<h2 class="fw-bolder mt-5 text-neutral-6">Your card logs</h2>
+<div class="row bg-neutral-7 p-2 rounded-10 mb-3">
+    <div class="col-3">
+        <p class="fw-bold text-neutral-2">No</p>
+    </div>
+    <div class="col-3">
+        <p class="fw-bold text-neutral-2">Room</p>
+    </div>
+    <div class="col-3">
+        <p class="fw-bold text-neutral-2">Day</p>
+    </div>
+    <div class="col-3">
+        <p class="fw-bold text-neutral-2">Time</p>
+    </div>
+</div>
+
+
+<div class="shadow log-container">
+
+</div>

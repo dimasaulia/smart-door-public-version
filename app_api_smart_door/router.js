@@ -93,6 +93,20 @@ router.get(
     allowedRole("USER"),
     card.userCards
 );
+router.get(
+    "/u/card/:cardNumber",
+    loginRequired,
+    allowedRole("USER"),
+    cardIsExist,
+    card.userCardsDetail
+);
+router.get(
+    "/u/card/logs/:cardNumber",
+    loginRequired,
+    allowedRole("USER"),
+    cardIsExist,
+    card.userCardLogs
+);
 router.get("/card/available", loginRequired, allowedRole("ADMIN"), card.list);
 router.get(
     "/card/unavailable",

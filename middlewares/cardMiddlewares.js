@@ -4,7 +4,7 @@ const { getUser } = require("../services/auth");
 const prisma = new PrismaClient();
 
 const cardIsExist = async (req, res, next) => {
-    const cardNumber = req.body.cardNumber;
+    const cardNumber = req.body.cardNumber || req.params.cardNumber;
     try {
         const card = await prisma.card.findUnique({
             where: {

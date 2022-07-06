@@ -22,7 +22,7 @@ const cardListTemplate = ({ card_name, card_number, type }) => {
             <img src="/image/icon_room.svg" alt="" class="room-icons">
             <p class="ms-2">Room Settings</p>
         </a>
-        <a href="" class="ms-5 me-5 text-blue-3 fw-bold d-flex align-items-center">
+        <a href="/card/${card_number}" class="ms-5 me-5 text-blue-3 fw-bold d-flex align-items-center">
             <img src="/image/icon_log.svg" alt="" class="room-icons">
             <p class="ms-2">Logs</p>
         </a>

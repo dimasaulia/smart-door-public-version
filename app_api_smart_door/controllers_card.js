@@ -139,3 +139,46 @@ exports.userCards = async (req, res) => {
         });
     }
 };
+
+exports.userCardsDetail = async (req, res) => {
+    const { cardNumber: card_number } = req.params;
+    const userCardDetail = await prisma.card.findUnique({
+        where: {
+            card_number,
+        },
+        select: {
+            card_name: true,
+            card_number: true,
+            type: true,
+        },
+    });
+    const data = {
+        info: userCardDetail,
+    };
+    return resSuccess({ res, title: "Success get card detail", data });
+};
+
+exports.userCardLogs = async (req, res) => {
+    const { cardNumber: card_number } = req.params;
+    const data = await prisma.rooms_Records.findMany({
+        where: {
+            Card: {
+                card_number,
+            },
+        },
+        select: {
+            Card: {
+                select: {
+                    card_name: true,
+                },
+            },
+            room: {
+                select: {
+                    name: true,
+                },
+            },
+            createdAt: true,
+        },
+    });
+    return resSuccess({ res, title: "Success listed data", data });
+};

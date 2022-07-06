@@ -16,7 +16,7 @@ module.exports.cardLogs = (req, res) => {
         layout: "userBase",
         card: "bg-neutral-4",
         styles: ["/style/userCardLogs.css"],
-        scripts: [],
+        scripts: ["/js/userCardLogs.js"],
         id,
     };
     res.render("userCardLogs", data);
