@@ -14,9 +14,13 @@ const {
     cardIsExist,
     cardIsPair,
     isUserCard,
+    cardNotPair,
 } = require("../middlewares/cardMiddlewares");
 const { roomIsExist } = require("../middlewares/roomMiddlewares");
-const { userIsExist } = require("../middlewares/userMiddlewares");
+const {
+    userIsExist,
+    usernameIsExist,
+} = require("../middlewares/userMiddlewares");
 
 // ROLE ROUTER
 router.get("/role/list", loginRequired, allowedRole("ADMIN"), role.list);
@@ -77,6 +81,8 @@ router.post(
     "/user/pair",
     loginRequired,
     allowedRole("ADMIN"),
+    usernameIsExist,
+    cardNotPair,
     user.pairUserToCard
 );
 
@@ -100,7 +106,13 @@ router.get(
     allowedRole("ADMIN"),
     card.detail
 );
-router.post("/card/register", card.register); // HW API
+router.post(
+    "/card/register",
+    body("cardNumber").notEmpty(),
+    body("pin").notEmpty().isLength(6),
+    formChacker,
+    card.register
+); // HW API
 router.post("/card/validate", card.validateCard); // HW API
 
 // ROOM ROUTER

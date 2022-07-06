@@ -47,11 +47,12 @@ exports.register = async (req, res) => {
     const pin = req.body.pin;
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashPin = bcrypt.hashSync(pin, salt);
+    const card_number = req.body.cardNumber.replaceAll(" ", "");
 
     try {
         const registeredCard = await prisma.card.create({
             data: {
-                card_number: req.body.cardNumber,
+                card_number,
                 pin: hashPin,
             },
         });

@@ -43,7 +43,7 @@ model Profil {
 }
 
 model Card {
-  id          Int             @id @default(autoincrement())
+  id          String          @id @default(cuid())
   card_number String          @unique
   card_name   String?
   pin         String
@@ -84,7 +84,7 @@ model Rooms_Records {
   room      Room     @relation(fields: [roomId], references: [id])
   roomId    Int
   Card      Card     @relation(fields: [cardId], references: [id])
-  cardId    Int
+  cardId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

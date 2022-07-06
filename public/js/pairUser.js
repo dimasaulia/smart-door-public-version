@@ -3,13 +3,13 @@ const cardId = document.querySelector("#card-id");
 const btn = document.querySelector("#pairButton");
 const pairButtonn = document.querySelector("#pairButton");
 
-form.username.addEventListener("keyup", () => {
-    console.log(
-        form.username.value.length >= 4
-            ? form.username.value
-            : "Waiting for input"
-    );
-});
+// form.username.addEventListener("keyup", () => {
+//     console.log(
+//         form.username.value.length >= 4
+//             ? form.username.value
+//             : "Waiting for input"
+//     );
+// });
 
 var availableTutorials = [
     "ActionScript",
@@ -40,24 +40,30 @@ btn.addEventListener("click", async (e) => {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({
-                userId: username,
+                username: username,
                 cardNumber: cardValue,
             }),
-        }).then(() => {
-            closeLoader();
-            setToast({
-                status: "success",
-                title: "Berhasil Pairing",
-                msg: "Berhasil menautkan user dan kartu",
+        })
+            .then((res) => {
+                if (!res.ok) throw res.json();
+                return res.json();
+            })
+            .then(() => {
+                closeLoader();
+                setToast({
+                    status: "success",
+                    title: "Berhasil Pairing",
+                    msg: "Berhasil menautkan user dan kartu",
+                });
+                window.location = "/dashboard/card/list";
             });
-            window.location = "/dashboard/card/list";
-        });
     } catch (error) {
         closeLoader();
+        const err = await error;
         showToast({
             theme: "danger",
             title: "Gagal pairing",
-            desc: "Gagal menautkan user dan card",
+            desc: err.message || "Gagal menautkan user dan card",
         });
     }
 });

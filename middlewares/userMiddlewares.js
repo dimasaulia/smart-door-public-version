@@ -18,4 +18,20 @@ const userIsExist = async (req, res, next) => {
     }
 };
 
-module.exports = { userIsExist };
+const usernameIsExist = async (req, res, next) => {
+    const username = req.body.username;
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                username,
+            },
+        });
+
+        if (!user) throw "Can't find the username";
+        next();
+    } catch (error) {
+        return resError({ res, title: error });
+    }
+};
+
+module.exports = { userIsExist, usernameIsExist };

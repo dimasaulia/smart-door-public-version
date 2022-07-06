@@ -42,6 +42,25 @@ const cardIsPair = async (req, res, next) => {
     }
 };
 
+const cardNotPair = async (req, res, next) => {
+    const cardNumber = req.body.cardNumber;
+    try {
+        const card = await prisma.card.findUnique({
+            where: {
+                card_number: cardNumber,
+            },
+        });
+        if (card.card_status === "REGISTER") throw "Card already pair";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: error,
+            errors: error,
+        });
+    }
+};
+
 const isUserCard = async (req, res, next) => {
     const cardNumber = req.body.cardNumber;
     const userId = getUser(req);
@@ -66,4 +85,4 @@ const isUserCard = async (req, res, next) => {
     }
 };
 
-module.exports = { cardIsExist, cardIsPair, isUserCard };
+module.exports = { cardIsExist, cardIsPair, isUserCard, cardNotPair };

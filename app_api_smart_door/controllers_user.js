@@ -207,11 +207,11 @@ exports.update = async (req, res) => {
 };
 
 exports.pairUserToCard = async (req, res) => {
-    const userId = req.body.userId;
+    const username = req.body.username;
     const cardNumber = req.body.cardNumber;
     const user = await prisma.user.update({
         where: {
-            username: userId,
+            username,
         },
         data: {
             card: {

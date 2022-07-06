@@ -25,7 +25,8 @@ const cardMounting = () => {
         });
     });
 };
-const loadCard = (container, url) => {
+
+const loadAvailableCard = (container, url) => {
     startLoader();
 
     const splideContainerTemplate = (content) => {
@@ -78,7 +79,6 @@ const loadCard = (container, url) => {
             closeLoader();
             clearTimeout(timer);
             new Splide("#slider1").mount();
-            new Splide("#slider2").mount();
         })
         .catch((error) => {
             closeLoader();
@@ -89,11 +89,74 @@ const loadCard = (container, url) => {
                 desc: error,
             });
             new Splide("#slider1").mount();
+        });
+};
+
+const loadUnavailableCard = (container, url) => {
+    startLoader();
+
+    const splideContainerTemplate = (content) => {
+        return `
+        <li class="splide__slide">
+            <div class="row main--table rounded-13">
+                ${content}
+            </div>
+        </li>
+        `;
+    };
+
+    const slideItemTemplate = (id) => {
+        return `
+        <div class="col-12 table-item py-2 ps-3 d-flex justify-content-between">
+            <p>${id}</p>
+        </div>
+    `;
+    };
+
+    let slideItems = "";
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 5000);
+    // get Data
+    fetch(url, { signal: controller.signal })
+        .then((res) => {
+            if (res.ok) return res.json();
+            throw "Can't get server response";
+        })
+        .then((data) => {
+            cardId = 0;
+            for (let section = 0; section < data.cardSection; section++) {
+                for (let card = 0; card < 6; card++) {
+                    // Create value of slider container
+                    slideItems += slideItemTemplate(
+                        data.cardList[cardId].card_number
+                    );
+                    cardId < data.numberOfCard ? cardId++ : cardId;
+                    if (cardId === data.numberOfCard) break;
+                }
+
+                // Create slider container
+                container.insertAdjacentHTML(
+                    "beforeend",
+                    splideContainerTemplate(slideItems)
+                );
+                slideItems = ""; //clear container
+            }
+            closeLoader();
+            clearTimeout(timer);
+            new Splide("#slider2").mount();
+        })
+        .catch((error) => {
+            closeLoader();
+            clearTimeout(timer);
+            showToast({
+                theme: "danger",
+                title: "Something wrong",
+                desc: error,
+            });
             new Splide("#slider2").mount();
         });
 };
 
-loadCard(splideContainer[0], "/api/v1/card/available");
-loadCard(splideContainer[1], "/api/v1/card/unavailable");
-
+loadAvailableCard(splideContainer[0], "/api/v1/card/available");
+loadUnavailableCard(splideContainer[1], "/api/v1/card/unavailable");
 showFlashToast();

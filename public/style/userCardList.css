@@ -1,0 +1,17 @@
+.input-group-prepend {
+    background: white !important;
+    border-radius: 1px solid grey !important;
+}
+
+#cardname {
+    border: none !important;
+}
+
+.form-icons {
+    cursor: pointer;
+    width: 30px !important;
+}
+
+.room-icons {
+    width: 3em;
+}
