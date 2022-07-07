@@ -294,20 +294,19 @@ exports.requestRoomByUser = async (req, res) => {
         const requestUser = await prisma.room_Request.findMany({
             where: {
                 room: {
-                    every: {
+                    is: {
                         ruid,
                     },
                 },
             },
             include: {
-                user: {
-                    select: {
-                        username: true,
-                    },
-                },
                 card: {
-                    select: {
-                        card_number: true,
+                    include: {
+                        user: {
+                            select: {
+                                username: true,
+                            },
+                        },
                     },
                 },
             },

@@ -4,6 +4,7 @@ const ruid = roomIdContainer.getAttribute("data-ruid");
 const roomNameContainer = document.querySelector("#room-name");
 const ruidContainer = document.querySelector("#ruid");
 const itemContainer = document.querySelector(".item-container");
+const accessContainer = document.querySelector(".activity-access");
 const days = (date) => {
     return new Intl.DateTimeFormat("id", {
         year: "numeric",
@@ -19,12 +20,29 @@ const accaptableUserTemplate = ({
     return `
     <div
         class="d-flex mt-2 flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5">
-        <p href="" class="text-neutral-1">${username} - ${card_number}</p>
+        <p href="" class="text-neutral-1">${card_number}@${username}</p>
         <a href="" class="text-neutral-2">Memilik akses sejak    ${days(
             createdAt
         )}
         </a>
     </div>
+    `;
+};
+
+const requestUserTemplate = ({
+    card: {
+        card_number,
+        user: { username },
+    },
+}) => {
+    return `
+    <div class="col-12 mt-3">
+                    <div
+                        class="d-flex flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5">
+                        <a href="" class="text-neutral-2">${card_number}@${username}</a>
+                        <a href="" class="text-neutral-1 fw-bold">Give Access</a>
+                    </div>
+                </div>
     `;
 };
 // Basic Info
@@ -82,8 +100,14 @@ fetch(`/api/v1/room/requestUser/${ruid}`)
         if (!res.ok) throw res.json();
         return res.json();
     })
-    .then((data) => {
-        console.log(data.data);
+    .then((requestUser) => {
+        requestUser.data.forEach((card) => {
+            console.log(card);
+            accessContainer.insertAdjacentHTML(
+                "afterbegin",
+                requestUserTemplate(card)
+            );
+        });
         closeLoader();
     })
     .catch(async (err) => {
