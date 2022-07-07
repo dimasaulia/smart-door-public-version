@@ -57,7 +57,6 @@ fetch(`/api/v1/room/accaptableUser/${ruid}`)
     })
     .then((data) => {
         const cards = data.data[0].card;
-        console.log(cards);
         cards.forEach((card) => {
             itemContainer.insertAdjacentHTML(
                 "afterbegin",
@@ -78,3 +77,22 @@ fetch(`/api/v1/room/accaptableUser/${ruid}`)
     });
 
 // request user
+fetch(`/api/v1/room/requestUser/${ruid}`)
+    .then((res) => {
+        if (!res.ok) throw res.json();
+        return res.json();
+    })
+    .then((data) => {
+        console.log(data.data);
+        closeLoader();
+    })
+    .catch(async (err) => {
+        closeLoader();
+        const errors = await err;
+        console.log(errors);
+        showToast({
+            theme: "danger",
+            title: errors.message,
+            desc: "Gagal memuat info user, coba lagi",
+        });
+    });

@@ -287,3 +287,42 @@ exports.accaptableUser = async (req, res) => {
         });
     }
 };
+
+exports.requestRoomByUser = async (req, res) => {
+    try {
+        const { ruid } = req.params;
+        const requestUser = await prisma.room_Request.findMany({
+            where: {
+                room: {
+                    every: {
+                        ruid,
+                    },
+                },
+            },
+            include: {
+                user: {
+                    select: {
+                        username: true,
+                    },
+                },
+                card: {
+                    select: {
+                        card_number: true,
+                    },
+                },
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success listed request user",
+            data: requestUser,
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            title: "Gagal memuat user yang mimnta request",
+            errors: error,
+        });
+    }
+};

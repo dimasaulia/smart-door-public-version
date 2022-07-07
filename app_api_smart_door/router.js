@@ -138,6 +138,13 @@ router.get(
     roomIsExist,
     room.accaptableUser
 );
+router.get(
+    "/room/requestUser/:ruid",
+    loginRequired,
+    allowedRole("ADMIN"),
+    roomIsExist,
+    room.requestRoomByUser
+);
 router.get("/u/room/list", loginRequired, allowedRole("USER"), room.list);
 router.get(
     "/u/room/accesable/:cardNumber",
