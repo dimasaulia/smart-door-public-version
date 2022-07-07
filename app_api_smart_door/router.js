@@ -131,6 +131,13 @@ router.post("/card/validate", card.validateCard); // HW API
 
 // ROOM ROUTER
 router.get("/room/list", loginRequired, allowedRole("ADMIN"), room.list);
+router.get(
+    "/room/accaptableUser/:ruid",
+    loginRequired,
+    allowedRole("ADMIN"),
+    roomIsExist,
+    room.accaptableUser
+);
 router.get("/u/room/list", loginRequired, allowedRole("USER"), room.list);
 router.get(
     "/u/room/accesable/:cardNumber",
@@ -143,6 +150,7 @@ router.get(
     "/room/detail/:ruid",
     loginRequired,
     allowedRole("ADMIN"),
+    roomIsExist,
     room.detail
 );
 router.post(

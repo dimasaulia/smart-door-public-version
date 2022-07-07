@@ -1,12 +1,12 @@
-<h1 class="fw-bolder">Room {{ruid}} Detail</h1>
+<h1 class="fw-bolder room-id" data-ruid="{{ruid}}"></h1>
 
 <div class="row gx-5 gy-2 gy-md-0 mt-4">
     <div class="col-md-7">
         <div class="bg-neutral-7 ps-5 rounded-13 d-flex align-items-center py-5">
             <img src="/image/icon_room.svg" alt="Room Icon" class="room-icon">
             <div class="ms-3">
-                <h3 class="fw-bold text-blue-3">AA 305</h3>
-                <p>17shj1hgs6</p>
+                <h3 class="fw-bold text-blue-3" id="room-name">AA 305</h3>
+                <p id="ruid">17shj1hgs6</p>
             </div>
         </div>
     </div>
@@ -47,19 +47,14 @@
                         class="room-activity active py-2 rounded-5 d-flex justify-content-center align-items-center">
 
                         <img src="/image/icon_accaptable_user.svg" alt="" class="activity-icon">
-                        <p class="fw-bold ms-2"> Accaptable User</p>
+                        <p class="fw-bold ms-2"> Accaptable Cards</p>
                     </div>
                 </div>
             </div>
 
-            <div class="activity-logs mt-2">
+            <div class="item-container mt-2">
                 
-                    <div
-                        class="d-flex flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5">
-                        <a href="" class="text-neutral-1">dimas</a>
-                        <a href="" class="text-neutral-2">Success enter the room at 12 Jule 2022, 19:20
-                        </a>
-                    </div>
+                    
                 
 
                 <div class="col-12 mt-3">

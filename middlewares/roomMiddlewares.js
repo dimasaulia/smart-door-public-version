@@ -16,7 +16,7 @@ const roomIsExist = async (req, res, next) => {
     } catch (error) {
         return resError({
             res,
-            title: "Something wrong",
+            title: error,
             errors: error,
         });
     }

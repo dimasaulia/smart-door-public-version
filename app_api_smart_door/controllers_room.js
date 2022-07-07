@@ -260,3 +260,30 @@ exports.userAccessableRoom = async (req, res) => {
         });
     }
 };
+
+exports.accaptableUser = async (req, res) => {
+    try {
+        const { ruid } = req.params;
+        const accaptableUser = await prisma.room.findMany({
+            where: { ruid },
+            include: {
+                card: {
+                    include: {
+                        user: true,
+                    },
+                },
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Succes listed accaptable user",
+            data: accaptableUser,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Gagal memuat user yang diizinkan",
+            errors: error,
+        });
+    }
+};
