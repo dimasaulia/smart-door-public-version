@@ -194,15 +194,9 @@ exports.roomCheckIn = async (req, res) => {
 
 exports.roomRequest = async (req, res) => {
     try {
-        const { ruid, cardNumber } = req.query;
-        const uuid = getUser(req);
+        const { ruid, cardNumber: card_number } = req.query;
         const request = await prisma.room_Request.create({
             data: {
-                user: {
-                    connect: {
-                        id: uuid,
-                    },
-                },
                 room: {
                     connect: {
                         ruid,
@@ -210,7 +204,7 @@ exports.roomRequest = async (req, res) => {
                 },
                 card: {
                     connect: {
-                        card_number: cardNumber,
+                        card_number,
                     },
                 },
             },
@@ -221,6 +215,7 @@ exports.roomRequest = async (req, res) => {
             data: request,
         });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: "Gagal meminta ruangan",

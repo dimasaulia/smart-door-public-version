@@ -16,7 +16,10 @@ const {
     isUserCard,
     cardNotPair,
 } = require("../middlewares/cardMiddlewares");
-const { roomIsExist } = require("../middlewares/roomMiddlewares");
+const {
+    roomIsExist,
+    roomRequestNotExist,
+} = require("../middlewares/roomMiddlewares");
 const {
     userIsExist,
     usernameIsExist,
@@ -170,6 +173,7 @@ router.post(
     cardIsExist,
     isUserCard,
     roomIsExist,
+    roomRequestNotExist,
     room.roomRequest
 );
 router.post(

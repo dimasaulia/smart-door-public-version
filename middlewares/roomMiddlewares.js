@@ -22,4 +22,32 @@ const roomIsExist = async (req, res, next) => {
     }
 };
 
-module.exports = { roomIsExist };
+const roomRequestNotExist = async (req, res, next) => {
+    try {
+        const { ruid, cardNumber: card_number } = req.query;
+        const request = await prisma.room_Request.findMany({
+            where: {
+                room: {
+                    is: {
+                        ruid,
+                    },
+                },
+                card: {
+                    is: {
+                        card_number,
+                    },
+                },
+            },
+        });
+        if (request.length > 0) throw "Cant create room request";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: "Request sudah ada!",
+            errors: error,
+        });
+    }
+};
+
+module.exports = { roomIsExist, roomRequestNotExist };
