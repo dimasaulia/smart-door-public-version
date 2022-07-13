@@ -13,7 +13,7 @@ exports.list = async (req, res) => {
     const cardSection = Math.ceil(numberOfCard / 6);
     const cardList = await prisma.card.findMany({
         orderBy: {
-            id: "asc",
+            createdAt: "desc",
         },
         where: {
             card_status: "UNREGISTER",

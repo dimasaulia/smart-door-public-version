@@ -34,13 +34,14 @@ const requestUserTemplate = ({
         card_number,
         user: { username },
     },
+    id,
 }) => {
     return `
     <div class="col-12 mt-3">
                     <div
                         class="d-flex flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5">
                         <a href="" class="text-neutral-2">${card_number}@${username}</a>
-                        <a href="" class="text-neutral-1 fw-bold">Give Access</a>
+                        <a href="/api/v1/room/pair?ruid=${ruid}&cardNumber=${card_number}&requestId=${id}" class="text-neutral-1 fw-bold request-link">Give Access</a>
                     </div>
                 </div>
     `;
@@ -102,18 +103,52 @@ fetch(`/api/v1/room/requestUser/${ruid}`)
     })
     .then((requestUser) => {
         requestUser.data.forEach((card) => {
-            console.log(card);
             accessContainer.insertAdjacentHTML(
                 "afterbegin",
                 requestUserTemplate(card)
             );
+        });
+        const requestLink = document.querySelectorAll(".request-link");
+        requestLink.forEach((link) => {
+            const href = link.getAttribute("href");
+            link.addEventListener("click", (e) => {
+                startLoader();
+                e.preventDefault();
+                fetch(href, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                })
+                    .then((res) => {
+                        if (!res.ok) throw res.json();
+                        return res.json();
+                    })
+                    .then((data) => {
+                        closeLoader();
+                        link.parentElement.parentElement.remove();
+                        showToast({
+                            theme: "success",
+                            title: data.message,
+                            desc: "berhasil memberi akses kepada kartu",
+                        });
+                    })
+                    .catch(async (err) => {
+                        closeLoader();
+                        const errors = await err;
+                        showToast({
+                            theme: "danger",
+                            title: errors.message,
+                            desc: "Gagal memuat info user, coba lagi",
+                        });
+                    });
+            });
         });
         closeLoader();
     })
     .catch(async (err) => {
         closeLoader();
         const errors = await err;
-        console.log(errors);
         showToast({
             theme: "danger",
             title: errors.message,

@@ -24,7 +24,7 @@ const cardIsExist = async (req, res, next) => {
 };
 
 const cardIsPair = async (req, res, next) => {
-    const cardNumber = req.body.cardNumber;
+    const cardNumber = req.body.cardNumber || req.query.cardNumber;
     try {
         const card = await prisma.card.findUnique({
             where: {

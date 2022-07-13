@@ -26,27 +26,27 @@ const cardMounting = () => {
     });
 };
 
+const splideContainerTemplate = (content) => {
+    return `
+    <li class="splide__slide">
+        <div class="row main--table rounded-13">
+            ${content}
+        </div>
+    </li>
+    `;
+};
+
+const slideItemTemplate = (id) => {
+    return `
+    <div class="col-12 table-item py-2 ps-3 d-flex justify-content-between">
+        <p>${id}</p>
+        <a href="/dashboard/card/pair/?cardId=${id}" class="d-flex align-items-center pair--link">Pair to user</a>
+    </div>
+`;
+};
+
 const loadAvailableCard = (container, url) => {
     startLoader();
-
-    const splideContainerTemplate = (content) => {
-        return `
-        <li class="splide__slide">
-            <div class="row main--table rounded-13">
-                ${content}
-            </div>
-        </li>
-        `;
-    };
-
-    const slideItemTemplate = (id) => {
-        return `
-        <div class="col-12 table-item py-2 ps-3 d-flex justify-content-between">
-            <p>${id}</p>
-            <a href="/dashboard/card/pair/?cardId=${id}" class="d-flex align-items-center pair--link">Pair to user</a>
-        </div>
-    `;
-    };
 
     let slideItems = "";
     const controller = new AbortController();
@@ -79,6 +79,11 @@ const loadAvailableCard = (container, url) => {
             closeLoader();
             clearTimeout(timer);
             new Splide("#slider1").mount();
+
+            const newDataContainer = document.querySelector(
+                ".splide__slide.is-active>.row.main--table.rounded-13"
+            );
+            insertNewCard(newDataContainer);
         })
         .catch((error) => {
             closeLoader();
@@ -93,26 +98,6 @@ const loadAvailableCard = (container, url) => {
 };
 
 const loadUnavailableCard = (container, url) => {
-    startLoader();
-
-    const splideContainerTemplate = (content) => {
-        return `
-        <li class="splide__slide">
-            <div class="row main--table rounded-13">
-                ${content}
-            </div>
-        </li>
-        `;
-    };
-
-    const slideItemTemplate = (id) => {
-        return `
-        <div class="col-12 table-item py-2 ps-3 d-flex justify-content-between">
-            <p>${id}</p>
-        </div>
-    `;
-    };
-
     let slideItems = "";
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), 5000);
@@ -160,3 +145,11 @@ const loadUnavailableCard = (container, url) => {
 loadAvailableCard(splideContainer[0], "/api/v1/card/available");
 loadUnavailableCard(splideContainer[1], "/api/v1/card/unavailable");
 showFlashToast();
+
+function insertNewCard(container) {
+    const socket = io();
+    socket.on("newRegisteredCard", (data) => {
+        container.insertAdjacentHTML("afterbegin", slideItemTemplate(data));
+        console.log(`New data coming ${data}`);
+    });
+}

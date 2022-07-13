@@ -24,6 +24,7 @@ const {
     userIsExist,
     usernameIsExist,
 } = require("../middlewares/userMiddlewares");
+const { requestIsExist } = require("../middlewares/requestAccessMiddlewares");
 
 // ROLE ROUTER
 router.get("/role/list", loginRequired, allowedRole("ADMIN"), role.list);
@@ -84,6 +85,7 @@ router.post(
     "/user/pair",
     loginRequired,
     allowedRole("ADMIN"),
+    cardIsExist,
     usernameIsExist,
     cardNotPair,
     user.pairUserToCard
@@ -199,11 +201,14 @@ router.post(
     "/room/pair",
     loginRequired,
     allowedRole("ADMIN"),
-    body("roomId").notEmpty(),
-    body("cardNumber").notEmpty(),
+    query("ruid").notEmpty(),
+    query("cardNumber").notEmpty(),
+    query("requestId").notEmpty(),
+    formChacker,
     cardIsExist,
     cardIsPair,
-    formChacker,
+    roomIsExist,
+    requestIsExist,
     room.pairRoomToCard
 );
 router.post("/room/check-in/:ruid", roomIsExist, cardIsExist, room.roomCheckIn);

@@ -123,11 +123,13 @@ exports.delete = async (req, res) => {
 };
 
 exports.pairRoomToCard = async (req, res) => {
-    const { roomId, cardNumber } = req.body;
+    console.log("updatedRoom");
+
+    const { ruid, cardNumber, requestId: id } = req.query;
     try {
         const updatedRoom = await prisma.room.update({
             where: {
-                ruid: roomId,
+                ruid,
             },
             data: {
                 card: {
@@ -137,12 +139,15 @@ exports.pairRoomToCard = async (req, res) => {
                 },
             },
         });
+
+        await prisma.room_Request.delete({ where: { id: Number(id) } });
         return resSuccess({
             res,
             title: "Sukses memberi akses",
             data: updatedRoom,
         });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: "Gagal memberi akses ruangan",

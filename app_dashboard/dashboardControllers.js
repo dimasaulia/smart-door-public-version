@@ -14,14 +14,6 @@ exports.dashboard = async (req, res) => {
 
 exports.userPairingToDashboard = async (req, res) => {
     const cardId = req.query.cardId;
-    const cardCreatedAt = await prisma.card.findUnique({
-        where: {
-            card_number: cardId,
-        },
-        select: {
-            createdAt: true,
-        },
-    });
 
     const options = {
         weekday: "long",
@@ -29,10 +21,6 @@ exports.userPairingToDashboard = async (req, res) => {
         month: "long",
         day: "numeric",
     };
-
-    const cardCreationTime = new Intl.DateTimeFormat("id-ID", options).format(
-        new Date(cardCreatedAt.createdAt)
-    );
 
     const data = {
         card: "bg-neutral-4",
@@ -46,7 +34,6 @@ exports.userPairingToDashboard = async (req, res) => {
             "/js/pairUser.js",
         ],
         cardId,
-        cardCreationTime,
     };
     res.render("pair", data);
 };
