@@ -211,6 +211,12 @@ router.post(
     requestIsExist,
     room.pairRoomToCard
 );
-router.post("/room/check-in/:ruid", roomIsExist, cardIsExist, room.roomCheckIn);
+router.post(
+    "/room/check-in/:ruid",
+    roomIsExist,
+    cardIsExist,
+    cardIsPair,
+    room.roomCheckIn
+);
 
 module.exports = router;

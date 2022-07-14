@@ -177,7 +177,7 @@ exports.roomCheckIn = async (req, res) => {
 
         // check card can access the room
         const findedCard = room.card.find(
-            (card) => card.card_number === cardNumber
+            (card) => card.card_number === cardNumber.replaceAll(" ", "")
         );
         if (!findedCard) throw "You can't access this room";
 

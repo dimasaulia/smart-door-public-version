@@ -9,7 +9,7 @@ const cardIsExist = async (req, res, next) => {
     try {
         const card = await prisma.card.findUnique({
             where: {
-                card_number: cardNumber,
+                card_number: cardNumber.replaceAll(" ", ""),
             },
         });
         if (!card) throw "Cant find card number";
@@ -28,7 +28,7 @@ const cardIsPair = async (req, res, next) => {
     try {
         const card = await prisma.card.findUnique({
             where: {
-                card_number: cardNumber,
+                card_number: cardNumber.replaceAll(" ", ""),
             },
         });
         if (card.card_status === "UNREGISTER")
@@ -48,7 +48,7 @@ const cardNotPair = async (req, res, next) => {
     try {
         const card = await prisma.card.findUnique({
             where: {
-                card_number: cardNumber,
+                card_number: cardNumber.replaceAll(" ", ""),
             },
         });
         if (card.card_status === "REGISTER") throw "Card already pair";
@@ -70,7 +70,7 @@ const isUserCard = async (req, res, next) => {
     try {
         const card = await prisma.card.findUnique({
             where: {
-                card_number: cardNumber,
+                card_number: cardNumber.replaceAll(" ", ""),
             },
             select: {
                 userId: true,
