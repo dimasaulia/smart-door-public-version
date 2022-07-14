@@ -178,12 +178,7 @@ router.post(
     roomRequestNotExist,
     room.roomRequest
 );
-router.post(
-    "/room/get-or-create",
-    loginRequired,
-    allowedRole("ADMIN"),
-    room.getOrCreateRoom
-); //HW API
+router.post("/room/get-or-create", room.getOrCreateRoom); //HW API
 router.post(
     "/room/update/:ruid",
     loginRequired,
