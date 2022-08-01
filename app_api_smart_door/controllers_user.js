@@ -79,6 +79,11 @@ exports.register = async (req, res) => {
                 email,
                 password: hashPassword,
                 roleId: Number(defaultRole.id),
+                profil: {
+                    create: {
+                        full_name: username,
+                    },
+                },
             },
             select: {
                 id: true,

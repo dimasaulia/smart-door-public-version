@@ -11,7 +11,7 @@ datasource db {
 }
 
 model Role {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   name      String   @unique
   user      User[]
   createdAt DateTime @default(now())
@@ -24,7 +24,7 @@ model User {
   email     String   @unique
   password  String
   role      Role     @relation(fields: [roleId], references: [id])
-  roleId    Int
+  roleId    String
   profil    Profil?
   card      Card[]
   createdAt DateTime @default(now())
@@ -32,7 +32,7 @@ model User {
 }
 
 model Profil {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   full_name String?
   photo     String?
   user      User     @relation(fields: [userId], references: [id])
@@ -58,7 +58,7 @@ model Card {
 }
 
 model Room {
-  id          Int             @id @default(autoincrement())
+  id          String          @id @default(cuid())
   ruid        String          @unique
   name        String?
   card        Card[]
@@ -70,19 +70,19 @@ model Room {
 }
 
 model Room_Request {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   card      Card     @relation(fields: [cardId], references: [id])
   room      Room     @relation(fields: [roomId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  roomId    Int
+  roomId    String
   cardId    String
 }
 
 model Rooms_Records {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(cuid())
   room      Room     @relation(fields: [roomId], references: [id])
-  roomId    Int
+  roomId    String
   Card      Card     @relation(fields: [cardId], references: [id])
   cardId    String
   createdAt DateTime @default(now())

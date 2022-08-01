@@ -3,10 +3,20 @@ const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 exports.dashboard = async (req, res) => {
+    const unRegisterCard = await prisma.card.count({
+        where: { card_status: "UNREGISTER" },
+    });
+    const registerCard = await prisma.card.count({
+        where: { card_status: "REGISTER" },
+    });
+    const user = await prisma.user.count();
     const data = {
         dashboard: "bg-neutral-4",
         styles: ["list.css"],
         scripts: ["/js/gatewayList.js", "/js/dashboard.js"],
+        unRegisterCard,
+        registerCard,
+        user,
     };
 
     res.render("index", data);
