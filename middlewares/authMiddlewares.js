@@ -84,6 +84,7 @@ const setUser = async (req, res, next) => {
             },
         });
         res.locals.user = user.username;
+        req.user = user.username;
         next();
     } catch (error) {
         res.locals.user = "";
