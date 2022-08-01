@@ -1,5 +1,5 @@
 const { validationResult } = require("express-validator");
-const { resError } = require("../services/error");
+const { resError } = require("../services/responseHandler");
 
 const formChacker = (req, res, next) => {
     const errors = validationResult(req);

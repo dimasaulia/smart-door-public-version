@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { resError } = require("../services/error");
+const { resError } = require("../services/responseHandler");
 const prisma = new PrismaClient();
 
 const userIsExist = async (req, res, next) => {

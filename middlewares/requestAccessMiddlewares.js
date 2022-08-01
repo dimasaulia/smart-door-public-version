@@ -1,4 +1,4 @@
-const { resError, resSuccess } = require("../services/error");
+const { resError, resSuccess } = require("../services/responseHandler");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 

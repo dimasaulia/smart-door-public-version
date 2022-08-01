@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const { setAuthCookie, ErrorException, getUser } = require("../services/auth");
-const { resError, resSuccess } = require("../services/error");
+const { resError, resSuccess } = require("../services/responseHandler");
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 const saltRounds = 10;

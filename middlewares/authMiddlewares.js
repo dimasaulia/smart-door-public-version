@@ -1,6 +1,6 @@
 if (process.env.NODE_ENV !== "PRODUCTION") require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const { resError } = require("../services/error");
+const { resError } = require("../services/responseHandler");
 const { getToken, getUser } = require("../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
