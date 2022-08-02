@@ -31,7 +31,7 @@ const userListTemplate = ({ username, id, role, profil }) => {
                 </div>
             </div>
 
-            <div class="d-flex my-3 my-sm-0">
+            <div class="d-flex my-4 my-sm-0">
                 <a href="">
                     <img src="/image/icon_edit.svg" alt="" class="form-icons">
                 </a>
@@ -43,10 +43,10 @@ const userListTemplate = ({ username, id, role, profil }) => {
             ${
                 role.name === "ADMIN"
                     ? `<div>
-                            <p href="" class="bg-blue-2 text-neutral-7 py-2 px-4 rounded-13">Sudah Admin</p>
+                            <p class="bg-blue-2 text-neutral-7 py-2 px-4 rounded-13 mb-2">Sudah Admin</p>
                         </div>`
                     : `<div>
-                            <a href="" class="bg-blue-3 text-neutral-7 py-2 px-4 rounded-13">Jadika Admin</a>
+                            <a href="#" class="bg-blue-3 text-neutral-7 py-2 px-4 rounded-13 mb-2">Jadika Admin</a>
                         </div>`
             }
             
