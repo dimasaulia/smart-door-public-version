@@ -9,14 +9,28 @@ exports.dashboard = async (req, res) => {
     const registerCard = await prisma.card.count({
         where: { card_status: "REGISTER" },
     });
-    const user = await prisma.user.count();
+    const userCount = await prisma.user.count();
+    const roomCount = await prisma.room.count();
+    const roomRecord = await prisma.rooms_Records.count();
+    const userUnPair = await prisma.user.findMany({
+        include: {
+            card: true,
+        },
+    });
+    const userUnPairCount = userUnPair.filter((value) => {
+        if (value.card.length === 0) return value;
+    }).length;
+
     const data = {
         dashboard: "bg-neutral-4",
         styles: ["list.css"],
         scripts: ["/js/gatewayList.js", "/js/dashboard.js"],
         unRegisterCard,
         registerCard,
-        user,
+        userCount,
+        userUnPairCount,
+        roomCount,
+        roomRecord: roomRecord < 9999999 ? roomRecord : "9999999+",
     };
 
     res.render("index", data);

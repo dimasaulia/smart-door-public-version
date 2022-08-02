@@ -32,12 +32,12 @@
                             <div class="card--content d-flex align-items-center justify-content-around">
                                 <div class="d-flex flex-column align-items-center">
                                     <h4 class="fw-normal text-neutral-2">Paired</h4>
-                                    <h1 class="fw-bolder fs-72 text-blue-3"> {{user}} </h1>
+                                    <h1 class="fw-bolder fs-72 text-blue-3"> {{userCount}} </h1>
                                 </div>
 
                                 <div class="d-flex flex-column align-items-center">
                                     <h4 class="fw-normal text-neutral-2">Unpaired</h4>
-                                    <h1 class="fw-bolder fs-72 text-blue-3">275</h1>
+                                    <h1 class="fw-bolder fs-72 text-blue-3"> {{userUnPairCount}} </h1>
                                 </div>
                             </div>
                         </div>
@@ -47,13 +47,13 @@
                         <div class="card--item bg-neutral-7 rounded-13 border p-3">
                             <div
                                 class="card--header d-flex align-items-center justify-content-start border-2 pb-3  border-bottom ">
-                                <img src="/image/icon_group.svg" alt="icon kartu" class="card--icon">
-                                <a class="fw-bold ms-3 fs-4 text-blue-3" href="/cardList.html">Group List</a>
+                                <img src="/image/icon_room.svg" alt="icon kartu" class="card--icon">
+                                <a class="fw-bold ms-3 fs-4 text-blue-3" href="/cardList.html">Room List</a>
                             </div>
                             <div class="card--content d-flex align-items-center justify-content-around">
                                 <div class="d-flex flex-column align-items-center">
-                                    <h4 class="fw-normal text-neutral-2">Available Group</h4>
-                                    <h1 class="fw-bolder fs-72 text-blue-3">127</h1>
+                                    <h4 class="fw-normal text-neutral-2">Available Room</h4>
+                                    <h1 class="fw-bolder fs-72 text-blue-3">{{roomCount}}</h1>
                                 </div>
                             </div>
                         </div>
@@ -69,7 +69,7 @@
                             <div class="card--content d-flex align-items-center justify-content-around">
                                 <div class="d-flex flex-column align-items-center">
                                     <h4 class="fw-normal text-neutral-2">Activity</h4>
-                                    <h1 class="fw-bolder fs-72 text-blue-3">21898436</h1>
+                                    <h1 class="fw-bolder fs-72 text-blue-3">{{roomRecord}}</h1>
                                 </div>
                             </div>
                         </div>
