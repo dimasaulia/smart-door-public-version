@@ -49,8 +49,12 @@
     background: rgb(var(--color-blue-2));
 }
 
+#showMore {
+    cursor: pointer;
+}
+
 @media only screen and (max-width: 576px) {
     .user--list-item {
-        height: 20em;
+        height: auto;
     }
 }

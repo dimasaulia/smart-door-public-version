@@ -81,3 +81,34 @@
     cursor: pointer;
     width: 20px !important;
 }
+
+@media only screen and (max-width: 576px) {
+    .alert {
+        max-width: 80%;
+    }
+
+    .toastNotif {
+        max-height: 75px;
+        max-width: 80%;
+    }
+
+    .toastNotif h4 {
+        font-size: 1.1rem !important;
+    }
+
+    .toastNotif p {
+        font-size: .9rem !important;
+    }
+
+    .toast--icon {
+        width: 35px !important;
+    }
+
+    .toastNotif--color {
+        width: 2em !important;
+    }
+
+    .toast--icon-close {
+        width: 35px;
+    }
+}

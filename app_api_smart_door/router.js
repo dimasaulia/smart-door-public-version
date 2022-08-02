@@ -56,6 +56,12 @@ router.post(
 router.get("/user/logout", user.logout);
 router.get("/user/list", loginRequired, allowedRole("ADMIN"), user.list);
 router.get(
+    "/user/list/showmore",
+    loginRequired,
+    allowedRole("ADMIN"),
+    user.showMore
+);
+router.get(
     "/user/detail/:id",
     loginRequired,
     allowedRole("ADMIN"),

@@ -8,7 +8,7 @@ const deleteUser = ({ url, username, element }) => {
     const del = showAlertConfirm({
         theme: "danger",
         title: "Sure for delete?",
-        desc: `apakah anda yakin menghaspus, ${username}`,
+        desc: `Apakah anda yakin menghaspus, <b> ${username} </b>?`,
         link: "#",
         btn: "Delete",
         exec: () => deleteAction({ url, element }),
@@ -27,11 +27,11 @@ const userListTemplate = ({ username, id, role, profil }) => {
                         profil.full_name || username
                     }</h5>
                     <p class="text-blue-3">${username}</p>
-                    <p class="text-blue-3">${id}</p>
+                    <p class="text-blue-3 uuid" data-uuid=${id}>${id}</p>
                 </div>
             </div>
 
-            <div class="d-flex">
+            <div class="d-flex my-3 my-sm-0">
                 <a href="">
                     <img src="/image/icon_edit.svg" alt="" class="form-icons">
                 </a>
@@ -65,38 +65,8 @@ values.forEach((f) => {
     });
 });
 
+// Show all
 startLoader();
-fetch("/api/v1/user/list")
-    .then((res) => res.json())
-    .then((data) => {
-        data.forEach((user) => {
-            userConatiner.insertAdjacentHTML(
-                "afterbegin",
-                userListTemplate(user)
-            );
-        });
-        closeLoader();
-        document.querySelectorAll(".user--list-item").forEach((d) => {
-            const del_btn = d.children[1].children[1];
-            del_btn.addEventListener("click", (e) => {
-                e.preventDefault();
-                const uuid = d.getAttribute("data-uuid");
-                const username = d.getAttribute("data-username");
-                const url = `/api/v1/user/delete/${uuid}`;
-
-                deleteUser({ url, username, element: d });
-            });
-        });
-    })
-    .catch((err) => {
-        closeLoader();
-        showToast({
-            theme: "danger",
-            title: "Server error",
-            desc: "Gagal memuat data, coba lagi!",
-        });
-    });
-
 const deleteAction = ({ url, element }) => {
     startLoader();
 
@@ -126,3 +96,61 @@ const deleteAction = ({ url, element }) => {
             });
         });
 };
+
+async function loader() {
+    await fetch("/api/v1/user/list")
+        .then((res) => res.json())
+        .then((data) => {
+            data.forEach((user) => {
+                userConatiner.insertAdjacentHTML(
+                    "beforeend",
+                    userListTemplate(user)
+                );
+            });
+            closeLoader();
+            document.querySelectorAll(".user--list-item").forEach((d) => {
+                const del_btn = d.children[1].children[1];
+                del_btn.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    const uuid = d.getAttribute("data-uuid");
+                    const username = d.getAttribute("data-username");
+                    const url = `/api/v1/user/delete/${uuid}`;
+
+                    deleteUser({ url, username, element: d });
+                });
+            });
+        })
+        .catch((err) => {
+            closeLoader();
+            showToast({
+                theme: "danger",
+                title: "Server error",
+                desc: "Gagal memuat data, coba lagi!",
+            });
+        });
+
+    // SHOW MORE
+    let lastCursor = null;
+    const showMoreBtn = document.querySelector("#showMore");
+    const uuid = document.querySelectorAll(".uuid");
+    lastCursor = uuid[uuid.length - 1].getAttribute("data-uuid");
+
+    const request = async (url) => {
+        const response = await fetch(url);
+        const users = await response.json();
+        users.forEach((user) => {
+            userConatiner.insertAdjacentHTML(
+                "beforeend",
+                userListTemplate(user)
+            );
+        });
+        const uuid = document.querySelectorAll(".uuid");
+        lastCursor = uuid[uuid.length - 1].getAttribute("data-uuid");
+    };
+
+    showMoreBtn.addEventListener("click", () => {
+        request(`/api/v1/user/list/showmore?cursor=${lastCursor}`);
+    });
+}
+
+loader();

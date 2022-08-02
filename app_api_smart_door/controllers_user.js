@@ -4,7 +4,7 @@ const { ErrorException } = require("../services/responseHandler");
 const { resError, resSuccess } = require("../services/responseHandler");
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
-const saltRounds = 10;
+const itemOffset = 10;
 
 exports.login = async (req, res) => {
     const { username, password } = req.body;
@@ -99,8 +99,9 @@ module.exports.logout = (req, res) => {
 exports.list = async (req, res) => {
     const roleList = await prisma.user.findMany({
         orderBy: {
-            id: "asc",
+            username: "asc",
         },
+        take: itemOffset,
         include: {
             role: {
                 select: {
@@ -115,6 +116,31 @@ exports.list = async (req, res) => {
         },
     });
     res.json(roleList);
+};
+
+exports.showMore = async (req, res) => {
+    const { cursor } = req.query;
+    const users = await prisma.user.findMany({
+        orderBy: {
+            username: "asc",
+        },
+        take: itemOffset,
+        skip: 1,
+        cursor: { id: cursor },
+        include: {
+            role: {
+                select: {
+                    name: true,
+                },
+            },
+            profil: {
+                select: {
+                    full_name: true,
+                },
+            },
+        },
+    });
+    res.json(users);
 };
 
 exports.detail = async (req, res) => {

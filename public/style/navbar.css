@@ -5,7 +5,8 @@
 
 .nav {
     box-sizing: border-box !important;
-    height: 100ch !important;
+    height: 150ch !important;
+    overflow-x: hidden;
     position: fixed;
     width: var(--navWide);
 }

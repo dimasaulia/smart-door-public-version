@@ -47,7 +47,7 @@ const slideItemTemplate = (id) => {
 
 const slideItemTemplateRegister = (id) => {
     return `
-    <div class="col-12 table-item py-2 ps-3 d-flex justify-content-between">
+    <div class="col-12 table-item py-2 ps-3  d-flex justify-content-between">
         <p>${id}</p>
     </div>
 `;

@@ -46,7 +46,6 @@
 
 @media only screen and (max-width: 1200px) {
     .main--table {
-        background: pink;
         width: 89%;
     }
 }
@@ -54,7 +53,6 @@
 
 @media only screen and (max-width: 992px) {
     .main--table {
-        background: blue;
         width: 84%;
     }
 }
@@ -62,7 +60,12 @@
 
 @media only screen and (max-width: 576px) {
     .main--table {
-        background: aquamarine;
-        width: 76%;
+        width: 76% !important;
+    }
+}
+
+@media only screen and (max-width: 400px) {
+    .main--table {
+        width: 67% !important;
     }
 }

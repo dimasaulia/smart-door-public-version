@@ -4,7 +4,7 @@ let navbarHasOpen = false;
 navbarToggller.addEventListener("click", () => {
     navbarTarget.classList.toggle("nav--open");
     navbarHasOpen
-        ? (navbarToggller.src = "image/icon_layers.svg")
-        : (navbarToggller.src = "image/icon_close.svg");
+        ? (navbarToggller.src = "/image/icon_layers.svg")
+        : (navbarToggller.src = "/image/icon_close.svg");
     navbarHasOpen = !navbarHasOpen;
 });
