@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
-const { setAuthCookie, ErrorException, getUser } = require("../services/auth");
+const { setAuthCookie, getUser } = require("../services/auth");
+const { ErrorException } = require("../services/responseHandler");
 const { resError, resSuccess } = require("../services/responseHandler");
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
@@ -29,16 +30,19 @@ exports.login = async (req, res) => {
 
         // give response if cant find the user
         if (user === null)
-            throw new ErrorException("username", "Cant find the user");
+            throw new ErrorException({
+                type: "username",
+                detail: "Cant find the user",
+            });
 
         // compare user and password
         const auth = bcrypt.compareSync(password, user.password);
         // give response if password not match
         if (!auth)
-            throw new ErrorException(
-                "password",
-                "Username and Password didn't match"
-            );
+            throw new ErrorException({
+                type: "password",
+                detail: "Username and Password didn't match",
+            });
 
         setAuthCookie({ res, uuid: user.id });
         return resSuccess({

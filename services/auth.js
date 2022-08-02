@@ -57,10 +57,6 @@ const isTruePassword = (password, hashPassword) => {
     return isTruePassword;
 };
 
-function ErrorException({ type, detail, location = "not specified" }) {
-    this[`${type}`] = { type, detail, location };
-}
-
 module.exports = {
     createToken,
     expTime,
@@ -70,5 +66,4 @@ module.exports = {
     setAuthCookie,
     encryptPassword,
     isTruePassword,
-    ErrorException,
 };
