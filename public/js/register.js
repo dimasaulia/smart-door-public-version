@@ -33,26 +33,13 @@ submit.addEventListener("click", async (e) => {
             return (window.location = "/dashboard/");
         })
         .catch((err) => {
-            if (err.data.errors.meta) {
-                const alreadyRegister = err.data.errors.meta.target;
-                console.log(alreadyRegister);
-                alreadyRegister.forEach((e) => {
-                    document.querySelector(`#${e}--error`).textContent =
-                        "Email already register";
-                });
-            }
-            if (err.data.errors.type)
-                document.querySelector(
-                    `#${err.data.errors.type}--error`
-                ).textContent = err.data.errors.msg;
-
-            const formChecker = err.data.errors;
-            if (formChecker && !formChecker.meta) {
-                formChecker.forEach((data) => {
-                    document.querySelector(
-                        `#${data.param}--error`
-                    ).textContent = data.msg;
-                });
+            console.log(err);
+            if (err) {
+                const errors = err.data.errors;
+                for (const error in errors) {
+                    document.querySelector(`#${error}--error`).textContent =
+                        errors[error].detail;
+                }
             }
         });
 });

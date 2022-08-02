@@ -1,6 +1,6 @@
 if (process.env.NODE_ENV !== "PRODUCTION") require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const { resError } = require("../services/responseHandler");
+const { resError, ErrorException } = require("../services/responseHandler");
 const { getToken, getUser } = require("../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -45,6 +45,18 @@ const loginRequired = (req, res, next) => {
             });
         }
     });
+};
+
+const logoutRequired = (req, res, next) => {
+    const token = getToken(req);
+
+    // check if token exits
+    if (token)
+        return resError({
+            res,
+            title: "Logout Requires! Please Logout First",
+        });
+    next();
 };
 
 const allowedRole = (...roles) => {
@@ -92,4 +104,133 @@ const setUser = async (req, res, next) => {
     }
 };
 
-module.exports = { loginRequired, allowedRole, setUser };
+const defaultRoleIsExist = async (req, res, next) => {
+    try {
+        const defaultRole = await prisma.role.findUnique({
+            where: {
+                name: "USER",
+            },
+        });
+        if (defaultRole === null) throw "DEFAULT ROLE CANT FIND";
+        return next();
+    } catch (errors) {
+        return resError({
+            res,
+            title: "Internal Server Cant Find The Default Role",
+            errors,
+        });
+    }
+};
+
+const userIsExist = async (req, res, next) => {
+    try {
+        const { username } = req.body;
+        const user = await prisma.user.findUnique({
+            where: {
+                username,
+            },
+            select: {
+                id: true,
+                username: true,
+                password: true,
+                email: true,
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        // give response if cant find the user
+        if (user === null)
+            throw new ErrorException({
+                type: "username",
+                detail: "Cant find the user",
+                location: "Auth Midlleware",
+            });
+
+        return next();
+    } catch (errors) {
+        return resError({ res, title: "Something Wrong", errors });
+    }
+};
+
+const userIsNotExist = async (req, res, next) => {
+    try {
+        const { username } = req.body;
+        const user = await prisma.user.findUnique({
+            where: {
+                username,
+            },
+            select: {
+                id: true,
+                username: true,
+                password: true,
+                email: true,
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        // give response if cant find the user
+        if (user)
+            throw new ErrorException({
+                type: "username",
+                detail: "User already exist or register",
+                location: "Auth Midlleware",
+            });
+
+        return next();
+    } catch (errors) {
+        return resError({ res, title: "Something Wrong", errors });
+    }
+};
+
+const emailIsNotExist = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const user = await prisma.user.findUnique({
+            where: {
+                email,
+            },
+            select: {
+                id: true,
+                username: true,
+                password: true,
+                email: true,
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        // give response if cant find the user
+        if (user)
+            throw new ErrorException({
+                type: "email",
+                detail: "Email already exist or register",
+                location: "Auth Midlleware",
+            });
+
+        return next();
+    } catch (errors) {
+        return resError({ res, title: "Something Wrong", errors });
+    }
+};
+
+module.exports = {
+    loginRequired,
+    allowedRole,
+    setUser,
+    defaultRoleIsExist,
+    userIsExist,
+    logoutRequired,
+    userIsNotExist,
+    emailIsNotExist,
+};

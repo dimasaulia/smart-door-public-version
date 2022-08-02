@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { setAuthCookie, getUser } = require("../services/auth");
+const { setAuthCookie, getUser, encryptPassword } = require("../services/auth");
 const { ErrorException } = require("../services/responseHandler");
 const { resError, resSuccess } = require("../services/responseHandler");
 const bcrypt = require("bcrypt");
@@ -61,28 +61,14 @@ exports.login = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-    const username = req.body.username;
-    const email = req.body.email;
-    const plaintextPassword = req.body.password;
-    const hashPassword = bcrypt.hashSync(
-        plaintextPassword,
-        bcrypt.genSaltSync(saltRounds)
-    );
-
+    const { username, email, password } = req.body;
     try {
-        const defaultRole = await prisma.role.findUnique({
-            where: {
-                name: "USER",
-            },
-        });
-        if (defaultRole === null) throw "DEFAULT ROLE CANT FIND";
-
         const newUser = await prisma.user.create({
             data: {
                 username,
                 email,
-                password: hashPassword,
-                roleId: Number(defaultRole.id),
+                password: encryptPassword(password),
+                role: { connect: { name: "USER" } },
                 profil: {
                     create: {
                         full_name: username,

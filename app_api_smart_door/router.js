@@ -9,6 +9,9 @@ const { formChacker } = require("../middlewares/formMiddleware");
 const {
     loginRequired,
     allowedRole,
+    defaultRoleIsExist,
+    userIsNotExist,
+    emailIsNotExist,
 } = require("../middlewares/authMiddlewares");
 const {
     cardIsExist,
@@ -64,6 +67,8 @@ router.post(
     body("email").isEmail().trim(),
     body("password").isLength({ min: "8" }),
     formChacker,
+    userIsNotExist,
+    emailIsNotExist,
     user.register
 );
 router.post(
@@ -71,6 +76,7 @@ router.post(
     body("username").notEmpty(),
     body("password").isLength({ min: "8" }),
     formChacker,
+    defaultRoleIsExist,
     user.login
 );
 router.post("/user/update", loginRequired, allowedRole("ADMIN"), user.update);
