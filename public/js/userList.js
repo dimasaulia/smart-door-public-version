@@ -11,7 +11,7 @@ const deleteUser = ({ url, username, element }) => {
         desc: `apakah anda yakin menghaspus, ${username}`,
         link: "#",
         btn: "Delete",
-        exec: () => log({ url, element }),
+        exec: () => deleteAction({ url, element }),
     });
 };
 
@@ -23,7 +23,9 @@ const userListTemplate = ({ username, id, role, profil }) => {
                 <div class="user-profile-picture bg-neutral-4 rounded-circle"></div>
 
                 <div class="ms-4 mt-3 mt-sm-0">
-                    <h5 class="fw-bold text-blue-4">${profil || username}</h5>
+                    <h5 class="fw-bold text-blue-4">${
+                        profil.full_name || username
+                    }</h5>
                     <p class="text-blue-3">${username}</p>
                     <p class="text-blue-3">${id}</p>
                 </div>
@@ -80,7 +82,7 @@ fetch("/api/v1/user/list")
                 e.preventDefault();
                 const uuid = d.getAttribute("data-uuid");
                 const username = d.getAttribute("data-username");
-                const url = `http://localhost:8000/api/v1/user/delete/${uuid}`;
+                const url = `/api/v1/user/delete/${uuid}`;
 
                 deleteUser({ url, username, element: d });
             });
@@ -95,7 +97,7 @@ fetch("/api/v1/user/list")
         });
     });
 
-const log = ({ url, element }) => {
+const deleteAction = ({ url, element }) => {
     startLoader();
 
     fetch(url, {

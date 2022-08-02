@@ -12,6 +12,7 @@ const {
     defaultRoleIsExist,
     userIsNotExist,
     emailIsNotExist,
+    notCurrentUser,
 } = require("../middlewares/authMiddlewares");
 const {
     cardIsExist,
@@ -85,6 +86,7 @@ router.delete(
     loginRequired,
     allowedRole("ADMIN"),
     userIsExist,
+    notCurrentUser,
     user.delete
 );
 router.post(

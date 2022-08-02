@@ -224,6 +224,16 @@ const emailIsNotExist = async (req, res, next) => {
     }
 };
 
+const notCurrentUser = async (req, res, next) => {
+    const deletedUser = req.params.id;
+    const token = getUser(req);
+    if (deletedUser !== token) return next();
+    return resError({
+        res,
+        errors: "Cannot delete active user",
+    });
+};
+
 module.exports = {
     loginRequired,
     allowedRole,
@@ -233,4 +243,5 @@ module.exports = {
     logoutRequired,
     userIsNotExist,
     emailIsNotExist,
+    notCurrentUser,
 };
