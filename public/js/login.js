@@ -1,3 +1,4 @@
+"use strict";
 const submit = document.querySelector("#submit");
 const form = document.querySelector("form");
 submit.addEventListener("click", async (e) => {
@@ -6,7 +7,6 @@ submit.addEventListener("click", async (e) => {
     document.querySelector("#password--error").textContent = "";
     const username = form.username.value;
     const password = form.password.value;
-    console.log(username, password);
     await fetch("/api/v1/user/login", {
         headers: {
             "Content-Type": "application/json",
@@ -30,18 +30,12 @@ submit.addEventListener("click", async (e) => {
             return (window.location = "/dashboard");
         })
         .catch((err) => {
-            if (err.data.errors.type)
-                document.querySelector(
-                    `#${err.data.errors.type}--error`
-                ).textContent = err.data.errors.msg;
-
-            const formChecker = err.data.errors;
-            if (formChecker) {
-                formChecker.forEach((data) => {
-                    document.querySelector(
-                        `#${data.param}--error`
-                    ).textContent = data.msg;
-                });
+            if (err) {
+                const errors = err.data.errors;
+                for (const error in errors) {
+                    document.querySelector(`#${error}--error`).textContent =
+                        errors[error].detail;
+                }
             }
         });
 });
