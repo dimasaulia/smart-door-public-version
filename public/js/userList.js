@@ -2,7 +2,10 @@ const dropDownContent = document.querySelector(".form-dropdown");
 const toggler = document.querySelector("#show-role");
 const values = document.querySelectorAll(".role");
 const form = document.querySelector("#userRole");
+const usernameForm = document.querySelector("#username");
 const userConatiner = document.querySelector(".user--list-container");
+const showMoreBtn = document.querySelector("#showMore");
+let isSearch = false;
 
 const deleteUser = ({ url, username, element }) => {
     const del = showAlertConfirm({
@@ -65,8 +68,6 @@ values.forEach((f) => {
     });
 });
 
-// Show all
-startLoader();
 const deleteAction = ({ url, element }) => {
     startLoader();
 
@@ -97,60 +98,88 @@ const deleteAction = ({ url, element }) => {
         });
 };
 
-async function loader() {
-    await fetch("/api/v1/user/list")
-        .then((res) => res.json())
-        .then((data) => {
+async function fetcher(url) {
+    startLoader();
+    const response = await fetch(url);
+    const data = await response.json();
+    closeLoader();
+    return data;
+}
+
+const deleteHandler = () => {
+    // action for delete
+    document.querySelectorAll(".user--list-item").forEach((d) => {
+        const del_btn = d.children[1].children[1];
+        if (!d.getAttribute("data-listener")) {
+            del_btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const uuid = d.getAttribute("data-uuid");
+                const username = d.getAttribute("data-username");
+                const url = `/api/v1/user/delete/${uuid}`;
+
+                deleteUser({ url, username, element: d });
+            });
+            d.setAttribute("data-listener", "true");
+        }
+    });
+};
+
+// LOAD ALL DATA
+const loadAll = async () => {
+    try {
+        const data = await fetcher("/api/v1/user/search/all/?search=");
+        data.forEach((user) => {
+            userConatiner.insertAdjacentHTML(
+                "beforeend",
+                userListTemplate(user)
+            );
+        });
+        deleteHandler();
+    } catch (error) {
+        showToast({
+            theme: "danger",
+            title: "Server error",
+            desc: "Gagal memuat data, coba lagi!",
+        });
+    }
+};
+
+// Search
+const search = async () => {
+    usernameForm.addEventListener("keyup", async () => {
+        userConatiner.innerHTML = "";
+        try {
+            const data = await fetcher(
+                `/api/v1/user/search/all/?search=${usernameForm.value}`
+            );
             data.forEach((user) => {
                 userConatiner.insertAdjacentHTML(
                     "beforeend",
                     userListTemplate(user)
                 );
             });
-            closeLoader();
-            document.querySelectorAll(".user--list-item").forEach((d) => {
-                const del_btn = d.children[1].children[1];
-                del_btn.addEventListener("click", (e) => {
-                    e.preventDefault();
-                    const uuid = d.getAttribute("data-uuid");
-                    const username = d.getAttribute("data-username");
-                    const url = `/api/v1/user/delete/${uuid}`;
-
-                    deleteUser({ url, username, element: d });
-                });
-            });
-        })
-        .catch((err) => {
-            closeLoader();
+            deleteHandler();
+        } catch (error) {
             showToast({
                 theme: "danger",
                 title: "Server error",
                 desc: "Gagal memuat data, coba lagi!",
             });
-        });
-
-    // SHOW MORE
-    let lastCursor = null;
-    const showMoreBtn = document.querySelector("#showMore");
-    const uuid = document.querySelectorAll(".uuid");
-    lastCursor = uuid[uuid.length - 1].getAttribute("data-uuid");
-
-    const request = async (url) => {
-        const response = await fetch(url);
-        const users = await response.json();
-        users.forEach((user) => {
-            userConatiner.insertAdjacentHTML(
-                "beforeend",
-                userListTemplate(user)
-            );
-        });
-        const uuid = document.querySelectorAll(".uuid");
-        lastCursor = uuid[uuid.length - 1].getAttribute("data-uuid");
-    };
-
-    showMoreBtn.addEventListener("click", () => {
-        request(`/api/v1/user/list/showmore?cursor=${lastCursor}`);
+        }
     });
-}
+};
 
-loader();
+loadAll();
+search();
+
+showMoreBtn.addEventListener("click", async () => {
+    const uuid = document.querySelectorAll(".uuid");
+    const lastId = uuid[uuid.length - 1].getAttribute("data-uuid");
+    const data = await fetcher(
+        `/api/v1/user/search/all/showmore?cursor=${lastId}&search=${usernameForm.value}`
+    );
+    data.forEach((user) => {
+        userConatiner.insertAdjacentHTML("beforeend", userListTemplate(user));
+    });
+    deleteHandler();
+});

@@ -4,7 +4,7 @@ const { ErrorException } = require("../services/responseHandler");
 const { resError, resSuccess } = require("../services/responseHandler");
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
-const itemOffset = 10;
+const itemOffset = 2;
 
 exports.login = async (req, res) => {
     const { username, password } = req.body;
@@ -94,53 +94,6 @@ exports.register = async (req, res) => {
 module.exports.logout = (req, res) => {
     res.cookie("jwt", "", { maxAge: 1 });
     res.redirect("/auth/login");
-};
-
-exports.list = async (req, res) => {
-    const roleList = await prisma.user.findMany({
-        orderBy: {
-            username: "asc",
-        },
-        take: itemOffset,
-        include: {
-            role: {
-                select: {
-                    name: true,
-                },
-            },
-            profil: {
-                select: {
-                    full_name: true,
-                },
-            },
-        },
-    });
-    res.json(roleList);
-};
-
-exports.showMore = async (req, res) => {
-    const { cursor } = req.query;
-    const users = await prisma.user.findMany({
-        orderBy: {
-            username: "asc",
-        },
-        take: itemOffset,
-        skip: 1,
-        cursor: { id: cursor },
-        include: {
-            role: {
-                select: {
-                    name: true,
-                },
-            },
-            profil: {
-                select: {
-                    full_name: true,
-                },
-            },
-        },
-    });
-    res.json(users);
 };
 
 exports.detail = async (req, res) => {
@@ -278,4 +231,112 @@ exports.search = async (req, res) => {
     });
 
     res.status(200).json(results);
+};
+
+exports.userSearch = async (req, res) => {
+    const { search } = req.query;
+    let users;
+    if (search) {
+        users = await prisma.user.findMany({
+            where: {
+                profil: {
+                    full_name: {
+                        contains: search,
+                    },
+                },
+            },
+            orderBy: {
+                username: "asc",
+            },
+            take: itemOffset,
+            include: {
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
+                profil: {
+                    select: {
+                        full_name: true,
+                    },
+                },
+            },
+        });
+    } else {
+        users = await prisma.user.findMany({
+            orderBy: {
+                username: "asc",
+            },
+            take: itemOffset,
+            include: {
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
+                profil: {
+                    select: {
+                        full_name: true,
+                    },
+                },
+            },
+        });
+    }
+    res.json(users);
+};
+
+exports.userSearchMore = async (req, res) => {
+    const { search, cursor } = req.query;
+    let users;
+    if (search) {
+        users = await prisma.user.findMany({
+            where: {
+                profil: {
+                    full_name: {
+                        contains: search,
+                    },
+                },
+            },
+            orderBy: {
+                username: "asc",
+            },
+            skip: 1,
+            take: itemOffset,
+            cursor: { id: cursor },
+            include: {
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
+                profil: {
+                    select: {
+                        full_name: true,
+                    },
+                },
+            },
+        });
+    } else {
+        users = await prisma.user.findMany({
+            orderBy: {
+                username: "asc",
+            },
+            cursor: { id: cursor },
+            take: itemOffset,
+            skip: 1,
+            include: {
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
+                profil: {
+                    select: {
+                        full_name: true,
+                    },
+                },
+            },
+        });
+    }
+    res.json(users);
 };

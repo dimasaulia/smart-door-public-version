@@ -5,7 +5,6 @@ const formChacker = (req, res, next) => {
     try {
         const errors = validationResult(req);
         if (errors.isEmpty()) return next();
-
         errors.errors.forEach((error) => {
             throw new ErrorException({
                 type: error.param,

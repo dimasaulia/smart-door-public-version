@@ -54,13 +54,6 @@ router.post(
 
 // USER ROUTER
 router.get("/user/logout", user.logout);
-router.get("/user/list", loginRequired, allowedRole("ADMIN"), user.list);
-router.get(
-    "/user/list/showmore",
-    loginRequired,
-    allowedRole("ADMIN"),
-    user.showMore
-);
 router.get(
     "/user/detail/:id",
     loginRequired,
@@ -68,6 +61,18 @@ router.get(
     user.detail
 );
 router.get("/user/search", loginRequired, allowedRole("ADMIN"), user.search);
+router.get(
+    "/user/search/all",
+    loginRequired,
+    allowedRole("ADMIN"),
+    user.userSearch
+);
+router.get(
+    "/user/search/all/showmore",
+    loginRequired,
+    allowedRole("ADMIN"),
+    user.userSearchMore
+);
 router.post(
     "/user/register",
     body("username").notEmpty(),
