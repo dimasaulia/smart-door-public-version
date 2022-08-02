@@ -45,6 +45,14 @@ const slideItemTemplate = (id) => {
 `;
 };
 
+const slideItemTemplateRegister = (id) => {
+    return `
+    <div class="col-12 table-item py-2 ps-3 d-flex justify-content-between">
+        <p>${id}</p>
+    </div>
+`;
+};
+
 const loadAvailableCard = (container, url) => {
     startLoader();
 
@@ -112,7 +120,7 @@ const loadUnavailableCard = (container, url) => {
             for (let section = 0; section < data.cardSection; section++) {
                 for (let card = 0; card < 6; card++) {
                     // Create value of slider container
-                    slideItems += slideItemTemplate(
+                    slideItems += slideItemTemplateRegister(
                         data.cardList[cardId].card_number
                     );
                     cardId < data.numberOfCard ? cardId++ : cardId;
@@ -150,6 +158,5 @@ function insertNewCard(container) {
     const socket = io();
     socket.on("newRegisteredCard", (data) => {
         container.insertAdjacentHTML("afterbegin", slideItemTemplate(data));
-        console.log(`New data coming ${data}`);
     });
 }

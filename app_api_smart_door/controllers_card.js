@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { getUser } = require("../services/auth");
+const { getUser, encryptPassword } = require("../services/auth");
 const { resSuccess, resError } = require("../services/responseHandler");
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
@@ -43,17 +43,13 @@ exports.registeredCards = async (req, res) => {
 };
 
 exports.register = async (req, res) => {
-    const saltRounds = 10;
-    const pin = req.body.pin;
-    const salt = bcrypt.genSaltSync(saltRounds);
-    const hashPin = bcrypt.hashSync(pin, salt);
-    const card_number = req.body.cardNumber.replaceAll(" ", "");
+    const { pin, cardNumber } = req.body;
 
     try {
         const registeredCard = await prisma.card.create({
             data: {
-                card_number,
-                pin: hashPin,
+                card_number: cardNumber.replaceAll(" ", ""),
+                pin: encryptPassword(pin),
             },
         });
 
