@@ -7,8 +7,10 @@ const DASHBOARD = require("./app_dashboard/router");
 const AUTH = require("./app_auth/router");
 const USER = require("./app_user/router");
 const ROLE_V1 = require("./api_role/v1/router");
+const CARD_V1 = require("./api_card/v1/router");
 
 router.use(API_V1("role"), ROLE_V1);
+router.use(API_V1("card"), CARD_V1);
 router.use("/dashboard", DASHBOARD);
 router.use("/auth", AUTH);
 router.use("/", USER);

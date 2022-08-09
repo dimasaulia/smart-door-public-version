@@ -3,7 +3,6 @@ const router = express.Router();
 const { body, query } = require("express-validator");
 
 const user = require("./controllers_user");
-const card = require("./controllers_card");
 const room = require("./controllers_room");
 const { formChacker } = require("../middlewares/formMiddleware");
 const {
@@ -87,49 +86,6 @@ router.post(
     cardNotPair,
     user.pairUserToCard
 );
-
-// CARD ROUTER
-router.get(
-    "/u/card/available",
-    loginRequired,
-    allowedRole("USER"),
-    card.userCards
-);
-router.get(
-    "/u/card/:cardNumber",
-    loginRequired,
-    allowedRole("USER"),
-    cardIsExist,
-    card.userCardsDetail
-);
-router.get(
-    "/u/card/logs/:cardNumber",
-    loginRequired,
-    allowedRole("USER"),
-    cardIsExist,
-    card.userCardLogs
-);
-router.get("/card/available", loginRequired, allowedRole("ADMIN"), card.list);
-router.get(
-    "/card/unavailable",
-    loginRequired,
-    allowedRole("ADMIN"),
-    card.registeredCards
-);
-router.get(
-    "/card/detail/:cardNumber",
-    loginRequired,
-    allowedRole("ADMIN"),
-    card.detail
-);
-router.post(
-    "/card/register",
-    body("cardNumber").notEmpty(),
-    body("pin").notEmpty().isLength(6),
-    formChacker,
-    card.register
-); // HW API
-router.post("/card/validate", card.validateCard); // HW API
 
 // ROOM ROUTER
 router.get("/room/list", loginRequired, allowedRole("ADMIN"), room.list);
