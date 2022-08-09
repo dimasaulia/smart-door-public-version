@@ -7,7 +7,7 @@ const requestIsExist = async (req, res, next) => {
         req.body.requestId || req.params.requestId || req.query.requestId;
     try {
         const card = await prisma.room_Request.findUnique({
-            where: { id: Number(id) },
+            where: { id },
         });
         if (!card) throw "Cant find room request";
         return next();

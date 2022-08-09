@@ -294,6 +294,7 @@ exports.userSearchMore = async (req, res) => {
                 profil: {
                     full_name: {
                         contains: search,
+                        mode: "insensitive",
                     },
                 },
             },

@@ -8,7 +8,12 @@ const resError = ({ res, title, errors, code = 400 }) => {
     });
 };
 
-const resSuccess = ({ res, title, data, code = 200 }) => {
+const resSuccess = ({
+    res,
+    title = "Successfully execute task",
+    data,
+    code = 200,
+}) => {
     return res.status(code).json({
         success: true,
         message: title,

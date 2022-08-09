@@ -140,7 +140,7 @@ exports.pairRoomToCard = async (req, res) => {
             },
         });
 
-        await prisma.room_Request.delete({ where: { id: Number(id) } });
+        await prisma.room_Request.delete({ where: { id } });
         return resSuccess({
             res,
             title: "Sukses memberi akses",

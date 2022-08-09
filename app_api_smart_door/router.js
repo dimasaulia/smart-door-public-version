@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { body, query } = require("express-validator");
-const role = require("./controllers_role");
+
 const user = require("./controllers_user");
 const card = require("./controllers_card");
 const room = require("./controllers_room");
@@ -29,28 +29,6 @@ const {
     usernameIsExist,
 } = require("../middlewares/userMiddlewares");
 const { requestIsExist } = require("../middlewares/requestAccessMiddlewares");
-
-// ROLE ROUTER
-router.get("/role/list", loginRequired, allowedRole("ADMIN"), role.list);
-router.get(
-    "/role/detail/:id",
-    loginRequired,
-    allowedRole("ADMIN"),
-    role.detail
-);
-router.post("/role/create", loginRequired, allowedRole("ADMIN"), role.create);
-router.post(
-    "/role/delete/:id",
-    loginRequired,
-    allowedRole("ADMIN"),
-    role.delete
-);
-router.post(
-    "/role/update/:id",
-    loginRequired,
-    allowedRole("ADMIN"),
-    role.update
-);
 
 // USER ROUTER
 router.get("/user/logout", user.logout);
