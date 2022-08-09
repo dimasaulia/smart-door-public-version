@@ -1,9 +1,8 @@
-const { resError, resSuccess } = require("../services/responseHandler");
-const { getUser } = require("../services/auth");
+const { resError, resSuccess } = require("../../services/responseHandler");
+const { getUser } = require("../../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
-const { request } = require("express");
 
 exports.getOrCreateRoom = async (req, res) => {
     const ruid = req.body.ruid; // stands for room unique id

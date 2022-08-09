@@ -3,7 +3,6 @@ const router = express.Router();
 const { body, query } = require("express-validator");
 
 const user = require("./controllers_user");
-const room = require("./controllers_room");
 const { formChacker } = require("../middlewares/formMiddleware");
 const {
     loginRequired,
@@ -86,85 +85,4 @@ router.post(
     cardNotPair,
     user.pairUserToCard
 );
-
-// ROOM ROUTER
-router.get("/room/list", loginRequired, allowedRole("ADMIN"), room.list);
-router.get(
-    "/room/accaptableUser/:ruid",
-    loginRequired,
-    allowedRole("ADMIN"),
-    roomIsExist,
-    room.accaptableUser
-);
-router.get(
-    "/room/requestUser/:ruid",
-    loginRequired,
-    allowedRole("ADMIN"),
-    roomIsExist,
-    room.requestRoomByUser
-);
-router.get("/u/room/list", loginRequired, allowedRole("USER"), room.list);
-router.get(
-    "/u/room/accesable/:cardNumber",
-    loginRequired,
-    cardIsExist,
-    allowedRole("USER"),
-    room.userAccessableRoom
-);
-router.get(
-    "/room/detail/:ruid",
-    loginRequired,
-    allowedRole("ADMIN"),
-    roomIsExist,
-    room.detail
-);
-router.post(
-    "/u/room/request",
-    query("cardNumber").notEmpty(),
-    query("ruid").notEmpty(),
-    formChacker,
-    loginRequired,
-    allowedRole("USER"),
-    cardIsExist,
-    isUserCard,
-    roomIsExist,
-    roomRequestNotExist,
-    room.roomRequest
-);
-router.post("/room/get-or-create", room.getOrCreateRoom); //HW API
-router.post(
-    "/room/update/:ruid",
-    loginRequired,
-    allowedRole("ADMIN"),
-    room.update
-);
-router.delete(
-    "/room/delete/:ruid",
-    loginRequired,
-    allowedRole("ADMIN"),
-    roomIsExist,
-    room.delete
-);
-router.post(
-    "/room/pair",
-    loginRequired,
-    allowedRole("ADMIN"),
-    query("ruid").notEmpty(),
-    query("cardNumber").notEmpty(),
-    query("requestId").notEmpty(),
-    formChacker,
-    cardIsExist,
-    cardIsPair,
-    roomIsExist,
-    requestIsExist,
-    room.pairRoomToCard
-);
-router.post(
-    "/room/check-in/:ruid",
-    roomIsExist,
-    cardIsExist,
-    cardIsPair,
-    room.roomCheckIn
-);
-
 module.exports = router;
