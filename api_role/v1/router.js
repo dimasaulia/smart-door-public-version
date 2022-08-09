@@ -3,11 +3,11 @@ const role = require("./controllers_role");
 const {
     loginRequired,
     allowedRole,
-} = require("../middlewares/authMiddlewares");
+} = require("../../middlewares/authMiddlewares");
 const {
     roleIDIsExist,
     roleNameIsNotExist,
-} = require("../middlewares/roleMiddlewares");
+} = require("../../middlewares/roleMiddlewares");
 
 // ROLE ROUTER
 router.get("/list", loginRequired, allowedRole("ADMIN"), role.list);

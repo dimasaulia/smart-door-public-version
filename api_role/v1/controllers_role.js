@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { resSuccess, resError } = require("../services/responseHandler");
+const { resSuccess, resError } = require("../../services/responseHandler");
 const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
