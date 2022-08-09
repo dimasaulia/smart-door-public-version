@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const { body, query } = require("express-validator");
+const { body } = require("express-validator");
 
 const user = require("./controllers_user");
-const { formChacker } = require("../middlewares/formMiddleware");
+const { formChacker } = require("../../middlewares/formMiddleware");
 const {
     loginRequired,
     allowedRole,
@@ -11,46 +11,29 @@ const {
     userIsNotExist,
     emailIsNotExist,
     notCurrentUser,
-} = require("../middlewares/authMiddlewares");
+} = require("../../middlewares/authMiddlewares");
 const {
     cardIsExist,
-    cardIsPair,
-    isUserCard,
     cardNotPair,
-} = require("../middlewares/cardMiddlewares");
-const {
-    roomIsExist,
-    roomRequestNotExist,
-} = require("../middlewares/roomMiddlewares");
+} = require("../../middlewares/cardMiddlewares");
 const {
     userIsExist,
     usernameIsExist,
-} = require("../middlewares/userMiddlewares");
-const { requestIsExist } = require("../middlewares/requestAccessMiddlewares");
+} = require("../../middlewares/userMiddlewares");
 
 // USER ROUTER
-router.get("/user/logout", user.logout);
+router.get("/logout", user.logout);
+router.get("/detail/:id", loginRequired, allowedRole("ADMIN"), user.detail);
+router.get("/search", loginRequired, allowedRole("ADMIN"), user.search);
+router.get("/search/all", loginRequired, allowedRole("ADMIN"), user.userSearch);
 router.get(
-    "/user/detail/:id",
-    loginRequired,
-    allowedRole("ADMIN"),
-    user.detail
-);
-router.get("/user/search", loginRequired, allowedRole("ADMIN"), user.search);
-router.get(
-    "/user/search/all",
-    loginRequired,
-    allowedRole("ADMIN"),
-    user.userSearch
-);
-router.get(
-    "/user/search/all/showmore",
+    "/search/all/showmore",
     loginRequired,
     allowedRole("ADMIN"),
     user.userSearchMore
 );
 router.post(
-    "/user/register",
+    "/register",
     body("username").notEmpty(),
     body("email").isEmail().trim(),
     body("password").isLength({ min: "8" }),
@@ -60,16 +43,16 @@ router.post(
     user.register
 );
 router.post(
-    "/user/login",
+    "/login",
     body("username").notEmpty(),
     body("password").isLength({ min: "8" }),
     formChacker,
     defaultRoleIsExist,
     user.login
 );
-router.post("/user/update", loginRequired, allowedRole("ADMIN"), user.update);
+router.post("/update", loginRequired, allowedRole("ADMIN"), user.update);
 router.delete(
-    "/user/delete/:id",
+    "/delete/:id",
     loginRequired,
     allowedRole("ADMIN"),
     userIsExist,
@@ -77,7 +60,7 @@ router.delete(
     user.delete
 );
 router.post(
-    "/user/pair",
+    "/pair",
     loginRequired,
     allowedRole("ADMIN"),
     cardIsExist,

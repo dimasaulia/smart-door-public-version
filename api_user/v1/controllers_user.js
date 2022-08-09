@@ -1,7 +1,11 @@
 const { PrismaClient } = require("@prisma/client");
-const { setAuthCookie, getUser, encryptPassword } = require("../services/auth");
-const { ErrorException } = require("../services/responseHandler");
-const { resError, resSuccess } = require("../services/responseHandler");
+const {
+    setAuthCookie,
+    getUser,
+    encryptPassword,
+} = require("../../services/auth");
+const { ErrorException } = require("../../services/responseHandler");
+const { resError, resSuccess } = require("../../services/responseHandler");
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 const itemOffset = 2;
