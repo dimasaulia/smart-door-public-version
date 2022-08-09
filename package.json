@@ -33,6 +33,7 @@
         "start": "node app.js",
         "db:init": "yarn prisma init",
         "db:migrate": "yarn prisma migrate dev",
+        "db:deploy": "yarn prisma migrate deploy",
         "db:studio": "yarn prisma studio",
         "db:generate": "yarn prisma generate"
     }
