@@ -3,6 +3,12 @@ const { resSuccess, resError } = require("../../services/responseHandler");
 const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
+/**
+ * Controller yang digunakan untuk menampilkan list role yang tersedia. Contrroler mengimplementasikan paginasi berbasis cursor dengan maksimal output setiap request adalah 10 object.
+ * @param cursor berasal dari req.query, jika kursor kosong maka data yang akan tampil adalah 10 data pertama di database, jika terdapat kursor maka data yang akan tampil adalah 10 data di dataabse setelah cursor yang diberikan
+ * @param search berasal dari req.query, parameter opsional jika terdapat isian pada query maka data yang ditampilkan adalah data yang sesuai dengan hasil pencarian
+ * @returns list dari role yang tersedia, dengan maksimum keluaran sebanyak 10 objek.
+ */
 exports.list = async (req, res) => {
     const { search, cursor } = req.query;
     let roleList;
