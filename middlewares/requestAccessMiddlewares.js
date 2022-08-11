@@ -12,7 +12,6 @@ const requestIsExist = async (req, res, next) => {
         if (!card) throw "Cant find room request";
         return next();
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: error,

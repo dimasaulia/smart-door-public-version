@@ -35,7 +35,7 @@ router.get(
     roomIsExist,
     room.requestRoomByUser
 );
-router.get("/u/room/list", loginRequired, allowedRole("USER"), room.list);
+router.get("/u/list", loginRequired, allowedRole("USER"), room.list);
 router.get(
     "/u/accesable/:cardNumber",
     loginRequired,

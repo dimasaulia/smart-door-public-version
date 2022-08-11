@@ -122,8 +122,6 @@ exports.delete = async (req, res) => {
 };
 
 exports.pairRoomToCard = async (req, res) => {
-    console.log("updatedRoom");
-
     const { ruid, cardNumber, requestId: id } = req.query;
     try {
         const updatedRoom = await prisma.room.update({
@@ -146,7 +144,6 @@ exports.pairRoomToCard = async (req, res) => {
             data: updatedRoom,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Gagal memberi akses ruangan",
@@ -219,7 +216,6 @@ exports.roomRequest = async (req, res) => {
             data: request,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Gagal meminta ruangan",
@@ -244,14 +240,12 @@ exports.userAccessableRoom = async (req, res) => {
                 ruid: true,
             },
         });
-        console.log(accessAbleRoom);
         return resSuccess({
             res,
             title: "Successful listed room",
             data: accessAbleRoom,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Gagal memuat ruangan",
@@ -316,7 +310,6 @@ exports.requestRoomByUser = async (req, res) => {
             data: requestUser,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Gagal memuat user yang mimnta request",

@@ -68,7 +68,6 @@ const showAlert = ({ theme, title, desc }) => {
         activateAlert();
         closeAlert = document.querySelectorAll(".close-alert");
         closeAlert.forEach((item) => {
-            console.log(item.parentElement);
             item.addEventListener("click", (e) => {
                 e.preventDefault();
                 item.parentElement.classList.remove("active");

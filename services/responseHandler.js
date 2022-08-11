@@ -1,4 +1,9 @@
-const resError = ({ res, title, errors, code = 400 }) => {
+const resError = ({
+    res,
+    title = "Failed execute task",
+    errors,
+    code = 400,
+}) => {
     return res.status(code).json({
         success: false,
         message: title,

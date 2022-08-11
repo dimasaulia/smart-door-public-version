@@ -176,7 +176,6 @@ exports.update = async (req, res) => {
             updatedUser,
         });
     } catch (err) {
-        console.log(err);
         res.status(422).json({
             code: 422,
             msg: err,

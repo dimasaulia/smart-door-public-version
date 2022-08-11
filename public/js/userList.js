@@ -80,7 +80,6 @@ const deleteAction = ({ url, element }) => {
         })
         .then((data) => {
             closeLoader();
-            console.log(data);
             showToast({
                 theme: "success",
                 title: "Delete berhasil",

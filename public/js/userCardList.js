@@ -31,7 +31,7 @@ const cardListTemplate = ({ card_name, card_number, type }) => {
 };
 
 startLoader();
-fetch("/api/v1/u/card/available")
+fetch("/api/v1/card/u/available")
     .then((res) => {
         if (!res.ok) throw "";
         return res.json();

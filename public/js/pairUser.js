@@ -3,14 +3,6 @@ const cardId = document.querySelector("#card-id");
 const btn = document.querySelector("#pairButton");
 const pairButtonn = document.querySelector("#pairButton");
 
-// form.username.addEventListener("keyup", () => {
-//     console.log(
-//         form.username.value.length >= 4
-//             ? form.username.value
-//             : "Waiting for input"
-//     );
-// });
-
 var availableTutorials = [
     "ActionScript",
     "Bootstrap",

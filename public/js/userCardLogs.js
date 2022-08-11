@@ -40,7 +40,7 @@ const logsTemplate = ({ createdAt, name, card_name, number }) => {
 };
 
 // Basic Info
-fetch(`/api/v1/u/card/${cardNumber}`)
+fetch(`/api/v1/card/u/${cardNumber}`)
     .then((res) => {
         if (!res.ok) throw res.json();
         return res.json();
@@ -67,7 +67,7 @@ fetch(`/api/v1/u/card/${cardNumber}`)
     });
 
 // fetch logs
-fetch(`/api/v1/u/card/logs/${cardNumber}`)
+fetch(`/api/v1/card/u/logs/${cardNumber}`)
     .then((res) => {
         if (!res.ok) throw res.json();
         return res.json();

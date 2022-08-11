@@ -87,7 +87,6 @@ fetch(`/api/v1/room/accaptableUser/${ruid}`)
     .catch(async (err) => {
         closeLoader();
         const errors = await err;
-        console.log(errors);
         showToast({
             theme: "danger",
             title: errors.message,

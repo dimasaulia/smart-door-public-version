@@ -20,7 +20,7 @@ const roomRequestTemplate = ({ room: { ruid, name }, no, cardNumber }) => {
                 <p class="text-start">${name}</p>
             </div>
             <div class="col-3">
-                <a href="/api/v1/u/room/request?ruid=${ruid}&cardNumber=${cardNumber}" class="text-start request">Request access</a>
+                <a href="/api/v1/room/u/request?ruid=${ruid}&cardNumber=${cardNumber}" class="text-start request">Request access</a>
             </div>
         </div>
     </div>
@@ -41,7 +41,7 @@ const accesableRoomTemplate = ({ ruid, name }) => {
 };
 
 // Basic Info
-fetch(`/api/v1/u/card/${cardNumber}`)
+fetch(`/api/v1/card/u/${cardNumber}`)
     .then((res) => {
         if (!res.ok) throw res.json();
         return res.json();
@@ -98,7 +98,7 @@ const requestRoom = async () => {
 };
 
 // room list
-fetch(`/api/v1/u/room/list`)
+fetch(`/api/v1/room/u/list`)
     .then((res) => {
         if (!res.ok) throw res.json();
         return res.json();
@@ -125,7 +125,7 @@ fetch(`/api/v1/u/room/list`)
     });
 
 // accessable room
-fetch(`/api/v1/u/room/accesable/${cardNumber}`)
+fetch(`/api/v1/room/u/accesable/${cardNumber}`)
     .then((res) => {
         if (!res.ok) throw res.json();
         return res.json();
