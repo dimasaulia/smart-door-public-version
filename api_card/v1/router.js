@@ -3,38 +3,43 @@ const {
     loginRequired,
     allowedRole,
 } = require("../../middlewares/authMiddlewares");
-const { cardIsExist } = require("../../middlewares/cardMiddlewares");
+const {
+    cardIsExist,
+    isUserCard,
+} = require("../../middlewares/cardMiddlewares");
 const { body } = require("express-validator");
 const { formChacker } = require("../../middlewares/formMiddleware");
 const card = require("./controllers_card");
 
 // CARD ROUTER
-router.get(
-    "/u/available",
-    loginRequired,
-    allowedRole("USER"),
-    card.userCards // ! Will cause error in user ui
-);
+router.get("/u/available", loginRequired, allowedRole("USER"), card.userCards);
 router.get(
     "/u/:cardNumber",
     loginRequired,
     allowedRole("USER"),
     cardIsExist,
-    card.userCardsDetail // ! Will cause error in user ui
+    isUserCard,
+    card.userCardsDetail
 );
 router.get(
     "/u/logs/:cardNumber",
     loginRequired,
     allowedRole("USER"),
     cardIsExist,
-    card.userCardLogs // ! Will cause error in user ui
+    isUserCard,
+    card.userCardLogs
 );
-router.get("/available", loginRequired, allowedRole("ADMIN"), card.list);
+router.get(
+    "/available",
+    loginRequired,
+    allowedRole("ADMIN"),
+    card.listOfUnRegisterCard // ! Will cause error in user ui
+);
 router.get(
     "/unavailable",
     loginRequired,
     allowedRole("ADMIN"),
-    card.registeredCards
+    card.listOfRegisterCard // ! Will cause error in user ui
 );
 router.get(
     "/detail/:cardNumber",
@@ -47,8 +52,7 @@ router.post(
     body("cardNumber").notEmpty(),
     body("pin").notEmpty().isLength(6),
     formChacker,
-    card.register
+    card.cardRegistration
 ); // HW API
-router.post("/validate", card.validateCard); // HW API
 
 module.exports = router;
