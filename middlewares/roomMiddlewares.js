@@ -50,4 +50,26 @@ const roomRequestNotExist = async (req, res, next) => {
     }
 };
 
-module.exports = { roomIsExist, roomRequestNotExist };
+const roomAccessNotExist = async (req, res, next) => {
+    try {
+        const { ruid, cardNumber: card_number } = req.query;
+        const request = await prisma.room.findMany({
+            where: {
+                ruid,
+                card: {
+                    some: { card_number },
+                },
+            },
+        });
+        if (request.length > 0) throw "Cant create room request";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: "Your card already have access",
+            errors: error,
+        });
+    }
+};
+
+module.exports = { roomIsExist, roomRequestNotExist, roomAccessNotExist };

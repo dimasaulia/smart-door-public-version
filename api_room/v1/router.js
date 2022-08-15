@@ -14,6 +14,7 @@ const {
 const {
     roomIsExist,
     roomRequestNotExist,
+    roomAccessNotExist,
 } = require("../../middlewares/roomMiddlewares");
 const {
     requestIsExist,
@@ -41,7 +42,7 @@ router.get(
     loginRequired,
     cardIsExist,
     allowedRole("USER"),
-    room.userAccessableRoom // ! will cause masive error in ui
+    room.userAccessableRoom
 );
 router.get(
     "/detail/:ruid",
@@ -61,7 +62,8 @@ router.post(
     isUserCard,
     roomIsExist,
     roomRequestNotExist,
-    room.roomRequest // ! will cause masive error in ui
+    roomAccessNotExist,
+    room.roomRequest
 );
 router.post("/get-or-create", room.getOrCreateRoom); //HW API
 router.post("/update/:ruid", loginRequired, allowedRole("ADMIN"), room.update);
@@ -84,6 +86,7 @@ router.post(
     cardIsPair,
     roomIsExist,
     requestIsExist,
+    roomAccessNotExist,
     room.pairRoomToCard
 );
 router.post(

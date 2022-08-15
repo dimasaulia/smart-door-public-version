@@ -1,9 +1,17 @@
-const { resError, resSuccess } = require("../../services/responseHandler");
-const { getUser } = require("../../services/auth");
+const {
+    resError,
+    resSuccess,
+    ErrorException,
+} = require("../../services/responseHandler");
+const { getUser, isTruePassword } = require("../../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const bcrypt = require("bcrypt");
+const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
+/**
+ * Fungsi yang digunakan oleh perangkat keras, fungsi nya adalah membuat atau menampilkan data ruangan dengan Room Unique ID yang tertanam di perangkat
+ */
 exports.getOrCreateRoom = async (req, res) => {
     const ruid = req.body.ruid; // stands for room unique id
     try {
@@ -21,26 +29,27 @@ exports.getOrCreateRoom = async (req, res) => {
                     name: ruid,
                 },
             });
-            res.status(201).json({
-                title: "successfully created a room",
-                msg: newRoom,
+            return resSuccess({
+                res,
+                title: "Success created room",
+                data: newRoom,
+                code: 201,
             });
-            return; //stop function
         }
 
-        res.status(200).json({
-            title: "successfully find the room",
-            msg: getRoom,
+        return resSuccess({
+            res,
+            title: "Succes get room information",
+            data: getRoom,
         });
-        return; //stop function
     } catch (err) {
-        res.status(500).json({
-            title: "Something wrong",
-            msg: err,
-        });
+        return resError({ res, errors: err });
     }
 };
 
+/**
+ * Fungsi untuk menampilkan informasi suatu ruangan berdasarkan RUID (Room Unique ID)
+ */
 exports.detail = async (req, res) => {
     const ruid = req.params.ruid; // stands for room unique id
     try {
@@ -49,35 +58,99 @@ exports.detail = async (req, res) => {
                 ruid: ruid,
             },
         });
-        if (detailRoom === null) throw "Room not found";
-        res.json(detailRoom);
-    } catch (err) {
-        res.status(422).json({
-            code: 422,
-            msg: err,
+
+        return resSuccess({
+            res,
+            title: "Succes get room information",
+            data: detailRoom,
         });
+    } catch (err) {
+        return resError({ res, errors: err, code: 422 });
     }
 };
 
+/**
+ * Fungsi untuk menampilkan daftar ruangan yang terpaginasi
+ */
 exports.list = async (req, res) => {
+    const { search, cursor } = req.query;
+    let roomList;
     try {
-        const roomList = await prisma.room.findMany({
-            orderBy: {
-                name: "asc",
-            },
+        if (search) {
+            if (!cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        name: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
+
+            if (cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        name: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
+        }
+
+        if (!search) {
+            if (!cursor) {
+                roomList = await prisma.room.findMany({
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
+            if (cursor) {
+                roomList = await prisma.room.findMany({
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
+        }
+
+        return resSuccess({
+            res,
+            title: "Success listed all room",
+            data: roomList,
         });
-        res.status(200).json(roomList);
-    } catch (err) {
-        res.status(500).json({
-            title: "Something wrong",
-            msg: err,
-        });
+    } catch (error) {
+        return resError({ res, errors: error });
     }
 };
 
+/**
+ * Fungsi untuk memperbaharui informasi suatu ruangan
+ */
 exports.update = async (req, res) => {
-    const ruid = req.params.ruid; // stands for room unique id
-    const roomName = req.body.roomName;
+    const { ruid } = req.params; // stands for room unique id
+    const { roomName } = req.body;
     try {
         const updatedRoom = await prisma.room.update({
             where: {
@@ -88,18 +161,19 @@ exports.update = async (req, res) => {
             },
         });
 
-        res.status(201).json({
-            title: "successfully updated the room",
-            msg: updatedRoom,
+        return resSuccess({
+            res,
+            title: "Succesfully update room information",
+            data: updatedRoom,
         });
     } catch (err) {
-        res.status(500).json({
-            title: "Something wrong",
-            msg: err,
-        });
+        return resError({ res, errors: err });
     }
 };
 
+/**
+ * Fungsi untuk menghapus ruangan tertentu
+ */
 exports.delete = async (req, res) => {
     const ruid = req.params.ruid; // stands for room unique id
     try {
@@ -114,13 +188,13 @@ exports.delete = async (req, res) => {
             title: "Successfull delete the room",
         });
     } catch (err) {
-        res.status(500).json({
-            title: "Something wrong",
-            msg: err,
-        });
+        return resError({ res, errors: err, code: 422 });
     }
 };
 
+/**
+ * Fungsi untuk menautkan ruangan dengan kartu, fungsi ini akan memberi akses kepada kartu untuk mengakses ruangan tertentu
+ */
 exports.pairRoomToCard = async (req, res) => {
     const { ruid, cardNumber, requestId: id } = req.query;
     try {
@@ -152,6 +226,9 @@ exports.pairRoomToCard = async (req, res) => {
     }
 };
 
+/**
+ * Fungsi ini akan digunakan perangkat keras. Fungsi yang berguna untuk mengecek kartu, pin dan ruangan yang akan dimasuki user,
+ */
 exports.roomCheckIn = async (req, res) => {
     const { ruid } = req.params;
     const { cardNumber, pin } = req.body;
@@ -175,24 +252,40 @@ exports.roomCheckIn = async (req, res) => {
         const findedCard = room.card.find(
             (card) => card.card_number === cardNumber.replaceAll(" ", "")
         );
-        if (!findedCard) throw "You can't access this room";
+        // if (!findedCard) throw "You can't access this room";
+        if (!findedCard)
+            throw ErrorException({
+                type: "card",
+                detail: "You can't access this room",
+                location: "Room Controller",
+            });
 
-        const matchPin = await bcrypt.compareSync(pin, findedCard.pin);
-        if (!matchPin) throw "Your pin is incorrect, try again";
+        // const matchPin = await bcrypt.compareSync(pin, findedCard.pin);
+        const matchPin = isTruePassword(findedCard.pin, pin);
+        // if (!matchPin) throw "Your pin is incorrect, try again";
+        if (!matchPin)
+            throw ErrorException({
+                type: "card",
+                detail: "Your pin is incorrect, try again",
+                location: "Room Controller",
+            });
 
         return resSuccess({
             res,
-            title: `Berhasil membuka ruangan ${room.ruid}`,
+            title: `Success open the room (${room.ruid})`,
         });
     } catch (error) {
         return resError({
             res,
-            title: "Gagal membuka ruangan",
+            title: "Failed to open the room",
             errors: error,
         });
     }
 };
 
+/**
+ * Fungsi yang bertugas untuk memasukan data ke dalam request room, user akan meminta akses ke ruangan yang diinginkan
+ */
 exports.roomRequest = async (req, res) => {
     try {
         const { ruid, cardNumber: card_number } = req.query;
@@ -224,36 +317,118 @@ exports.roomRequest = async (req, res) => {
     }
 };
 
+/**
+ * Fungsi yang akan menampilkan data ruangan yang bisa diakses oleh user, fungsi ini sudah terpaginasi
+ */
 exports.userAccessableRoom = async (req, res) => {
+    const { search, cursor } = req.query;
+    const { cardNumber: card_number } = req.params;
+    let roomList;
     try {
-        const { cardNumber: card_number } = req.params;
-        const accessAbleRoom = await prisma.room.findMany({
-            where: {
-                card: {
-                    some: {
-                        card_number,
+        if (search) {
+            if (!cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        name: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                        card: {
+                            some: {
+                                card_number,
+                            },
+                        },
                     },
-                },
-            },
-            select: {
-                name: true,
-                ruid: true,
-            },
-        });
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
+
+            if (cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        name: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                        card: {
+                            some: {
+                                card_number,
+                            },
+                        },
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
+        }
+
+        if (!search) {
+            if (!cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        card: {
+                            some: {
+                                card_number,
+                            },
+                        },
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        ruid: true,
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
+            if (cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        card: {
+                            some: {
+                                card_number,
+                            },
+                        },
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        ruid: true,
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
+        }
+
         return resSuccess({
             res,
-            title: "Successful listed room",
-            data: accessAbleRoom,
+            title: "Success listed all room",
+            data: roomList,
         });
     } catch (error) {
-        return resError({
-            res,
-            title: "Gagal memuat ruangan",
-            errors: error,
-        });
+        return resError({ res, errors: error });
     }
 };
 
+/** Fungsi yang akan menampilkan daftar user yang memiliki akses ke suatu ruangan */
 exports.accaptableUser = async (req, res) => {
     try {
         const { ruid } = req.params;
@@ -281,6 +456,7 @@ exports.accaptableUser = async (req, res) => {
     }
 };
 
+/** Fungsi yang akan menampilkan daftar user yang meminta akses ke suatu ruangan */
 exports.requestRoomByUser = async (req, res) => {
     try {
         const { ruid } = req.params;

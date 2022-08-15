@@ -74,7 +74,7 @@ startLoader();
 fetch("/api/v1/room/list")
     .then((res) => res.json())
     .then((rooms) => {
-        rooms.forEach((room) => {
+        rooms.data.forEach((room) => {
             roomConatiner.insertAdjacentHTML(
                 "afterbegin",
                 roomListTemplate(room)

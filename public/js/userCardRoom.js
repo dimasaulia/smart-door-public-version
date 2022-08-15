@@ -81,7 +81,7 @@ const requestRoom = async () => {
                 .then((data) => {
                     showToast({
                         theme: "success",
-                        title: "Berhasil request ruanagn",
+                        title: "Successfully request a room",
                         desc: `Permintaan ruangan berhasil dilakukan`,
                     });
                 })
@@ -89,8 +89,8 @@ const requestRoom = async () => {
                     const errors = await err;
                     showToast({
                         theme: "danger",
-                        title: errors.message,
-                        desc: "Gagal melakukan request ruangan!",
+                        desc: errors.message,
+                        title: "Failed request a room",
                     });
                 });
         });
@@ -104,8 +104,9 @@ fetch(`/api/v1/room/u/list`)
         return res.json();
     })
     .then((rooms) => {
-        let no = rooms.length;
-        rooms.forEach((room) => {
+        let no = rooms.data.length;
+        console.log(rooms.data);
+        rooms.data.forEach((room) => {
             roomContainer.insertAdjacentHTML(
                 "afterbegin",
                 roomRequestTemplate({ room, no, cardNumber })

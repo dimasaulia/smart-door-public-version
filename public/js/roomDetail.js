@@ -46,16 +46,17 @@ const requestUserTemplate = ({
                 </div>
     `;
 };
+
 // Basic Info
 fetch(`/api/v1/room/detail/${ruid}`)
     .then((res) => {
         if (!res.ok) throw res.json();
         return res.json();
     })
-    .then((data) => {
-        roomIdContainer.textContent = `${data.name.toUpperCase()} Detail`;
-        roomNameContainer.textContent = data.name.toUpperCase();
-        ruidContainer.textContent = data.ruid;
+    .then((roomInfo) => {
+        roomIdContainer.textContent = `${roomInfo.data.name.toUpperCase()} Detail`;
+        roomNameContainer.textContent = roomInfo.data.name.toUpperCase();
+        ruidContainer.textContent = roomInfo.data.ruid;
         closeLoader();
     })
     .catch(async (err) => {
@@ -63,8 +64,8 @@ fetch(`/api/v1/room/detail/${ruid}`)
         const errors = await err;
         showToast({
             theme: "danger",
-            title: errors.message,
-            desc: "Gagal memuat info ruangan, coba lagi",
+            desc: errors.message,
+            title: "Failed to load room info, please try again",
         });
     });
 
@@ -89,8 +90,8 @@ fetch(`/api/v1/room/accaptableUser/${ruid}`)
         const errors = await err;
         showToast({
             theme: "danger",
-            title: errors.message,
-            desc: "Gagal memuat info ruangan, coba lagi",
+            desc: errors.message,
+            title: "Failed to load room info, please try again",
         });
     });
 
@@ -129,7 +130,7 @@ fetch(`/api/v1/room/requestUser/${ruid}`)
                         showToast({
                             theme: "success",
                             title: data.message,
-                            desc: "berhasil memberi akses kepada kartu",
+                            desc: "Success give access to card",
                         });
                     })
                     .catch(async (err) => {
@@ -137,8 +138,8 @@ fetch(`/api/v1/room/requestUser/${ruid}`)
                         const errors = await err;
                         showToast({
                             theme: "danger",
-                            title: errors.message,
-                            desc: "Gagal memuat info user, coba lagi",
+                            title: "Failed to pair card",
+                            desc: errors.message,
                         });
                     });
             });
@@ -150,7 +151,7 @@ fetch(`/api/v1/room/requestUser/${ruid}`)
         const errors = await err;
         showToast({
             theme: "danger",
-            title: errors.message,
-            desc: "Gagal memuat info user, coba lagi",
+            desc: errors.message,
+            title: "Something wrong",
         });
     });
