@@ -242,7 +242,7 @@ exports.userCards = async (req, res) => {
             if (!cursor) {
                 cardList = await prisma.card.findMany({
                     where: {
-                        card_number: {
+                        card_name: {
                             contains: search,
                             mode: "insensitive",
                         },
@@ -258,7 +258,7 @@ exports.userCards = async (req, res) => {
             if (cursor) {
                 cardList = await prisma.card.findMany({
                     where: {
-                        card_number: {
+                        card_name: {
                             contains: search,
                             mode: "insensitive",
                         },

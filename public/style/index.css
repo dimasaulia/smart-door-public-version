@@ -17,3 +17,7 @@
 .card--content {
     height: 300px !important;
 }
+
+.pointer {
+    cursor: pointer;
+}

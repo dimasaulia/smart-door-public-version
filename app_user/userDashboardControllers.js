@@ -5,9 +5,9 @@ module.exports.home = (req, res) => {
         layout: "userBase",
         card: "bg-neutral-4",
         styles: ["/style/userCardList.css"],
-        scripts: ["/js/userCardList.js"],
+        scripts: ["/js/user/cardList.js"],
     };
-    res.render("user", data);
+    res.render("user/user", data);
 };
 
 module.exports.cardLogs = (req, res) => {
@@ -16,10 +16,10 @@ module.exports.cardLogs = (req, res) => {
         layout: "userBase",
         card: "bg-neutral-4",
         styles: ["/style/userCardLogs.css"],
-        scripts: ["/js/userCardLogs.js"],
+        scripts: ["/js/user/cardLogs.js"],
         id,
     };
-    res.render("userCardLogs", data);
+    res.render("user/userCardLogs", data);
 };
 
 module.exports.cardRoom = (req, res) => {
@@ -28,8 +28,8 @@ module.exports.cardRoom = (req, res) => {
         layout: "userBase",
         card: "bg-neutral-4",
         styles: ["/style/userCardLogs.css", "/style/userCardRoom.css"],
-        scripts: ["/js/userCardRoom.js"],
+        scripts: ["/js/user/cardRoom.js"],
         id,
     };
-    res.render("userCardRoom", data);
+    res.render("user/userCardRoom", data);
 };
