@@ -7,7 +7,7 @@ const {
     cardIsExist,
     isUserCard,
 } = require("../../middlewares/cardMiddlewares");
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
 const { formChacker } = require("../../middlewares/formMiddleware");
 const card = require("./controllers_card");
 
@@ -54,5 +54,16 @@ router.post(
     formChacker,
     card.cardRegistration
 ); // HW API
-
+router.post(
+    "/update/:cardNumber",
+    loginRequired,
+    allowedRole("USER"),
+    param("cardNumber").notEmpty(),
+    body("cardName").notEmpty(),
+    body("cardType").notEmpty(),
+    formChacker,
+    cardIsExist,
+    isUserCard,
+    card.update
+);
 module.exports = router;

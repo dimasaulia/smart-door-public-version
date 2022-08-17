@@ -1,10 +1,13 @@
-startLoader();
+// startLoader();
 const form = document.querySelector("form");
 const cardNumber = document.querySelector(".card-id").getAttribute("data-card");
-const cardType = document.querySelector("#card-type");
+const cardTypeForm = document.querySelector("#card-type");
 const cardIcon = document.querySelector(".card-icon");
 const cardLogs = document.querySelector(".log-container");
+const saveBtn = document.querySelector("#save-change");
+const loadMoreBtn = document.querySelector("#load-more");
 const formCardName = form.cardName;
+
 const days = (date) => {
     return new Intl.DateTimeFormat("id", {
         year: "numeric",
@@ -20,9 +23,9 @@ const times = (date) => {
     }).format(new Date(date));
 };
 
-const logsTemplate = ({ createdAt, name, card_name, number }) => {
+const logsTemplate = ({ createdAt, name, number, id }) => {
     return `
-    <div class="log-info row p-2">
+    <div class="log-info row p-2" data-cursor=${id}>
         <div class="col-3">
             <p class="fw-bold text-neutral-2">${number}</p>
         </div>
@@ -39,63 +42,106 @@ const logsTemplate = ({ createdAt, name, card_name, number }) => {
     `;
 };
 
-// Basic Info
-fetch(`/api/v1/card/u/${cardNumber}`)
-    .then((res) => {
-        if (!res.ok) throw res.json();
-        return res.json();
-    })
-    .then((data) => {
-        const { card_number, card_name, type } = data.data.info;
-        form.cardNumber.value = card_number;
-        form.cardName.value = card_name;
-        for (let index = 0; index < cardType.length; index++) {
-            if (cardType.options[index].value === type) {
-                cardType.options.selectedIndex = index;
-            }
+// INFO: Basic Info Loader
+const basicInfoLoader = (data) => {
+    const { card_number, card_name, type } = data.info;
+    form.cardNumber.value = card_number;
+    form.cardName.value = card_name;
+    for (let index = 0; index < cardTypeForm.length; index++) {
+        if (cardTypeForm.options[index].value === type) {
+            cardTypeForm.options.selectedIndex = index;
         }
-        cardIcon.setAttribute("src", `/image/icon_${type}.svg`);
-        closeLoader();
-    })
-    .catch((err) => {
-        closeLoader();
-        showToast({
-            theme: "danger",
-            title: "Server error",
-            desc: "Gagal memuat data, coba lagi!",
+    }
+    cardIcon.setAttribute("src", `/image/icon_${type}.svg`);
+};
+
+const basicInfoErrHandler = (err) => {
+    closeLoader();
+    showToast({
+        theme: "danger",
+        title: "Failed to load data",
+        desc: err,
+    });
+};
+
+generalDataLoader({
+    url: `/api/v1/card/u/${cardNumber}`,
+    func: basicInfoLoader,
+    errHandler: basicInfoErrHandler,
+});
+
+// INFO: Fetch logs data
+const cardLogsLoader = (data) => {
+    let number = document.querySelectorAll(".log-info").length + 1;
+    data.forEach((log) => {
+        const {
+            createdAt,
+
+            room: { name },
+            Card: { card_name },
+            id,
+        } = log;
+        cardLogs.insertAdjacentHTML(
+            "beforeend",
+            logsTemplate({ createdAt, name, number, id })
+        );
+        number++;
+    });
+};
+
+const cardLogsLoaderMore = (data) => {
+    let number = document.querySelectorAll(".log-info").length + 1;
+    if (data.length === 0) {
+        showAlert({
+            theme: "warning",
+            title: "Data already load",
+            desc: "You have loaded all the data",
         });
+    }
+    data.forEach((log) => {
+        const {
+            createdAt,
+            room: { name },
+            id,
+        } = log;
+        cardLogs.insertAdjacentHTML(
+            "beforeend",
+            logsTemplate({ createdAt, name, id, number })
+        );
+        number++;
+    });
+};
+
+generalDataLoader({
+    url: `/api/v1/card/u/logs/${cardNumber}`,
+    func: cardLogsLoader,
+});
+
+loadMoreBtn.addEventListener("click", () => {
+    const cursor = lastCursorFinder(".log-info", "cursor");
+    generalDataLoader({
+        url: `/api/v1/card/u/logs/${cardNumber}/?cursor=${cursor}`,
+        func: cardLogsLoaderMore,
+    });
+});
+
+// INFO: Change card info
+saveBtn.addEventListener("click", async () => {
+    const cardName = formCardName.value;
+    const cardType = cardTypeForm.value;
+    const updateCardData = await setter({
+        url: `/api/v1/card/update/${cardNumber}`,
+        body: {
+            cardName,
+            cardType,
+        },
+        successMsg: "Succes updated card",
     });
 
-// fetch logs
-fetch(`/api/v1/card/u/logs/${cardNumber}`)
-    .then((res) => {
-        if (!res.ok) throw res.json();
-        return res.json();
-    })
-    .then((data) => {
-        let number = data.data.length;
-        data.data.forEach((log) => {
-            const {
-                createdAt,
-                room: { name },
-                Card: { card_name },
-            } = log;
-            cardLogs.insertAdjacentHTML(
-                "afterbegin",
-                logsTemplate({ createdAt, name, card_name, number })
-            );
-            number--;
-        });
-    })
-    .catch((err) => {
-        showToast({
-            theme: "danger",
-            title: "Internal error",
-            desc: "Gagal memuat logs",
-        });
-    });
-
-// change name
-formCardName.addEventListener("focusout", () => {
-    console.log(formCardName.value);
+    if (updateCardData.success === true) {
+        cardIcon.setAttribute(
+            "src",
+            `/image/icon_${updateCardData.data.type}.svg`
+        );
+    }
 });

@@ -319,6 +319,7 @@ exports.userCards = async (req, res) => {
     }
 };
 
+/** Menampilkan informasi mendetail tentang kartu user */
 exports.userCardsDetail = async (req, res) => {
     try {
         const { cardNumber: card_number } = req.params;
@@ -345,30 +346,105 @@ exports.userCardsDetail = async (req, res) => {
     }
 };
 
+/** Menampilkan daftar ruangan yang pernah di kunjungi */
 exports.userCardLogs = async (req, res) => {
+    const { cardNumber: card_number } = req.params;
+    const { cursor } = req.query;
+    let cardLogs;
     try {
-        const { cardNumber: card_number } = req.params;
-        const data = await prisma.rooms_Records.findMany({
+        if (!cursor) {
+            cardLogs = await prisma.rooms_Records.findMany({
+                where: {
+                    Card: {
+                        card_number,
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                take: ITEM_LIMIT,
+                select: {
+                    id: true,
+                    Card: {
+                        select: {
+                            card_name: true,
+                        },
+                    },
+                    room: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    createdAt: true,
+                },
+            });
+        }
+
+        if (cursor) {
+            cardLogs = await prisma.rooms_Records.findMany({
+                where: {
+                    Card: {
+                        card_number,
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                take: ITEM_LIMIT,
+                skip: 1,
+                cursor: {
+                    id: cursor,
+                },
+                select: {
+                    id: true,
+                    Card: {
+                        select: {
+                            card_name: true,
+                        },
+                    },
+                    room: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                    createdAt: true,
+                },
+            });
+        }
+
+        return resSuccess({
+            res,
+            title: "Success listed data",
+            data: cardLogs,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get user's cards logs",
+            errors: error,
+        });
+    }
+};
+
+/** Memperbaharui informasi kartu */
+exports.update = async (req, res) => {
+    const { cardNumber: card_number } = req.params;
+    const { cardName: card_name, cardType: type } = req.body;
+    try {
+        const card = await prisma.card.update({
             where: {
-                Card: {
-                    card_number,
-                },
+                card_number,
             },
-            select: {
-                Card: {
-                    select: {
-                        card_name: true,
-                    },
-                },
-                room: {
-                    select: {
-                        name: true,
-                    },
-                },
-                createdAt: true,
+            data: {
+                card_name,
+                type,
             },
         });
-        return resSuccess({ res, title: "Success listed data", data });
+        return resSuccess({
+            res,
+            title: "Success update card info",
+            data: card,
+        });
     } catch (error) {
         return resError({
             res,

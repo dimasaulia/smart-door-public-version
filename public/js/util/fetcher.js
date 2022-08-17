@@ -6,13 +6,55 @@ async function fetcher(url) {
     return data;
 }
 
+async function setter({ url, body, successMsg = "Success execute task" }) {
+    const response = await fetch(url, {
+        headers: {
+            "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(body),
+    });
+
+    const data = await response.json();
+
+    if (!data.success) {
+        showToast({
+            theme: "danger",
+            title: "Something wrong",
+            desc:
+                data.data.err ||
+                data.data.error ||
+                data.data.errors ||
+                "we are sorry can't execute your task",
+        });
+        return { success: false, data: data.data };
+    }
+
+    if (data.success) {
+        showToast({
+            theme: "success",
+            title: successMsg,
+            desc: data.message,
+        });
+        return { success: true, data: data.data };
+    }
+}
+
 async function generalDataLoader({ url, func, errHandler = false }) {
     const data = await fetcher(`${url}`);
     if (!data.success) {
         if (errHandler) {
             errHandler(data.data.err || data.data.error || data.data.errors);
         }
+        if (!errHandler) {
+            showToast({
+                theme: "danger",
+                title: "Something wrong",
+                desc: data.data.err || data.data.error || data.data.errors,
+            });
+        }
     }
+
     if (data.success) {
         func(data.data);
     }
@@ -23,6 +65,5 @@ function lastCursorFinder(containerClass, attrName) {
     const lastCursor = container[container.length - 1].getAttribute(
         `data-${attrName}`
     );
-    console.log(lastCursor);
     return lastCursor;
 }
