@@ -1,17 +1,21 @@
 async function fetcher(url) {
     startLoader();
     const response = await fetch(url);
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
     const data = await response.json();
     closeLoader();
     return data;
 }
 
-async function generalDataLoader({ url, func }) {
+async function generalDataLoader({ url, func, errHandler = false }) {
     const data = await fetcher(`${url}`);
-    func(data.data);
+    if (!data.success) {
+        if (errHandler) {
+            errHandler(data.data.err || data.data.error || data.data.errors);
+        }
+    }
+    if (data.success) {
+        func(data.data);
+    }
 }
 
 function lastCursorFinder(containerClass, attrName) {
@@ -19,5 +23,6 @@ function lastCursorFinder(containerClass, attrName) {
     const lastCursor = container[container.length - 1].getAttribute(
         `data-${attrName}`
     );
+    console.log(lastCursor);
     return lastCursor;
 }
