@@ -453,3 +453,29 @@ exports.update = async (req, res) => {
         });
     }
 };
+
+//** Memperbaharui pin kartu */
+exports.changePin = async (req, res) => {
+    const { cardNumber: card_number } = req.params;
+    const { newPin } = req.body;
+    try {
+        const card = await prisma.card.update({
+            where: { card_number },
+            data: {
+                pin: encryptPassword(newPin),
+            },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success change pin",
+            data: card,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get user's cards logs",
+            errors: error,
+        });
+    }
+};

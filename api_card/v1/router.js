@@ -6,6 +6,8 @@ const {
 const {
     cardIsExist,
     isUserCard,
+    isTurePin,
+    isNewPinMatch,
 } = require("../../middlewares/cardMiddlewares");
 const { body, param } = require("express-validator");
 const { formChacker } = require("../../middlewares/formMiddleware");
@@ -65,5 +67,23 @@ router.post(
     cardIsExist,
     isUserCard,
     card.update
+);
+router.post(
+    "/change-pin/:cardNumber",
+    loginRequired,
+    allowedRole("USER"),
+    param("cardNumber").notEmpty(),
+    body("newPin").notEmpty().isNumeric().isLength({ min: "6", max: "6" }),
+    body("confirmNewPin")
+        .notEmpty()
+        .isNumeric()
+        .isLength({ min: "6", max: "6" }),
+    body("oldPin").notEmpty().isNumeric().isLength({ min: "6", max: "6" }),
+    formChacker,
+    cardIsExist,
+    isUserCard,
+    isNewPinMatch,
+    isTurePin,
+    card.changePin
 );
 module.exports = router;

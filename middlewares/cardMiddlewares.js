@@ -1,6 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
-const { resError } = require("../services/responseHandler");
-const { getUser } = require("../services/auth");
+const { resError, ErrorException } = require("../services/responseHandler");
+const { getUser, isTruePassword } = require("../services/auth");
 const prisma = new PrismaClient();
 
 const cardIsExist = async (req, res, next) => {
@@ -88,4 +88,59 @@ const isUserCard = async (req, res, next) => {
     }
 };
 
-module.exports = { cardIsExist, cardIsPair, isUserCard, cardNotPair };
+const isTurePin = async (req, res, next) => {
+    const { oldPin } = req.body;
+    const { cardNumber: card_number } = req.params;
+
+    try {
+        const { pin } = await prisma.card.findUnique({
+            where: {
+                card_number,
+            },
+        });
+        const matchPin = isTruePassword(oldPin, pin);
+
+        if (!matchPin)
+            throw new ErrorException({
+                type: "card",
+                detail: "Your pin is incorrect, try again",
+                location: "Card Middelware",
+            });
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: `${error.card.type} error at ${error.card.location}`,
+            errors: error.card.detail,
+        });
+    }
+};
+
+const isNewPinMatch = (req, res, next) => {
+    try {
+        const { confirmNewPin, newPin } = req.body;
+        if (confirmNewPin !== newPin) {
+            throw new ErrorException({
+                type: "card",
+                detail: "Your new pin is not match, try again",
+                location: "Card Middelware",
+            });
+        }
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: `${error.card.type} error at ${error.card.location}`,
+            errors: error.card.detail,
+        });
+    }
+};
+
+module.exports = {
+    cardIsExist,
+    cardIsPair,
+    isUserCard,
+    cardNotPair,
+    isTurePin,
+    isNewPinMatch,
+};

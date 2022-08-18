@@ -22,6 +22,18 @@ module.exports.cardLogs = (req, res) => {
     res.render("user/userCardLogs", data);
 };
 
+module.exports.cardChangePin = (req, res) => {
+    const { id } = req.params;
+    const data = {
+        layout: "userBase",
+        card: "bg-neutral-4",
+        styles: ["/style/changePin.css"],
+        scripts: ["/js/user/cardChangePin.js"],
+        id,
+    };
+    res.render("user/userChangePin", data);
+};
+
 module.exports.cardRoom = (req, res) => {
     const { card: id } = req.params;
     const data = {
