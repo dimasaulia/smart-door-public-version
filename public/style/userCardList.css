@@ -15,3 +15,15 @@
 .room-icons {
     width: 3em;
 }
+
+@media only screen and (max-width: 767px) {
+    .room-icons {
+        width: 1.8em;
+    }
+}
+
+@media only screen and (max-width: 576) {
+    .room-icons {
+        width: 1.5em;
+    }
+}

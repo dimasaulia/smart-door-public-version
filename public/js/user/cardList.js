@@ -6,7 +6,7 @@ const searchBtn = document.querySelector("#search");
 const cardListTemplate = ({ card_name, card_number, type, id }) => {
     return `
     <div
-        class="card--list-item mt-3 pe-5 d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 p-3 rounded-13" data-cursor=${id}>
+        class="card--list-item mt-3 pe-sm-5 pe-0 d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 p-3 rounded-13" data-cursor=${id}>
         <div
             class="card-profile d-flex flex-column flex-sm-row justify-content-start align-items-center">
             <div class="card-profile-picture">
@@ -21,11 +21,11 @@ const cardListTemplate = ({ card_name, card_number, type, id }) => {
             </div>
         </div>
 
-        <a href="/room/${card_number}" class="text-blue-3 fw-bold d-flex align-items-center">
+        <a href="/room/${card_number}" class="text-blue-3 fw-bold d-flex align-items-center mt-sm-0 mt-2">
             <img src="/image/icon_room.svg" alt="" class="room-icons">
             <p class="ms-2">Room Settings</p>
         </a>
-        <a href="/card/${card_number}" class="ms-5 me-5 text-blue-3 fw-bold d-flex align-items-center">
+        <a href="/card/${card_number}" class="ms-5 me-5 text-blue-3 fw-bold d-flex align-items-center mt-sm-0 mt-2">
             <img src="/image/icon_log.svg" alt="" class="room-icons">
             <p class="ms-2">Logs</p>
         </a>
