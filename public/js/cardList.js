@@ -67,14 +67,14 @@ const loadAvailableCard = (container, url) => {
         })
         .then((data) => {
             cardId = 0;
-            for (let section = 0; section < data.cardSection; section++) {
+            for (let section = 0; section < data.data.cardSection; section++) {
                 for (let card = 0; card < 6; card++) {
                     // Create value of slider container
                     slideItems += slideItemTemplate(
-                        data.cardList[cardId].card_number
+                        data.data.cardList[cardId].card_number
                     );
-                    cardId < data.numberOfCard ? cardId++ : cardId;
-                    if (cardId === data.numberOfCard) break;
+                    cardId < data.data.numberOfCard ? cardId++ : cardId;
+                    if (cardId === data.data.numberOfCard) break;
                 }
 
                 // Create slider container
@@ -117,14 +117,14 @@ const loadUnavailableCard = (container, url) => {
         })
         .then((data) => {
             cardId = 0;
-            for (let section = 0; section < data.cardSection; section++) {
+            for (let section = 0; section < data.data.cardSection; section++) {
                 for (let card = 0; card < 6; card++) {
                     // Create value of slider container
                     slideItems += slideItemTemplateRegister(
-                        data.cardList[cardId].card_number
+                        data.data.cardList[cardId].card_number
                     );
-                    cardId < data.numberOfCard ? cardId++ : cardId;
-                    if (cardId === data.numberOfCard) break;
+                    cardId < data.data.numberOfCard ? cardId++ : cardId;
+                    if (cardId === data.data.numberOfCard) break;
                 }
 
                 // Create slider container
