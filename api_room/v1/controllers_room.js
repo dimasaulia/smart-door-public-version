@@ -274,7 +274,7 @@ exports.roomCheckIn = async (req, res) => {
             data: {
                 Card: {
                     connect: {
-                        card_number: cardNumber,
+                        card_number: cardNumber.replaceAll(" ", ""),
                     },
                 },
                 room: {
@@ -295,7 +295,7 @@ exports.roomCheckIn = async (req, res) => {
             data: {
                 Card: {
                     connect: {
-                        card_number: cardNumber,
+                        card_number: cardNumber.replaceAll(" ", ""),
                     },
                 },
                 room: {
