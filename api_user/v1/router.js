@@ -11,6 +11,7 @@ const {
     userIsNotExist,
     emailIsNotExist,
     notCurrentUser,
+    adminRoleIsExist,
 } = require("../../middlewares/authMiddlewares");
 const {
     cardIsExist,
@@ -61,5 +62,24 @@ router.post(
     usernameIsExist,
     cardNotPair,
     user.pairUserToCard
+);
+router.post(
+    "/set-admin/:id",
+    loginRequired,
+    allowedRole("ADMIN"),
+    userIsExist,
+    adminRoleIsExist,
+    notCurrentUser,
+    user.setAdminRole
+);
+
+router.post(
+    "/set-user/:id",
+    loginRequired,
+    allowedRole("ADMIN"),
+    userIsExist,
+    defaultRoleIsExist,
+    notCurrentUser,
+    user.setUserRole
 );
 module.exports = router;

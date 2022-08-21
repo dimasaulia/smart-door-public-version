@@ -122,6 +122,23 @@ const defaultRoleIsExist = async (req, res, next) => {
     }
 };
 
+const adminRoleIsExist = async (req, res, next) => {
+    try {
+        const defaultRole = await prisma.role.findUnique({
+            where: {
+                name: "ADMIN",
+            },
+        });
+        if (defaultRole === null) throw "ADMIN ROLE CANT FIND";
+        return next();
+    } catch (errors) {
+        return resError({
+            res,
+            title: "Internal Server Cant Find The Default Role",
+            errors,
+        });
+    }
+};
 const userIsExist = async (req, res, next) => {
     try {
         const { username } = req.body;
@@ -230,7 +247,7 @@ const notCurrentUser = async (req, res, next) => {
     if (deletedUser !== token) return next();
     return resError({
         res,
-        errors: "Cannot delete active user",
+        errors: "Cannot modify active user",
     });
 };
 
@@ -239,6 +256,7 @@ module.exports = {
     allowedRole,
     setUser,
     defaultRoleIsExist,
+    adminRoleIsExist,
     userIsExist,
     logoutRequired,
     userIsNotExist,

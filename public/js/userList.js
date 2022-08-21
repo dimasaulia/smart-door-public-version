@@ -46,11 +46,11 @@ const userListTemplate = ({ username, id, role, profil }) => {
 
             ${
                 role.name === "ADMIN"
-                    ? `<div>
-                            <p class="bg-blue-2 text-neutral-7 py-2 px-4 rounded-13 mb-2">Sudah Admin</p>
+                    ? `<div data-role=${role.name} class="pointer">
+                            <p class="bg-blue-2 text-neutral-7 py-2 px-4 rounded-13 mb-2" >Set User Role</p>
                         </div>`
-                    : `<div>
-                            <a href="#" class="bg-blue-3 text-neutral-7 py-2 px-4 rounded-13 mb-2">Jadika Admin</a>
+                    : `<div data-role=${role.name} class="pointer">
+                            <a href="#" class="bg-blue-3 text-neutral-7 py-2 px-4 rounded-13 mb-2" >Set Admin Role</a>
                         </div>`
             }
             
@@ -116,11 +116,64 @@ const deleteHandler = () => {
     });
 };
 
+const setAdminHandler = () => {
+    document.querySelectorAll(".user--list-item").forEach((d) => {
+        const updateBtn = d.children[2];
+        if (!updateBtn.getAttribute("data-listener")) {
+            console.log("WORK");
+            const uuid = d.getAttribute("data-uuid");
+            updateBtn.addEventListener("click", async (e) => {
+                e.preventDefault();
+                const activeRole = updateBtn.getAttribute("data-role");
+                if (activeRole === "USER") {
+                    const updatedRole = await setter({
+                        url: `/api/v1/user/set-admin/${uuid}`,
+                        successMsg: "Succes update role",
+                    });
+                    if (updatedRole.success) {
+                        updateBtn.textContent = "";
+                        updateBtn.insertAdjacentHTML(
+                            "beforeend",
+                            `<p class="bg-blue-2 text-neutral-7 py-2 px-4 rounded-13 mb-2">
+                                Set User Role
+                                </p>`
+                        );
+                        updateBtn.setAttribute(
+                            "data-role",
+                            updatedRole.data.role.name
+                        );
+                    }
+                }
+
+                if (activeRole === "ADMIN") {
+                    const updatedRole = await setter({
+                        url: `/api/v1/user/set-user/${uuid}`,
+                        successMsg: "Succes update role",
+                    });
+                    if (updatedRole.success) {
+                        updateBtn.textContent = "";
+                        updateBtn.insertAdjacentHTML(
+                            "beforeend",
+                            `<a href="#" class="bg-blue-3 text-neutral-7 py-2 px-4 rounded-13 mb-2" >Set Admin Role</a>`
+                        );
+                        updateBtn.setAttribute(
+                            "data-role",
+                            updatedRole.data.role.name
+                        );
+                    }
+                }
+            });
+            updateBtn.setAttribute("data-listener", "true");
+        }
+    });
+};
+
 const userListLoader = (data) => {
     data.forEach((user) => {
         userConatiner.insertAdjacentHTML("beforeend", userListTemplate(user));
     });
     deleteHandler();
+    setAdminHandler();
 };
 
 // INFO: First Load User List

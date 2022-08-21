@@ -6,17 +6,32 @@ async function fetcher(url) {
     return data;
 }
 
-async function setter({ url, body, successMsg = "Success execute task" }) {
-    const response = await fetch(url, {
-        headers: {
-            "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify(body),
-    });
+async function setter({
+    url,
+    body = null,
+    successMsg = "Success execute task",
+}) {
+    let response;
+    if (body) {
+        response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+            body: JSON.stringify(body),
+        });
+    }
+
+    if (!body) {
+        response = await fetch(url, {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            method: "POST",
+        });
+    }
 
     const data = await response.json();
-
     if (!data.success) {
         showToast({
             theme: "danger",

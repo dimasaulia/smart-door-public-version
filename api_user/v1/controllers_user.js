@@ -329,3 +329,67 @@ exports.list = async (req, res) => {
         });
     }
 };
+
+exports.setAdminRole = async (req, res) => {
+    const uuid = req.params.id;
+    try {
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: uuid,
+            },
+            data: {
+                role: {
+                    connect: {
+                        name: "ADMIN",
+                    },
+                },
+            },
+            include: {
+                role: true,
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success update user role",
+            data: updatedUser,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant update user role",
+            errors: error,
+        });
+    }
+};
+
+exports.setUserRole = async (req, res) => {
+    const uuid = req.params.id;
+    try {
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: uuid,
+            },
+            data: {
+                role: {
+                    connect: {
+                        name: "USER",
+                    },
+                },
+            },
+            include: {
+                role: true,
+            },
+        });
+        return resSuccess({
+            res,
+            title: `Success updat user role to ${updatedUser.role.name}`,
+            data: updatedUser,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant update user role",
+            errors: error,
+        });
+    }
+};
