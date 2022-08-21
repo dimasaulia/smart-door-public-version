@@ -25,13 +25,7 @@ const {
 router.get("/logout", user.logout);
 router.get("/detail/:id", loginRequired, allowedRole("ADMIN"), user.detail);
 router.get("/search", loginRequired, allowedRole("ADMIN"), user.search);
-router.get("/search/all", loginRequired, allowedRole("ADMIN"), user.userSearch);
-router.get(
-    "/search/all/showmore",
-    loginRequired,
-    allowedRole("ADMIN"),
-    user.userSearchMore
-);
+router.get("/list", loginRequired, allowedRole("ADMIN"), user.list);
 router.post(
     "/register",
     body("username").notEmpty(),

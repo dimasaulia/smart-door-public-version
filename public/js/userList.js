@@ -1,10 +1,11 @@
 const dropDownContent = document.querySelector(".form-dropdown");
 const toggler = document.querySelector("#show-role");
-const values = document.querySelectorAll(".role");
-const form = document.querySelector("#userRole");
+const roleValues = document.querySelectorAll(".role");
+const roleForm = document.querySelector("#userRole");
 const usernameForm = document.querySelector("#username");
 const userConatiner = document.querySelector(".user--list-container");
 const showMoreBtn = document.querySelector("#showMore");
+const searchBtn = document.querySelector("#search");
 let isSearch = false;
 
 const deleteUser = ({ url, username, element }) => {
@@ -61,9 +62,9 @@ toggler.addEventListener("click", () => {
     dropDownContent.classList.toggle("active-down");
 });
 
-values.forEach((f) => {
+roleValues.forEach((f) => {
     f.addEventListener("click", () => {
-        form.value = f.getAttribute("data-role");
+        roleForm.value = f.getAttribute("data-role");
         dropDownContent.classList.toggle("active-down");
     });
 });
@@ -97,14 +98,6 @@ const deleteAction = ({ url, element }) => {
         });
 };
 
-async function fetcher(url) {
-    startLoader();
-    const response = await fetch(url);
-    const data = await response.json();
-    closeLoader();
-    return data;
-}
-
 const deleteHandler = () => {
     // action for delete
     document.querySelectorAll(".user--list-item").forEach((d) => {
@@ -123,62 +116,41 @@ const deleteHandler = () => {
     });
 };
 
-// LOAD ALL DATA
-const loadAll = async () => {
-    try {
-        const data = await fetcher("/api/v1/user/search/all/?search=");
-        data.forEach((user) => {
-            userConatiner.insertAdjacentHTML(
-                "beforeend",
-                userListTemplate(user)
-            );
-        });
-        deleteHandler();
-    } catch (error) {
-        showToast({
-            theme: "danger",
-            title: "Server error",
-            desc: "Gagal memuat data, coba lagi!",
-        });
-    }
-};
-
-// Search
-const search = async () => {
-    usernameForm.addEventListener("keyup", async () => {
-        userConatiner.innerHTML = "";
-        try {
-            const data = await fetcher(
-                `/api/v1/user/search/all/?search=${usernameForm.value}`
-            );
-            data.forEach((user) => {
-                userConatiner.insertAdjacentHTML(
-                    "beforeend",
-                    userListTemplate(user)
-                );
-            });
-            deleteHandler();
-        } catch (error) {
-            showToast({
-                theme: "danger",
-                title: "Server error",
-                desc: "Gagal memuat data, coba lagi!",
-            });
-        }
-    });
-};
-
-loadAll();
-search();
-
-showMoreBtn.addEventListener("click", async () => {
-    const uuid = document.querySelectorAll(".uuid");
-    const lastId = uuid[uuid.length - 1].getAttribute("data-uuid");
-    const data = await fetcher(
-        `/api/v1/user/search/all/showmore?cursor=${lastId}&search=${usernameForm.value}`
-    );
+const userListLoader = (data) => {
     data.forEach((user) => {
         userConatiner.insertAdjacentHTML("beforeend", userListTemplate(user));
     });
     deleteHandler();
+};
+
+// INFO: First Load User List
+generalDataLoader({ url: "/api/v1/user/list", func: userListLoader });
+
+// INFO: First Load Search User List
+searchBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const search = usernameForm.value;
+    userConatiner.textContent = "";
+    generalDataLoader({
+        url: `/api/v1/user/list?search=${search}`,
+        func: userListLoader,
+    });
+});
+// INFO: Load More User List
+showMoreBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const cursor = lastCursorFinder(".user--list-item", "uuid");
+    const search = usernameForm.value;
+    if (search.length > 0) {
+        generalDataLoader({
+            url: `/api/v1/user/list/?cursor=${cursor}&search=${search}`,
+            func: userListLoader,
+        });
+    }
+    if (search.length === 0) {
+        generalDataLoader({
+            url: `/api/v1/user/list/?cursor=${cursor}`,
+            func: userListLoader,
+        });
+    }
 });

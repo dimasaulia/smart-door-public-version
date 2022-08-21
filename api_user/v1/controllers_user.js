@@ -8,7 +8,7 @@ const { ErrorException } = require("../../services/responseHandler");
 const { resError, resSuccess } = require("../../services/responseHandler");
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
-const itemOffset = 2;
+const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 
 exports.login = async (req, res) => {
     const { username, password } = req.body;
@@ -236,111 +236,96 @@ exports.search = async (req, res) => {
     res.status(200).json(results);
 };
 
-exports.userSearch = async (req, res) => {
-    const { search } = req.query;
-    let users;
-    if (search) {
-        users = await prisma.user.findMany({
-            where: {
-                profil: {
-                    full_name: {
-                        contains: search,
-                    },
-                },
-            },
-            orderBy: {
-                username: "asc",
-            },
-            take: itemOffset,
-            include: {
-                role: {
-                    select: {
-                        name: true,
-                    },
-                },
-                profil: {
-                    select: {
-                        full_name: true,
-                    },
-                },
-            },
-        });
-    } else {
-        users = await prisma.user.findMany({
-            orderBy: {
-                username: "asc",
-            },
-            take: itemOffset,
-            include: {
-                role: {
-                    select: {
-                        name: true,
-                    },
-                },
-                profil: {
-                    select: {
-                        full_name: true,
-                    },
-                },
-            },
-        });
-    }
-    res.json(users);
-};
+exports.list = async (req, res) => {
+    try {
+        const { search, cursor } = req.query;
+        let userList;
 
-exports.userSearchMore = async (req, res) => {
-    const { search, cursor } = req.query;
-    let users;
-    if (search) {
-        users = await prisma.user.findMany({
-            where: {
-                profil: {
-                    full_name: {
-                        contains: search,
-                        mode: "insensitive",
+        if (search) {
+            if (!cursor) {
+                userList = await prisma.user.findMany({
+                    where: {
+                        username: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
                     },
-                },
-            },
-            orderBy: {
-                username: "asc",
-            },
-            skip: 1,
-            take: itemOffset,
-            cursor: { id: cursor },
-            include: {
-                role: {
-                    select: {
-                        name: true,
+                    orderBy: {
+                        username: "asc",
                     },
-                },
-                profil: {
-                    select: {
-                        full_name: true,
+                    take: ITEM_LIMIT,
+                    include: {
+                        profil: true,
+                        role: true,
                     },
-                },
-            },
+                });
+            }
+
+            if (cursor) {
+                userList = await prisma.user.findMany({
+                    where: {
+                        username: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                    },
+                    orderBy: {
+                        createdAt: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                    include: {
+                        profil: true,
+                        role: true,
+                    },
+                });
+            }
+        }
+
+        if (!search) {
+            if (!cursor) {
+                userList = await prisma.user.findMany({
+                    orderBy: {
+                        username: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    include: {
+                        profil: true,
+                        role: true,
+                    },
+                });
+            }
+            if (cursor) {
+                userList = await prisma.user.findMany({
+                    orderBy: {
+                        username: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                    include: {
+                        profil: true,
+                        role: true,
+                    },
+                });
+            }
+        }
+
+        return resSuccess({
+            res,
+            title: "Success get user list",
+            data: userList,
         });
-    } else {
-        users = await prisma.user.findMany({
-            orderBy: {
-                username: "asc",
-            },
-            cursor: { id: cursor },
-            take: itemOffset,
-            skip: 1,
-            include: {
-                role: {
-                    select: {
-                        name: true,
-                    },
-                },
-                profil: {
-                    select: {
-                        full_name: true,
-                    },
-                },
-            },
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get user list",
+            errors: error,
         });
     }
-    res.json(users);
 };
