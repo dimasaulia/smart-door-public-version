@@ -23,7 +23,7 @@ const times = (date) => {
     }).format(new Date(date));
 };
 
-const logsTemplate = ({ createdAt, name, number, id }) => {
+const logsTemplate = ({ createdAt, name, number, id, status }) => {
     return `
     <div class="log-info row p-2" data-cursor=${id}>
         <div class="col-3">
@@ -33,10 +33,12 @@ const logsTemplate = ({ createdAt, name, number, id }) => {
             <p class="fw-bold text-neutral-2">${name}</p>
         </div>
         <div class="col-3">
-            <p class="fw-bold text-neutral-2">${days(createdAt)}</p>
+            <p class="fw-bold text-neutral-2">${days(createdAt)}, ${times(
+        createdAt
+    )} WIB</p>
         </div>
         <div class="col-3">
-            <p class="fw-bold text-neutral-2">${times(createdAt)} WIB</p>
+            <p class="fw-bold text-neutral-2">${status}</p>
         </div>
     </div>
     `;
@@ -80,10 +82,12 @@ const cardLogsLoader = (data) => {
             room: { name },
             Card: { card_name },
             id,
+            isSuccess,
         } = log;
+        const status = isSuccess ? "Success" : "Failed";
         cardLogs.insertAdjacentHTML(
             "beforeend",
-            logsTemplate({ createdAt, name, number, id })
+            logsTemplate({ createdAt, name, number, id, status })
         );
         number++;
     });
@@ -103,10 +107,12 @@ const cardLogsLoaderMore = (data) => {
             createdAt,
             room: { name },
             id,
+            isSuccess,
         } = log;
+        const status = isSuccess ? "Success" : "Failed";
         cardLogs.insertAdjacentHTML(
             "beforeend",
-            logsTemplate({ createdAt, name, id, number })
+            logsTemplate({ createdAt, name, id, number, status })
         );
         number++;
     });

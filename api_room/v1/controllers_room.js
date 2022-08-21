@@ -254,27 +254,58 @@ exports.roomCheckIn = async (req, res) => {
         );
         // if (!findedCard) throw "You can't access this room";
         if (!findedCard)
-            throw ErrorException({
+            throw new ErrorException({
                 type: "card",
                 detail: "You can't access this room",
                 location: "Room Controller",
             });
 
         // const matchPin = await bcrypt.compareSync(pin, findedCard.pin);
-        const matchPin = isTruePassword(findedCard.pin, pin);
+        const matchPin = isTruePassword(pin, findedCard.pin);
         // if (!matchPin) throw "Your pin is incorrect, try again";
         if (!matchPin)
-            throw ErrorException({
+            throw new ErrorException({
                 type: "card",
                 detail: "Your pin is incorrect, try again",
                 location: "Room Controller",
             });
+
+        const reocrd = await prisma.rooms_Records.create({
+            data: {
+                Card: {
+                    connect: {
+                        card_number: cardNumber,
+                    },
+                },
+                room: {
+                    connect: {
+                        ruid,
+                    },
+                },
+                isSuccess: true,
+            },
+        });
 
         return resSuccess({
             res,
             title: `Success open the room (${room.ruid})`,
         });
     } catch (error) {
+        const reocrd = await prisma.rooms_Records.create({
+            data: {
+                Card: {
+                    connect: {
+                        card_number: cardNumber,
+                    },
+                },
+                room: {
+                    connect: {
+                        ruid,
+                    },
+                },
+                isSuccess: false,
+            },
+        });
         return resError({
             res,
             title: "Failed to open the room",

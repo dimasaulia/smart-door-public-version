@@ -375,6 +375,7 @@ exports.userCardLogs = async (req, res) => {
                             name: true,
                         },
                     },
+                    isSuccess: true,
                     createdAt: true,
                 },
             });
@@ -407,6 +408,7 @@ exports.userCardLogs = async (req, res) => {
                             name: true,
                         },
                     },
+                    isSuccess: true,
                     createdAt: true,
                 },
             });
