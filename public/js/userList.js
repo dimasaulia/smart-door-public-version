@@ -28,7 +28,7 @@ const userListTemplate = ({ username, id, role, profil }) => {
 
                 <div class="ms-4 mt-3 mt-sm-0">
                     <h5 class="fw-bold text-blue-4">${
-                        profil.full_name || username
+                        profil?.full_name || username
                     }</h5>
                     <p class="text-blue-3">${username}</p>
                     <p class="text-blue-3 uuid" data-uuid=${id}>${id}</p>
@@ -168,7 +168,6 @@ const setAdminHandler = () => {
 };
 
 const userListLoader = (data) => {
-    console.log(data);
     data.forEach((user) => {
         userConatiner.insertAdjacentHTML("beforeend", userListTemplate(user));
     });
