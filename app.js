@@ -9,6 +9,7 @@ const io = require("socket.io")(http);
 const expbs = require("express-handlebars");
 app.io = io;
 
+/*
 const livereload = require("livereload");
 const connectLiveReload = require("connect-livereload");
 const liveReloadServer = livereload.createServer();
@@ -19,7 +20,7 @@ liveReloadServer.server.once("connection", () => {
     }, 50);
 });
 app.use(connectLiveReload());
-
+*/
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
