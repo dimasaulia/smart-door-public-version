@@ -168,6 +168,7 @@ const setAdminHandler = () => {
 };
 
 const userListLoader = (data) => {
+    console.log(data);
     data.forEach((user) => {
         userConatiner.insertAdjacentHTML("beforeend", userListTemplate(user));
     });
