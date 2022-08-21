@@ -120,7 +120,6 @@ const setAdminHandler = () => {
     document.querySelectorAll(".user--list-item").forEach((d) => {
         const updateBtn = d.children[2];
         if (!updateBtn.getAttribute("data-listener")) {
-            console.log("WORK");
             const uuid = d.getAttribute("data-uuid");
             updateBtn.addEventListener("click", async (e) => {
                 e.preventDefault();
