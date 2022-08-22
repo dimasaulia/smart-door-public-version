@@ -636,7 +636,6 @@ exports.logs = async (req, res) => {
             data: room,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Gagal memuat user yang mimnta request",
