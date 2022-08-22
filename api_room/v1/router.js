@@ -23,7 +23,7 @@ const {
 // ROOM ROUTER
 router.get("/list", loginRequired, allowedRole("ADMIN"), room.list);
 router.get(
-    "/accaptableUser/:ruid",
+    "/accaptable-user/:ruid",
     loginRequired,
     allowedRole("ADMIN"),
     roomIsExist,
@@ -95,6 +95,13 @@ router.post(
     cardIsExist,
     cardIsPair,
     room.roomCheckIn
+);
+router.get(
+    "/logs/:ruid",
+    loginRequired,
+    allowedRole("ADMIN"),
+    roomIsExist,
+    room.logs
 );
 
 module.exports = router;

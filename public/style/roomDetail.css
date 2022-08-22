@@ -7,7 +7,7 @@
 }
 
 .activity-icon {
-    width: 30px;
+    width: 30px !important;
 }
 
 .room-activity {
@@ -18,6 +18,12 @@
 .room-activity.active {
     background: rgb(var(--color-blue-3));
     color: rgb(var(--color-neutral-7));
+}
+
+.room-activity.active .activity-icon path,
+.room-activity.active .activity-icon .cls-1,
+.room-activity.active .activity-icon .cls-2 {
+    stroke: white !important;
 }
 
 .activity-logs {

@@ -6,7 +6,6 @@ const {
 const { getUser, isTruePassword } = require("../../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const bcrypt = require("bcrypt");
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
 /**
@@ -59,10 +58,31 @@ exports.detail = async (req, res) => {
             },
         });
 
+        const numberOfVisitor = await prisma.rooms_Records.count({
+            where: {
+                room: {
+                    ruid,
+                },
+            },
+        });
+        const accaptableUser = await prisma.card.count({
+            where: {
+                room: {
+                    some: {
+                        ruid,
+                    },
+                },
+            },
+        });
+
+        const requestUser = await prisma.room_Request.count({
+            where: { room: { ruid } },
+        });
+
         return resSuccess({
             res,
             title: "Succes get room information",
-            data: detailRoom,
+            data: { detailRoom, numberOfVisitor, accaptableUser, requestUser },
         });
     } catch (err) {
         return resError({ res, errors: err, code: 422 });
@@ -461,18 +481,51 @@ exports.userAccessableRoom = async (req, res) => {
 
 /** Fungsi yang akan menampilkan daftar user yang memiliki akses ke suatu ruangan */
 exports.accaptableUser = async (req, res) => {
+    const { ruid } = req.params;
+    const { cursor } = req.query;
+    let accaptableUser;
     try {
-        const { ruid } = req.params;
-        const accaptableUser = await prisma.room.findMany({
-            where: { ruid },
-            include: {
-                card: {
-                    include: {
-                        user: true,
+        if (!cursor) {
+            accaptableUser = await prisma.card.findMany({
+                where: {
+                    room: {
+                        some: {
+                            ruid,
+                        },
                     },
                 },
-            },
-        });
+                orderBy: {
+                    updatedAt: "desc",
+                },
+                take: ITEM_LIMIT,
+                include: {
+                    user: true,
+                },
+            });
+        }
+
+        if (cursor) {
+            accaptableUser = await prisma.card.findMany({
+                where: {
+                    room: {
+                        some: {
+                            ruid,
+                        },
+                    },
+                },
+                orderBy: {
+                    updatedAt: "desc",
+                },
+                take: ITEM_LIMIT,
+                skip: 1,
+                cursor: {
+                    id: cursor,
+                },
+                include: {
+                    user: true,
+                },
+            });
+        }
         return resSuccess({
             res,
             title: "Succes listed accaptable user",
@@ -517,6 +570,73 @@ exports.requestRoomByUser = async (req, res) => {
             data: requestUser,
         });
     } catch (error) {
+        return resError({
+            res,
+            title: "Gagal memuat user yang mimnta request",
+            errors: error,
+        });
+    }
+};
+
+/** Fungsi untuk menampilkan informasi (log) ruangan*/
+exports.logs = async (req, res) => {
+    // INFO: This function need update to have search functionality
+    const { ruid } = req.params;
+    const { cursor } = req.query;
+    let room;
+    try {
+        if (!cursor) {
+            room = await prisma.rooms_Records.findMany({
+                where: {
+                    room: {
+                        ruid,
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                include: {
+                    Card: {
+                        include: {
+                            user: true,
+                        },
+                    },
+                },
+                take: ITEM_LIMIT,
+            });
+        }
+
+        if (cursor) {
+            room = await prisma.rooms_Records.findMany({
+                where: {
+                    room: {
+                        ruid,
+                    },
+                },
+                orderBy: {
+                    createdAt: "desc",
+                },
+                take: ITEM_LIMIT,
+                skip: 1,
+                cursor: {
+                    id: cursor,
+                },
+                include: {
+                    Card: {
+                        include: {
+                            user: true,
+                        },
+                    },
+                },
+            });
+        }
+        return resSuccess({
+            res,
+            title: "Success listed room logs",
+            data: room,
+        });
+    } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: "Gagal memuat user yang mimnta request",
