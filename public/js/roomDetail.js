@@ -10,7 +10,7 @@ const numberOfUserContainer = document.querySelector("#user");
 const numberOfRequestUserContainer = document.querySelector("#request-user");
 const showMoreBtn = document.querySelector("#logs-show-more");
 const logsBtn = document.querySelector("#logs");
-const userBtn = document.querySelector("#user");
+const userBtn = document.querySelector("#user-btn");
 let mode = "USER"; // antoher value is LOG
 
 const days = (date) => {
@@ -201,7 +201,6 @@ userBtn.addEventListener("click", () => {
 });
 
 const logsLoader = (data) => {
-    console.log(data);
     data.forEach((card) => {
         itemContainer.insertAdjacentHTML("beforeend", roomLogsTemplate(card));
     });
