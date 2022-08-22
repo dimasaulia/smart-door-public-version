@@ -40,19 +40,13 @@ const accaptableUserTemplate = ({
     `;
 };
 
-const roomLogsTemplate = ({
-    Card: {
-        card_number,
-        user: { username },
-    },
-    id,
-    createdAt,
-    isSuccess,
-}) => {
+const roomLogsTemplate = ({ Card, id, createdAt, isSuccess }) => {
     return `
     <div
         class="room-log d-flex mt-2 flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5" data-room-log=${id}>
-        <p href="" class="text-neutral-1">${card_number}@${username}</p>
+        <p href="" class="text-neutral-1">${
+            Card?.card_number ? Card.card_number : "not identify"
+        }@${Card?.user.username || "not found"}</p>
         <a href="" class="text-neutral-2">${
             isSuccess ? "Berhasil " : "Gagal "
         }Mengakses ruangan pada    ${days(createdAt)}
