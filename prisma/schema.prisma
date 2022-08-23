@@ -61,6 +61,7 @@ model Room {
   id          String          @id @default(cuid())
   ruid        String          @unique
   name        String?
+  pin         String?         @default("220982")
   card        Card[]
   records     Rooms_Records[]
   roomRequest Room_Request[]

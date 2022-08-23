@@ -9,6 +9,15 @@ const io = require("socket.io")(http);
 const expbs = require("express-handlebars");
 app.io = io;
 
+const { PrismaClient } = require("@prisma/client");
+const prisma = new PrismaClient();
+prisma.$use(async (params, next) => {
+    // Manipulate params here
+    const result = await next(params);
+    console.log("HELLO");
+    // See results here
+    return result;
+});
 /*
 const livereload = require("livereload");
 const connectLiveReload = require("connect-livereload");

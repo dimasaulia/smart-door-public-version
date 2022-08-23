@@ -3,10 +3,36 @@ const {
     resSuccess,
     ErrorException,
 } = require("../../services/responseHandler");
-const { getUser, isTruePassword } = require("../../services/auth");
+const {
+    getUser,
+    isTruePassword,
+    encryptPassword,
+} = require("../../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
+
+// INFO: Prisma middleware to encrypt default room pin
+prisma.$use(async (params, next) => {
+    const result = await next(params);
+    if (
+        params.action === "create" &&
+        params.model === "Room" &&
+        result.pin === "220982"
+    ) {
+        console.log("FIRST RECORD");
+        result.pin = encryptPassword(result.pin);
+        await prisma.room.update({
+            where: {
+                id: result.id,
+            },
+            data: {
+                pin: result.pin,
+            },
+        });
+    }
+    return result;
+});
 
 /**
  * Fungsi yang digunakan oleh perangkat keras, fungsi nya adalah membuat atau menampilkan data ruangan dengan Room Unique ID yang tertanam di perangkat
@@ -708,6 +734,64 @@ exports.logs = async (req, res) => {
         return resError({
             res,
             title: "Gagal memuat user yang mimnta request",
+            errors: error,
+        });
+    }
+};
+
+/** Fungsi untuk validasi pin pintu */
+exports.validatePin = async (req, res) => {
+    const { ruid } = req.params;
+    const { pin } = req.body;
+    try {
+        const { pin: hashPin } = await prisma.room.findUnique({
+            where: { ruid },
+        });
+
+        const validate = isTruePassword(pin, hashPin);
+        if (!validate)
+            throw new ErrorException({
+                type: "room",
+                detail: "Pin not match",
+                location: "Room Controller",
+            });
+
+        return resSuccess({
+            res,
+            title: "Success to validate pin",
+            data: { validate },
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Failed to validate pin",
+            errors: error,
+        });
+    }
+};
+
+exports.changePin = async (req, res) => {
+    const { ruid } = req.params;
+    const { newPin } = req.body;
+
+    try {
+        const room = await prisma.room.update({
+            where: { ruid },
+            data: {
+                pin: encryptPassword(newPin),
+            },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success change pin",
+            data: room,
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            title: "Failed to change pin",
             errors: error,
         });
     }

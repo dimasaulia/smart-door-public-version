@@ -1,5 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
-const { resError } = require("../services/responseHandler");
+const { isTruePassword } = require("../services/auth");
+const { resError, ErrorException } = require("../services/responseHandler");
 const prisma = new PrismaClient();
 
 const roomIsExist = async (req, res, next) => {
@@ -72,4 +73,37 @@ const roomAccessNotExist = async (req, res, next) => {
     }
 };
 
-module.exports = { roomIsExist, roomRequestNotExist, roomAccessNotExist };
+const isRoomTurePin = async (req, res, next) => {
+    const { oldPin } = req.body;
+    const { ruid } = req.params;
+
+    try {
+        const { pin } = await prisma.room.findUnique({
+            where: {
+                ruid,
+            },
+        });
+        const matchPin = isTruePassword(oldPin, pin);
+
+        if (!matchPin)
+            throw new ErrorException({
+                type: "room",
+                detail: "Your pin is incorrect, try again",
+                location: "Room Middelware",
+            });
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: `${error.room.type} error at ${error.room.location}`,
+            errors: error.room.detail,
+        });
+    }
+};
+
+module.exports = {
+    roomIsExist,
+    roomRequestNotExist,
+    roomAccessNotExist,
+    isRoomTurePin,
+};
