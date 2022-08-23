@@ -11,6 +11,7 @@ const numberOfRequestUserContainer = document.querySelector("#request-user");
 const showMoreBtn = document.querySelector("#logs-show-more");
 const logsBtn = document.querySelector("#logs");
 const userBtn = document.querySelector("#user-btn");
+const showMoreRequestBtn = document.querySelector("#request-show-more");
 let mode = "USER"; // antoher value is LOG
 
 const days = (date) => {
@@ -22,20 +23,18 @@ const days = (date) => {
         minute: "numeric",
     }).format(new Date(date));
 };
+
 const accaptableUserTemplate = ({
-    card_number,
+    card_name,
     user: { username },
-    createdAt,
+    updatedAt,
     id,
 }) => {
     return `
     <div
         class="accaptable-user d-flex mt-2 flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5" data-user-uuid=${id}>
-        <p href="" class="text-neutral-1">${card_number}@${username}</p>
-        <a href="" class="text-neutral-2">Memilik akses sejak    ${days(
-            createdAt
-        )}
-        </a>
+        <p href="" class="text-neutral-1">${card_name}@${username}</p>
+        <p href="" class="text-neutral-2">Memilik akses ruangan</p>
     </div>
     `;
 };
@@ -45,7 +44,7 @@ const roomLogsTemplate = ({ Card, id, createdAt, isSuccess }) => {
     <div
         class="room-log d-flex mt-2 flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5" data-room-log=${id}>
         <p href="" class="text-neutral-1">${
-            Card?.card_number ? Card.card_number : "not identify"
+            Card?.card_name ? Card.card_name : "not identify"
         }@${Card?.user.username || "not found"}</p>
         <a href="" class="text-neutral-2">${
             isSuccess ? "Berhasil " : "Gagal "
@@ -58,15 +57,16 @@ const roomLogsTemplate = ({ Card, id, createdAt, isSuccess }) => {
 const requestUserTemplate = ({
     card: {
         card_number,
+        card_name,
         user: { username },
     },
     id,
 }) => {
     return `
-    <div class="col-12 mt-3">
+    <div class="col-12 mt-3 request-user" data-request="${id}">
         <div
             class="d-flex flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5">
-            <a href="" class="text-neutral-2">${card_number}@${username}</a>
+            <a href="" class="text-neutral-2">${card_name}@${username}</a>
             <a href="/api/v1/room/pair?ruid=${ruid}&cardNumber=${card_number}&requestId=${id}" class="text-neutral-1 fw-bold request-link">Give Access</a>
         </div>
     </div>
@@ -122,67 +122,6 @@ showMoreBtn.addEventListener("click", (e) => {
     e.preventDefault();
 });
 
-// request user
-fetch(`/api/v1/room/requestUser/${ruid}`)
-    .then((res) => {
-        if (!res.ok) throw res.json();
-        return res.json();
-    })
-    .then((requestUser) => {
-        requestUser.data.forEach((card) => {
-            accessContainer.insertAdjacentHTML(
-                "afterbegin",
-                requestUserTemplate(card)
-            );
-        });
-        const requestLink = document.querySelectorAll(".request-link");
-        requestLink.forEach((link) => {
-            const href = link.getAttribute("href");
-            link.addEventListener("click", (e) => {
-                startLoader();
-                e.preventDefault();
-                fetch(href, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                })
-                    .then((res) => {
-                        if (!res.ok) throw res.json();
-                        return res.json();
-                    })
-                    .then((data) => {
-                        closeLoader();
-                        link.parentElement.parentElement.remove();
-                        showToast({
-                            theme: "success",
-                            title: data.message,
-                            desc: "Success give access to card",
-                        });
-                    })
-                    .catch(async (err) => {
-                        closeLoader();
-                        const errors = await err;
-                        showToast({
-                            theme: "danger",
-                            title: "Failed to pair card",
-                            desc: errors.message,
-                        });
-                    });
-            });
-        });
-        closeLoader();
-    })
-    .catch(async (err) => {
-        closeLoader();
-        const errors = await err;
-        showToast({
-            theme: "danger",
-            desc: errors.message,
-            title: "Something wrong",
-        });
-    });
-
 userBtn.addEventListener("click", () => {
     itemContainer.textContent = "";
     generalDataLoader({
@@ -209,4 +148,57 @@ logsBtn.addEventListener("click", () => {
     mode = "LOG";
     userBtn.classList.remove("active");
     logsBtn.classList.add("active");
+});
+
+// INFO: Request User List
+const requestUserLoader = (data) => {
+    data.forEach((card) => {
+        accessContainer.insertAdjacentHTML(
+            "beforeend",
+            requestUserTemplate(card)
+        );
+    });
+
+    const requestLink = document.querySelectorAll(".request-link");
+    requestLink.forEach((link) => {
+        const href = link.getAttribute("href");
+        const listener = link.getAttribute("data-listener");
+        if (!listener) {
+            link.addEventListener("click", async (e) => {
+                e.preventDefault();
+                const pair = await setter({
+                    url: href,
+                    successMsg: "Success give access to user",
+                });
+
+                if (pair.success) {
+                    console.log(pair.data);
+                    link.parentElement.parentElement.remove();
+                    itemContainer.insertAdjacentHTML(
+                        "afterbegin",
+                        `<div
+                            class="accaptable-user d-flex mt-2 flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5" data-user-uuid=${data.id}>
+                            <p href="" class="text-neutral-1">${pair.data.card[0].card_name}@${pair.data.card[0].user.username}</p>
+                            <p href="" class="text-neutral-2">Memilik akses ruangan</p>
+                        </div>`
+                    );
+                }
+            });
+            link.setAttribute("data-listener", "true");
+        }
+    });
+};
+
+generalDataLoader({
+    url: `/api/v1/room/requestUser/${ruid}`,
+    func: requestUserLoader,
+});
+
+showMoreRequestBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const cursor = lastCursorFinder(".request-user", "request");
+    generalDataLoader({
+        url: `/api/v1/room/requestUser/${ruid}?cursor=${cursor}`,
+        func: requestUserLoader,
+    });
 });

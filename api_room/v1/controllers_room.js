@@ -229,6 +229,16 @@ exports.pairRoomToCard = async (req, res) => {
                     },
                 },
             },
+            include: {
+                card: {
+                    where: {
+                        card_number: cardNumber,
+                    },
+                    include: {
+                        user: true,
+                    },
+                },
+            },
         });
 
         await prisma.room_Request.delete({ where: { id } });
@@ -542,28 +552,87 @@ exports.accaptableUser = async (req, res) => {
 
 /** Fungsi yang akan menampilkan daftar user yang meminta akses ke suatu ruangan */
 exports.requestRoomByUser = async (req, res) => {
+    const { ruid } = req.params;
+    const { cursor } = req.query;
+    let requestUser;
     try {
-        const { ruid } = req.params;
-        const requestUser = await prisma.room_Request.findMany({
-            where: {
-                room: {
-                    is: {
-                        ruid,
+        if (!cursor) {
+            requestUser = await prisma.room_Request.findMany({
+                where: {
+                    room: {
+                        is: {
+                            ruid,
+                        },
                     },
                 },
-            },
-            include: {
-                card: {
-                    include: {
-                        user: {
-                            select: {
-                                username: true,
+                orderBy: {
+                    createdAt: "asc",
+                },
+                include: {
+                    card: {
+                        include: {
+                            user: {
+                                select: {
+                                    username: true,
+                                },
                             },
                         },
                     },
                 },
-            },
-        });
+                take: ITEM_LIMIT,
+            });
+        }
+
+        if (cursor) {
+            requestUser = await prisma.room_Request.findMany({
+                where: {
+                    room: {
+                        is: {
+                            ruid,
+                        },
+                    },
+                },
+                orderBy: {
+                    createdAt: "asc",
+                },
+                take: ITEM_LIMIT,
+                skip: 1,
+                cursor: {
+                    id: cursor,
+                },
+                include: {
+                    card: {
+                        include: {
+                            user: {
+                                select: {
+                                    username: true,
+                                },
+                            },
+                        },
+                    },
+                },
+            });
+        }
+        // requestUser = await prisma.room_Request.findMany({
+        //     where: {
+        //         room: {
+        //             is: {
+        //                 ruid,
+        //             },
+        //         },
+        //     },
+        //     include: {
+        //         card: {
+        //             include: {
+        //                 user: {
+        //                     select: {
+        //                         username: true,
+        //                     },
+        //                 },
+        //             },
+        //         },
+        //     },
+        // });
         return resSuccess({
             res,
             title: "Success listed request user",

@@ -1,6 +1,7 @@
 // startLoader();
 const form = document.querySelector("form");
-const cardNumber = document.querySelector(".card-id").getAttribute("data-card");
+const cardIdContainer = document.querySelector(".card-id");
+const cardNumber = cardIdContainer.getAttribute("data-card");
 const cardTypeForm = document.querySelector("#card-type");
 const cardIcon = document.querySelector(".card-icon");
 const cardLogs = document.querySelector(".log-container");
@@ -54,6 +55,7 @@ const basicInfoLoader = (data) => {
             cardTypeForm.options.selectedIndex = index;
         }
     }
+    cardIdContainer.textContent = `${card_name} | Details`;
     cardIcon.setAttribute("src", `/image/icon_${type}.svg`);
 };
 
@@ -149,5 +151,6 @@ saveBtn.addEventListener("click", async () => {
             "src",
             `/image/icon_${updateCardData.data.type}.svg`
         );
+        cardIdContainer.textContent = `${updateCardData.data.card_name} | Details`;
     }
 });
