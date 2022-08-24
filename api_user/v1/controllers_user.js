@@ -1,8 +1,22 @@
 const { PrismaClient } = require("@prisma/client");
-const { setAuthCookie, getUser, hasher } = require("../../services/auth");
+const {
+    setAuthCookie,
+    getUser,
+    hasher,
+    createJwtToken,
+    encrypter,
+    decrypter,
+    urlEncrypter,
+    urlDecrypter,
+    verifyJwt,
+    hashChecker,
+} = require("../../services/auth");
 const { ErrorException } = require("../../services/responseHandler");
 const { resError, resSuccess } = require("../../services/responseHandler");
+const { random: stringGenerator, uuid } = require("@supercharge/strings");
 const bcrypt = require("bcrypt");
+const { sendEmail } = require("../../services/mailing");
+const e = require("express");
 const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 
@@ -387,5 +401,132 @@ exports.setUserRole = async (req, res) => {
             title: "Cant update user role",
             errors: error,
         });
+    }
+};
+
+exports.emailVerification = async (req, res) => {
+    try {
+        const cloudToken = await prisma.token.findUnique({
+            where: { userId: getUser(req) },
+            include: { user: true },
+        });
+        const { email, id: uuid } = await prisma.user.findUnique({
+            where: { id: getUser(req) },
+        });
+
+        const token = stringGenerator(64);
+        const secret = createJwtToken({ uuid, token }, 60 * 5);
+        // If not exist then create
+        if (!cloudToken) {
+            const { id: uuid, email } = await prisma.user.findUnique({
+                where: { id: getUser(req) },
+            });
+            userEmail = email;
+            const storedToken = await prisma.token.create({
+                data: {
+                    userId: uuid,
+                    token: hasher(token),
+                    expiredAt: new Date(new Date().getTime() + 5 * 60000),
+                },
+            });
+        } else {
+            if (new Date() > cloudToken?.expiredAt) {
+                await prisma.token.update({
+                    where: {
+                        id: cloudToken.id,
+                    },
+                    data: {
+                        token: hasher(token),
+                        expiredAt: new Date(new Date().getTime() + 5 * 60000),
+                    },
+                });
+            } else {
+                throw new ErrorException({
+                    type: "token",
+                    detail: "Your token is still valid",
+                    location: "User Middleware",
+                });
+            }
+        }
+
+        const url = urlEncrypter(secret).replaceAll("=", "#");
+        await sendEmail(
+            email,
+            "Email Verification",
+            `${req.host}:${process.env.PORT}/api/v1/user/email-verifying/?token=${url}}`
+        );
+
+        return resSuccess({
+            res,
+            title: "We send verification url to your email",
+            data: url,
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
+    }
+};
+
+exports.verifyingEmail = async (req, res) => {
+    const { token } = req.query;
+    let verificationSuccess;
+    try {
+        const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
+        if (data?.uuid && data?.token) {
+            const cloudToken = await prisma.token.findUnique({
+                where: { userId: data.uuid },
+            });
+
+            // INFO : Check user is exist
+            if (cloudToken === null) {
+                throw new ErrorException({
+                    type: "token",
+                    detail: "User not found",
+                    location: "User Controller",
+                });
+            }
+
+            // INFO: check expires date
+            if (!(new Date() < cloudToken.expiredAt)) {
+                throw new ErrorException({
+                    type: "token",
+                    detail: "Your token is expireds",
+                    location: "User Controller",
+                });
+            }
+
+            // INFO: Match the token
+            const isTokenMatch = hashChecker(data.token, cloudToken.token);
+            if (!isTokenMatch) {
+                throw new ErrorException({
+                    type: "token",
+                    detail: "Your token is not match",
+                    location: "User Controller",
+                });
+            }
+
+            // INFO: If all data valid or success
+            verificationSuccess = await prisma.user.update({
+                where: { id: data?.uuid },
+                data: { isVerified: true },
+            });
+
+            await prisma.token.delete({
+                where: { userId: data.uuid },
+            });
+        } else {
+            throw new ErrorException({
+                type: "token",
+                detail: "Your token is not valid",
+                location: "User Controller",
+            });
+        }
+
+        return resSuccess({
+            res,
+            title: "Email successfully verified",
+            data: verificationSuccess,
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
     }
 };

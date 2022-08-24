@@ -11,9 +11,12 @@ const expTime = () => {
 };
 
 /** Creating jwt token*/
-const createJwtToken = (id) => {
-    return jwt.sign({ id }, process.env.SECRET, {
-        expiresIn: Number(process.env.MAX_AGE) || Number(expTime()),
+const createJwtToken = (
+    data,
+    exp = Number(process.env.MAX_AGE) || Number(expTime())
+) => {
+    return jwt.sign(data, process.env.SECRET, {
+        expiresIn: exp,
     });
 };
 
@@ -38,6 +41,16 @@ const getUser = (req) => {
     return UUID;
 };
 
+/** Verify JwT */
+const verifyJwt = (data) => {
+    const payload = jwt.verify(
+        data,
+        process.env.SECRET,
+        (err, decode) => decode
+    );
+    return payload;
+};
+
 /** Set Cookie To User Browser */
 const setCookie = ({ res, title, data }) => {
     res.cookie(title, encrypter(data), {
@@ -52,7 +65,7 @@ const getCookie = ({ res, title }) => {
 
 /** Set authentication cookie */
 const setAuthCookie = ({ res, uuid }) => {
-    setCookie({ res, title: "jwt", data: createJwtToken(uuid) });
+    setCookie({ res, title: "jwt", data: createJwtToken({ id: uuid }) });
 };
 
 /**
@@ -84,6 +97,13 @@ const encrypter = (text) => {
     return ciphertext;
 };
 
+const urlEncrypter = (text) => {
+    var ciphertext = CryptoJS.enc.Base64.stringify(
+        CryptoJS.enc.Utf8.parse(text)
+    );
+    return ciphertext;
+};
+
 /**
  * Function to decrypt input string.
  * @param {string} text Input string to decyript.
@@ -91,6 +111,13 @@ const encrypter = (text) => {
 const decrypter = (text) => {
     var bytes = CryptoJS.AES.decrypt(text, process.env.SECRET);
     var originalText = bytes.toString(CryptoJS.enc.Utf8);
+    return originalText;
+};
+
+const urlDecrypter = (text) => {
+    var originalText = CryptoJS.enc.Base64.parse(text).toString(
+        CryptoJS.enc.Utf8
+    );
     return originalText;
 };
 
@@ -105,4 +132,7 @@ module.exports = {
     hashChecker,
     encrypter,
     decrypter,
+    verifyJwt,
+    urlDecrypter,
+    urlEncrypter,
 };

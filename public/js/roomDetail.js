@@ -172,7 +172,6 @@ const requestUserLoader = (data) => {
                 });
 
                 if (pair.success) {
-                    console.log(pair.data);
                     link.parentElement.parentElement.remove();
                     itemContainer.insertAdjacentHTML(
                         "afterbegin",

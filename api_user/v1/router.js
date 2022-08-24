@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 
 const user = require("./controllers_user");
 const { formChacker } = require("../../middlewares/formMiddleware");
@@ -81,5 +81,13 @@ router.post(
     defaultRoleIsExist,
     notCurrentUser,
     user.setUserRole
+);
+router.post("/email-send-verification/", loginRequired, user.emailVerification);
+router.get(
+    "/email-verifying/",
+    loginRequired,
+    query("token").notEmpty(),
+    formChacker,
+    user.verifyingEmail
 );
 module.exports = router;
