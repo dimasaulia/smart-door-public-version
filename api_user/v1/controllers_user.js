@@ -452,22 +452,18 @@ exports.emailVerification = async (req, res) => {
         let url;
         if (process.env.NODE_ENV === "PRODUCTION") {
             url = `${
-                req.host
+                req.hostname
             }/api/v1/user/email-verifying/?token=${urlEncrypter(
                 secret
             ).replaceAll("=", "#")}`;
         } else {
-            url = `${req.host}:${
+            url = `${req.hostname}:${
                 process.env.PORT
             }/api/v1/user/email-verifying/?token=${urlEncrypter(
                 secret
             ).replaceAll("=", "#")}}`;
         }
-        await sendEmail(
-            email,
-            "Email Verification",
-            `${req.host}:${process.env.PORT}/api/v1/user/email-verifying/?token=${url}}`
-        );
+        await sendEmail(email, "Email Verification", url);
 
         return resSuccess({
             res,
