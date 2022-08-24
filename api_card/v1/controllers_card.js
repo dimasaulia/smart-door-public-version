@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { getUser, encryptPassword } = require("../../services/auth");
+const { getUser, hasher } = require("../../services/auth");
 const { resSuccess, resError } = require("../../services/responseHandler");
 const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
@@ -187,7 +187,7 @@ exports.cardRegistration = async (req, res) => {
         const registeredCard = await prisma.card.create({
             data: {
                 card_number: cardNumber.replaceAll(" ", ""),
-                pin: encryptPassword(pin),
+                pin: hasher(pin),
             },
         });
 
@@ -464,7 +464,7 @@ exports.changePin = async (req, res) => {
         const card = await prisma.card.update({
             where: { card_number },
             data: {
-                pin: encryptPassword(newPin),
+                pin: hasher(newPin),
             },
         });
 

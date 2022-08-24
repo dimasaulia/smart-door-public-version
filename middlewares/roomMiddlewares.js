@@ -1,5 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const { isTruePassword } = require("../services/auth");
+const { hashChecker } = require("../services/auth");
 const { resError, ErrorException } = require("../services/responseHandler");
 const prisma = new PrismaClient();
 
@@ -83,7 +83,7 @@ const isRoomTurePin = async (req, res, next) => {
                 ruid,
             },
         });
-        const matchPin = isTruePassword(oldPin, pin);
+        const matchPin = hashChecker(oldPin, pin);
 
         if (!matchPin)
             throw new ErrorException({

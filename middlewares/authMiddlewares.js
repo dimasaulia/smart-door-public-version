@@ -1,15 +1,14 @@
 if (process.env.NODE_ENV !== "PRODUCTION") require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { resError, ErrorException } = require("../services/responseHandler");
-const { getToken, getUser } = require("../services/auth");
+const { getJwtToken, getUser } = require("../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
 const loginRequired = (req, res, next) => {
-    const token = getToken(req);
-
+    const jwtToken = getJwtToken(req);
     // check if token exits
-    if (!token)
+    if (!jwtToken)
         return resError({
             res,
             title: "Login Requires! Please Login",
@@ -17,7 +16,7 @@ const loginRequired = (req, res, next) => {
         });
 
     // verify token
-    jwt.verify(token, process.env.SECRET, async (err, decode) => {
+    jwt.verify(jwtToken, process.env.SECRET, async (err, decode) => {
         if (!err) {
             // find user
             const user = await prisma.user.findUnique({
@@ -48,10 +47,10 @@ const loginRequired = (req, res, next) => {
 };
 
 const logoutRequired = (req, res, next) => {
-    const token = getToken(req);
+    const jwtToken = getJwtToken(req);
 
     // check if token exits
-    if (token)
+    if (jwtToken)
         return resError({
             res,
             title: "Logout Requires! Please Logout First",

@@ -1,9 +1,5 @@
 const { PrismaClient } = require("@prisma/client");
-const {
-    setAuthCookie,
-    getUser,
-    encryptPassword,
-} = require("../../services/auth");
+const { setAuthCookie, getUser, hasher } = require("../../services/auth");
 const { ErrorException } = require("../../services/responseHandler");
 const { resError, resSuccess } = require("../../services/responseHandler");
 const bcrypt = require("bcrypt");
@@ -71,7 +67,7 @@ exports.register = async (req, res) => {
             data: {
                 username,
                 email,
-                password: encryptPassword(password),
+                password: hasher(password),
                 role: { connect: { name: "USER" } },
                 profil: {
                     create: {

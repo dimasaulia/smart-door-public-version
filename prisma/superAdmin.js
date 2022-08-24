@@ -1,4 +1,4 @@
-const { encryptPassword } = require("../services/auth");
+const { hasher } = require("../services/auth");
 
 const role = [
     {
@@ -13,7 +13,7 @@ const user = [
     {
         username: "dimasaulia",
         email: "dimasauliafachrudin@gmail.com",
-        password: encryptPassword("12345678"),
+        password: hasher("12345678"),
         role: "ADMIN",
     },
 ];

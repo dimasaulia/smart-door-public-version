@@ -3,11 +3,7 @@ const {
     resSuccess,
     ErrorException,
 } = require("../../services/responseHandler");
-const {
-    getUser,
-    isTruePassword,
-    encryptPassword,
-} = require("../../services/auth");
+const { getUser, hashChecker, hasher } = require("../../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
@@ -21,7 +17,7 @@ prisma.$use(async (params, next) => {
         result.pin === "220982"
     ) {
         console.log("FIRST RECORD");
-        result.pin = encryptPassword(result.pin);
+        result.pin = hasher(result.pin);
         await prisma.room.update({
             where: {
                 id: result.id,
@@ -317,7 +313,7 @@ exports.roomCheckIn = async (req, res) => {
             });
 
         // const matchPin = await bcrypt.compareSync(pin, findedCard.pin);
-        const matchPin = isTruePassword(pin, findedCard.pin);
+        const matchPin = hashChecker(pin, findedCard.pin);
         // if (!matchPin) throw "Your pin is incorrect, try again";
         if (!matchPin)
             throw new ErrorException({
@@ -748,7 +744,7 @@ exports.validatePin = async (req, res) => {
             where: { ruid },
         });
 
-        const validate = isTruePassword(pin, hashPin);
+        const validate = hashChecker(pin, hashPin);
         if (!validate)
             throw new ErrorException({
                 type: "room",
@@ -778,7 +774,7 @@ exports.changePin = async (req, res) => {
         const room = await prisma.room.update({
             where: { ruid },
             data: {
-                pin: encryptPassword(newPin),
+                pin: hasher(newPin),
             },
         });
 
@@ -788,7 +784,6 @@ exports.changePin = async (req, res) => {
             data: room,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Failed to change pin",
