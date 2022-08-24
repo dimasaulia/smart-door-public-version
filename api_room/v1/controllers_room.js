@@ -16,7 +16,6 @@ prisma.$use(async (params, next) => {
         params.model === "Room" &&
         result.pin === "220982"
     ) {
-        console.log("FIRST RECORD");
         result.pin = hasher(result.pin);
         await prisma.room.update({
             where: {
