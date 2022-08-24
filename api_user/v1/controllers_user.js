@@ -449,7 +449,20 @@ exports.emailVerification = async (req, res) => {
             }
         }
 
-        const url = urlEncrypter(secret).replaceAll("=", "#");
+        let url;
+        if (process.env.NODE_ENV === "PRODUCTION") {
+            url = `${
+                req.host
+            }/api/v1/user/email-verifying/?token=${urlEncrypter(
+                secret
+            ).replaceAll("=", "#")}`;
+        } else {
+            url = `${req.host}:${
+                process.env.PORT
+            }/api/v1/user/email-verifying/?token=${urlEncrypter(
+                secret
+            ).replaceAll("=", "#")}}`;
+        }
         await sendEmail(
             email,
             "Email Verification",
