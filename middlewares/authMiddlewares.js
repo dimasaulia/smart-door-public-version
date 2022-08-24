@@ -1,7 +1,12 @@
 if (process.env.NODE_ENV !== "PRODUCTION") require("dotenv").config();
 const jwt = require("jsonwebtoken");
 const { resError, ErrorException } = require("../services/responseHandler");
-const { getJwtToken, getUser } = require("../services/auth");
+const {
+    getJwtToken,
+    getUser,
+    verifyJwt,
+    urlDecrypter,
+} = require("../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
@@ -250,6 +255,100 @@ const notCurrentUser = async (req, res, next) => {
     });
 };
 
+const urlTokenIsValid = async (req, res, next) => {
+    try {
+        const { token } = req.query;
+        const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
+        if (!(data?.uuid && data?.token)) throw "(Mid): Your token is Invalid";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            errors: error,
+        });
+    }
+};
+
+const urlTokenNotExpired = async (req, res, next) => {
+    const { token } = req.query;
+    try {
+        const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
+        const cloudToken = await prisma.token.findUnique({
+            where: { userId: data.uuid },
+        });
+
+        if (new Date() > cloudToken.expiredAt) {
+            throw new ErrorException({
+                type: "token",
+                detail: "Your token is expireds",
+                location: "User Controller",
+            });
+        }
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            errors: error,
+        });
+    }
+};
+
+/** Fungsi yang akan mencegah user untuk melakukan request baru ketika token masih aktif */
+const urlTokenIsNotActive = async (req, res, next) => {
+    try {
+        const cloudToken = await prisma.token.findUnique({
+            where: { userId: getUser(req) },
+        });
+
+        if (!cloudToken) return next();
+
+        if (new Date() < cloudToken.expiredAt) {
+            throw new ErrorException({
+                type: "token",
+                detail: "Your token is still valid",
+                location: "User Controller",
+            });
+        }
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            errors: error,
+        });
+    }
+};
+
+/** Memastikan halaman hanya bisa diakses oleh user yang belum terverifikasi */
+const userNotVerify = async (req, res, next) => {
+    try {
+        const { isVerified } = await prisma.user.findUnique({
+            where: { id: getUser(req) },
+        });
+        if (isVerified) throw "Your email already verified";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            errors: error,
+        });
+    }
+};
+
+const userIsVerify = async (req, res, next) => {
+    try {
+        const { isVerified } = await prisma.user.findUnique({
+            where: { id: getUser(req) },
+        });
+        if (!isVerified) throw "Your email not verified";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            errors: error,
+        });
+    }
+};
+
 module.exports = {
     loginRequired,
     allowedRole,
@@ -261,4 +360,9 @@ module.exports = {
     userIsNotExist,
     emailIsNotExist,
     notCurrentUser,
+    urlTokenIsValid,
+    urlTokenNotExpired,
+    urlTokenIsNotActive,
+    userIsVerify,
+    userNotVerify,
 };

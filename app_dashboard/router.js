@@ -3,12 +3,7 @@ const router = express.Router();
 const dashboard = require("./dashboardControllers");
 const { loginRequired, allowedRole } = require("../middlewares/uiMiddlewares");
 
-router.get(
-    "/",
-    loginRequired,
-    // allowedRole("ADMIN"),
-    dashboard.dashboard
-);
+router.get("/", loginRequired, allowedRole("ADMIN"), dashboard.dashboard);
 router.get(
     "/card/list",
     loginRequired,

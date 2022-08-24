@@ -410,19 +410,22 @@ exports.emailVerification = async (req, res) => {
             where: { userId: getUser(req) },
             include: { user: true },
         });
+
         const { email, id: uuid } = await prisma.user.findUnique({
             where: { id: getUser(req) },
         });
-
         const token = stringGenerator(64);
         const secret = createJwtToken({ uuid, token }, 60 * 5);
+
         // If not exist then create
         if (!cloudToken) {
             const { id: uuid, email } = await prisma.user.findUnique({
                 where: { id: getUser(req) },
             });
+
             userEmail = email;
-            const storedToken = await prisma.token.create({
+
+            await prisma.token.create({
                 data: {
                     userId: uuid,
                     token: hasher(token),
@@ -440,12 +443,6 @@ exports.emailVerification = async (req, res) => {
                         expiredAt: new Date(new Date().getTime() + 5 * 60000),
                     },
                 });
-            } else {
-                throw new ErrorException({
-                    type: "token",
-                    detail: "Your token is still valid",
-                    location: "User Middleware",
-                });
             }
         }
 
@@ -461,14 +458,14 @@ exports.emailVerification = async (req, res) => {
                 process.env.PORT
             }/api/v1/user/email-verifying/?token=${urlEncrypter(
                 secret
-            ).replaceAll("=", "#")}}`;
+            ).replaceAll("=", "#")}`;
         }
         await sendEmail(email, "Email Verification", url);
 
         return resSuccess({
             res,
             title: "We send verification url to your email",
-            data: url,
+            data: [],
         });
     } catch (error) {
         return resError({ res, errors: error });
@@ -480,55 +477,29 @@ exports.verifyingEmail = async (req, res) => {
     let verificationSuccess;
     try {
         const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
-        if (data?.uuid && data?.token) {
-            const cloudToken = await prisma.token.findUnique({
-                where: { userId: data.uuid },
-            });
+        const cloudToken = await prisma.token.findUnique({
+            where: { userId: data.uuid },
+        });
 
-            // INFO : Check user is exist
-            if (cloudToken === null) {
-                throw new ErrorException({
-                    type: "token",
-                    detail: "User not found",
-                    location: "User Controller",
-                });
-            }
-
-            // INFO: check expires date
-            if (!(new Date() < cloudToken.expiredAt)) {
-                throw new ErrorException({
-                    type: "token",
-                    detail: "Your token is expireds",
-                    location: "User Controller",
-                });
-            }
-
-            // INFO: Match the token
-            const isTokenMatch = hashChecker(data.token, cloudToken.token);
-            if (!isTokenMatch) {
-                throw new ErrorException({
-                    type: "token",
-                    detail: "Your token is not match",
-                    location: "User Controller",
-                });
-            }
-
-            // INFO: If all data valid or success
-            verificationSuccess = await prisma.user.update({
-                where: { id: data?.uuid },
-                data: { isVerified: true },
-            });
-
-            await prisma.token.delete({
-                where: { userId: data.uuid },
-            });
-        } else {
+        // INFO: Match the token
+        const isTokenMatch = hashChecker(data.token, cloudToken.token);
+        if (!isTokenMatch) {
             throw new ErrorException({
                 type: "token",
-                detail: "Your token is not valid",
+                detail: "Your token is not match",
                 location: "User Controller",
             });
         }
+
+        // INFO: If all data valid or success
+        verificationSuccess = await prisma.user.update({
+            where: { id: data.uuid },
+            data: { isVerified: true },
+        });
+
+        await prisma.token.delete({
+            where: { userId: data.uuid },
+        });
 
         return resSuccess({
             res,
