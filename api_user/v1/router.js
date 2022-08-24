@@ -82,7 +82,7 @@ router.post(
     notCurrentUser,
     user.setUserRole
 );
-router.post("/email-send-verification/", loginRequired, user.emailVerification);
+router.get("/email-send-verification/", loginRequired, user.emailVerification);
 router.get(
     "/email-verifying/",
     loginRequired,
