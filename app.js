@@ -3,21 +3,12 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const app = express();
-const path = require("path");
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const expbs = require("express-handlebars");
+const { urlErrorHandler } = require("./services/responseHandler");
 app.io = io;
 
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
-prisma.$use(async (params, next) => {
-    // Manipulate params here
-    const result = await next(params);
-    console.log("HELLO");
-    // See results here
-    return result;
-});
 /*
 const livereload = require("livereload");
 const connectLiveReload = require("connect-livereload");
@@ -52,6 +43,7 @@ const PORT = process.env.PORT || 8080;
 const ROUTER = require("./router");
 
 app.use("/", ROUTER);
+app.use(urlErrorHandler);
 
 io.on("connection", (socket) => {
     console.log("A client connected 🚀");

@@ -12,6 +12,7 @@ const prisma = new PrismaClient();
 
 const loginRequired = (req, res, next) => {
     const jwtToken = getJwtToken(req);
+
     // check if token exits
     if (!jwtToken)
         return resError({

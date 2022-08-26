@@ -7,6 +7,7 @@ const prisma = new PrismaClient();
 
 const loginRequired = (req, res, next) => {
     const token = getJwtToken(req);
+
     // check if token exits
     if (!token) return res.redirect("/auth/login");
 

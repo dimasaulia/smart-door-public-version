@@ -30,4 +30,14 @@ function ErrorException({ type, detail, location = "not specified" }) {
     this[`${type}`] = { type, detail, location };
 }
 
-module.exports = { resError, resSuccess, ErrorException };
+urlErrorHandler = (req, res, next) => {
+    const data = {
+        styles: ["/style/404.css"],
+        scripts: [],
+        layout: "auth.hbs",
+        admin: process.env.PHONE_NUMBER,
+    };
+    return res.status(404).render("404", data);
+};
+
+module.exports = { resError, resSuccess, ErrorException, urlErrorHandler };
