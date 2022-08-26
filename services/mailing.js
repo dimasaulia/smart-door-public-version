@@ -26,16 +26,14 @@ const sendEmail = async (user_mail, subject, message) => {
     });
 };
 
-const urlTokenGenerator = (req, url) => {
+const urlTokenGenerator = (req, endpoint, token) => {
     let finalUrl;
     if (process.env.NODE_ENV === "PRODUCTION") {
-        finalUrl = `${
-            req.hostname
-        }/api/v1/user/reset-password/?token=${urlEncrypter(url)}`;
+        finalUrl = `${req.hostname}${endpoint}?token=${urlEncrypter(token)}`;
     } else {
         finalUrl = `${req.hostname}:${
             process.env.PORT
-        }/api/v1/user/reset-password/?token=${urlEncrypter(url)}`;
+        }${endpoint}?token=${urlEncrypter(token)}`;
     }
     return finalUrl;
 };

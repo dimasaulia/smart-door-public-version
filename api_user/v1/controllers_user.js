@@ -446,20 +446,12 @@ exports.emailVerification = async (req, res) => {
             }
         }
 
-        let url;
-        if (process.env.NODE_ENV === "PRODUCTION") {
-            url = `${
-                req.hostname
-            }/api/v1/user/email-verifying/?token=${urlEncrypter(
-                secret
-            ).replaceAll("=", "#")}`;
-        } else {
-            url = `${req.hostname}:${
-                process.env.PORT
-            }/api/v1/user/email-verifying/?token=${urlEncrypter(
-                secret
-            ).replaceAll("=", "#")}`;
-        }
+        const url = urlTokenGenerator(
+            req,
+            "/api/v1/user/email-verifying/",
+            secret
+        );
+
         await sendEmail(email, "Email Verification", url);
 
         return resSuccess({
@@ -529,7 +521,11 @@ exports.sendResetPassword = async (req, res) => {
             });
         }
 
-        let url = urlTokenGenerator(req, secret);
+        const url = urlTokenGenerator(
+            req,
+            "/api/v1/user/reset-password/",
+            secret
+        );
         await sendEmail(email, "Reset password", url);
 
         return resSuccess({
