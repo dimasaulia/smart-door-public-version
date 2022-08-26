@@ -32,6 +32,7 @@ async function setter({
     }
 
     const data = await response.json();
+
     if (!data.success) {
         showToast({
             theme: "danger",

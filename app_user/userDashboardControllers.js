@@ -1,5 +1,3 @@
-const { request } = require("express");
-
 module.exports.home = (req, res) => {
     const data = {
         layout: "userBase",
@@ -10,7 +8,7 @@ module.exports.home = (req, res) => {
     res.render("user/user", data);
 };
 
-module.exports.cardLogs = (req, res) => {
+module.exports.cardLogs = async (req, res) => {
     const { id } = req.params;
     const data = {
         layout: "userBase",

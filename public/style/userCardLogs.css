@@ -2,7 +2,7 @@
     width: 18em;
 }
 
-input,
+input[type=text],
 select {
     -webkit-appearance: inherit;
     -moz-appearance: none;
@@ -10,15 +10,24 @@ select {
     width: 20em !important;
 }
 
-input:active,
-input:disabled,
-input:focus,
+input[type=text]:active,
+input[type=text]:disabled,
+input[type=text]:focus,
 select:active,
 select:disabled,
 select:focus {
     background: rgb(var(--color-neutral-7)) !important;
     border: 1.5px solid rgb(var(--color-blue-4)) !important;
     box-shadow: var(-shadowLow);
+}
+
+.form-check {
+    margin-bottom: 0 !important;
+}
+
+.form-check-input {
+    height: 1.5rem !important;
+    width: 3rem !important;
 }
 
 .card-form {

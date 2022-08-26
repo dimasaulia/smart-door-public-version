@@ -63,6 +63,7 @@ router.post(
     param("cardNumber").notEmpty(),
     body("cardName").notEmpty(),
     body("cardType").notEmpty(),
+    body("isTwoStepAuth").notEmpty(),
     formChacker,
     cardIsExist,
     isUserCard,
@@ -85,5 +86,16 @@ router.post(
     isNewPinMatch,
     isTurePin,
     card.changePin
+);
+router.post(
+    "/change-auth-mode/:cardNumber",
+    loginRequired,
+    allowedRole("USER"),
+    body("oldPin").notEmpty().isNumeric().isLength({ min: "6", max: "6" }),
+    formChacker,
+    cardIsExist,
+    isUserCard,
+    isTurePin,
+    card.changeAuthType
 );
 module.exports = router;

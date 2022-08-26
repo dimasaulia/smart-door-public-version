@@ -1,7 +1,6 @@
 const { PrismaClient } = require("@prisma/client");
 const { getUser, hasher } = require("../../services/auth");
 const { resSuccess, resError } = require("../../services/responseHandler");
-const bcrypt = require("bcrypt");
 const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 1;
 
@@ -331,6 +330,7 @@ exports.userCardsDetail = async (req, res) => {
                 card_name: true,
                 card_number: true,
                 type: true,
+                isTwoStepAuth: true,
             },
         });
         const data = {
@@ -431,7 +431,7 @@ exports.userCardLogs = async (req, res) => {
 /** Memperbaharui informasi kartu */
 exports.update = async (req, res) => {
     const { cardNumber: card_number } = req.params;
-    const { cardName: card_name, cardType: type } = req.body;
+    const { cardName: card_name, cardType: type, isTwoStepAuth } = req.body;
     try {
         const card = await prisma.card.update({
             where: {
@@ -440,6 +440,7 @@ exports.update = async (req, res) => {
             data: {
                 card_name,
                 type,
+                isTwoStepAuth: isTwoStepAuth == "true" ? true : false,
             },
         });
         return resSuccess({
@@ -477,6 +478,37 @@ exports.changePin = async (req, res) => {
         return resError({
             res,
             title: "Cant get user's cards logs",
+            errors: error,
+        });
+    }
+};
+
+/** Mengubah status two factor auth pada kartu */
+exports.changeAuthType = async (req, res) => {
+    const { cardNumber } = req.params;
+    try {
+        const { isTwoStepAuth: authType } = await prisma.card.findUnique({
+            where: { card_number: cardNumber },
+        });
+
+        const auth = await prisma.card.update({
+            where: {
+                card_number: cardNumber,
+            },
+            data: {
+                isTwoStepAuth: !authType,
+            },
+        });
+
+        return resSuccess({
+            res,
+            title: `Succes change card authentication mode`,
+            data: auth,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: error,
             errors: error,
         });
     }

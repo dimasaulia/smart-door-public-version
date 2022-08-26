@@ -7,6 +7,7 @@ const cardIcon = document.querySelector(".card-icon");
 const cardLogs = document.querySelector(".log-container");
 const saveBtn = document.querySelector("#save-change");
 const loadMoreBtn = document.querySelector("#load-more");
+const authTypeForm = document.querySelector("#auth-type");
 const formCardName = form.cardName;
 
 const days = (date) => {
@@ -47,7 +48,7 @@ const logsTemplate = ({ createdAt, name, number, id, status }) => {
 
 // INFO: Basic Info Loader
 const basicInfoLoader = (data) => {
-    const { card_number, card_name, type } = data.info;
+    const { card_number, card_name, type, isTwoStepAuth } = data.info;
     form.cardNumber.value = card_number;
     form.cardName.value = card_name;
     for (let index = 0; index < cardTypeForm.length; index++) {
@@ -55,7 +56,7 @@ const basicInfoLoader = (data) => {
             cardTypeForm.options.selectedIndex = index;
         }
     }
-    cardIdContainer.textContent = `${card_name} | Details`;
+    authTypeForm.checked = isTwoStepAuth;
     cardIcon.setAttribute("src", `/image/icon_${type}.svg`);
 };
 
@@ -137,11 +138,13 @@ loadMoreBtn.addEventListener("click", () => {
 saveBtn.addEventListener("click", async () => {
     const cardName = formCardName.value;
     const cardType = cardTypeForm.value;
+    const isTwoStepAuth = String(authTypeForm.checked);
     const updateCardData = await setter({
         url: `/api/v1/card/update/${cardNumber}`,
         body: {
             cardName,
             cardType,
+            isTwoStepAuth,
         },
         successMsg: "Succes updated card",
     });
