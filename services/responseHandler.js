@@ -37,7 +37,8 @@ urlErrorHandler = (req, res, next) => {
         layout: "auth.hbs",
         admin: process.env.PHONE_NUMBER,
     };
-    return res.status(404).render("404", data);
+    res.status(404);
+    return res.render("404", data);
 };
 
 module.exports = { resError, resSuccess, ErrorException, urlErrorHandler };

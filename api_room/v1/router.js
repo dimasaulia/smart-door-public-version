@@ -11,12 +11,14 @@ const {
     cardIsPair,
     isUserCard,
     isNewPinMatch,
+    isTwoStepAuth,
 } = require("../../middlewares/cardMiddlewares");
 const {
     roomIsExist,
     roomRequestNotExist,
     roomAccessNotExist,
     isRoomTurePin,
+    cardIsHaveAccess,
 } = require("../../middlewares/roomMiddlewares");
 const {
     requestIsExist,
@@ -93,9 +95,14 @@ router.post(
 );
 router.post(
     "/check-in/:ruid",
+    param("ruid").notEmpty(),
+    body("cardNumber").notEmpty(),
+    formChacker,
     roomIsExist,
     cardIsExist,
     cardIsPair,
+    cardIsHaveAccess,
+    isTwoStepAuth,
     room.roomCheckIn
 );
 router.get(

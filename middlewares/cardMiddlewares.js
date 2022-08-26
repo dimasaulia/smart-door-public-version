@@ -1,5 +1,9 @@
 const { PrismaClient } = require("@prisma/client");
-const { resError, ErrorException } = require("../services/responseHandler");
+const {
+    resError,
+    ErrorException,
+    resSuccess,
+} = require("../services/responseHandler");
 const { getUser, hashChecker } = require("../services/auth");
 const prisma = new PrismaClient();
 
@@ -136,6 +140,29 @@ const isNewPinMatch = (req, res, next) => {
     }
 };
 
+/** Fungsi untuk melakukan validasi apakah user mengaktifkan dual step authentication, jika tidak user langsung diberi akses ke rungan, jika user mengaktifkan dual step auth maka validasi pin akan di aktifkan */
+const isTwoStepAuth = async (req, res, next) => {
+    const { ruid } = req.params;
+
+    // check if card use two step authentication, if card not use this feature response with true
+    const cardNumber =
+        req.body.cardNumber || req.params.cardNumber || req.query.cardNumber;
+
+    const card = await prisma.card.findUnique({
+        where: { card_number: cardNumber },
+        include: { room: true },
+    });
+
+    if (!card.isTwoStepAuth) {
+        return resSuccess({
+            res,
+            title: `Success open the room (${ruid})`,
+        });
+    }
+
+    return next();
+};
+
 module.exports = {
     cardIsExist,
     cardIsPair,
@@ -143,4 +170,5 @@ module.exports = {
     cardNotPair,
     isTurePin,
     isNewPinMatch,
+    isTwoStepAuth,
 };

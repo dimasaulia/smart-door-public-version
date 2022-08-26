@@ -299,21 +299,12 @@ exports.roomCheckIn = async (req, res) => {
             },
         });
 
-        // check card can access the room
         const findedCard = room.card.find(
             (card) => card.card_number === cardNumber.replaceAll(" ", "")
         );
-        // if (!findedCard) throw "You can't access this room";
-        if (!findedCard)
-            throw new ErrorException({
-                type: "card",
-                detail: "You can't access this room",
-                location: "Room Controller",
-            });
 
-        // const matchPin = await bcrypt.compareSync(pin, findedCard.pin);
         const matchPin = hashChecker(pin, findedCard.pin);
-        // if (!matchPin) throw "Your pin is incorrect, try again";
+
         if (!matchPin)
             throw new ErrorException({
                 type: "card",
