@@ -35,7 +35,7 @@ const getUser = (req) => {
         getJwtToken(req),
         process.env.SECRET,
         (err, decode) => {
-            return decode.id;
+            return decode?.id;
         }
     );
     return UUID;
@@ -100,7 +100,7 @@ const encrypter = (text) => {
 const urlEncrypter = (text) => {
     var ciphertext = CryptoJS.enc.Base64.stringify(
         CryptoJS.enc.Utf8.parse(text)
-    );
+    ).replaceAll("=", "#");
     return ciphertext;
 };
 

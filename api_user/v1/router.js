@@ -15,6 +15,9 @@ const {
     urlTokenIsValid,
     urlTokenIsNotActive,
     userNotVerify,
+    logoutRequired,
+    emailIsExist,
+    urlTokenIsMatch,
 } = require("../../middlewares/authMiddlewares");
 const {
     cardIsExist,
@@ -99,6 +102,26 @@ router.get(
     formChacker,
     userNotVerify,
     urlTokenIsValid,
+    urlTokenIsMatch,
     user.verifyingEmail
+);
+router.get(
+    "/send-reset-password/",
+    logoutRequired,
+    body("email").notEmpty().isEmail(),
+    formChacker,
+    emailIsExist,
+    urlTokenIsNotActive,
+    user.sendResetPassword
+);
+router.post(
+    "/reset-password/",
+    logoutRequired,
+    query("token").notEmpty(),
+    body("password").notEmpty(),
+    formChacker,
+    urlTokenIsValid,
+    urlTokenIsMatch,
+    user.resetPassword
 );
 module.exports = router;

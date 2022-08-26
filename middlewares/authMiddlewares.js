@@ -6,6 +6,7 @@ const {
     getUser,
     verifyJwt,
     urlDecrypter,
+    hashChecker,
 } = require("../services/auth");
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
@@ -144,6 +145,7 @@ const adminRoleIsExist = async (req, res, next) => {
         });
     }
 };
+
 const userIsExist = async (req, res, next) => {
     try {
         const { username } = req.body;
@@ -168,6 +170,40 @@ const userIsExist = async (req, res, next) => {
         if (user === null)
             throw new ErrorException({
                 type: "username",
+                detail: "Cant find the user",
+                location: "Auth Midlleware",
+            });
+
+        return next();
+    } catch (errors) {
+        return resError({ res, title: "Something Wrong", errors });
+    }
+};
+
+const emailIsExist = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+        const user = await prisma.user.findUnique({
+            where: {
+                email,
+            },
+            select: {
+                id: true,
+                username: true,
+                password: true,
+                email: true,
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        // give response if cant find the user
+        if (user === null)
+            throw new ErrorException({
+                type: "email",
                 detail: "Cant find the user",
                 location: "Auth Midlleware",
             });
@@ -297,9 +333,18 @@ const urlTokenNotExpired = async (req, res, next) => {
 /** Fungsi yang akan mencegah user untuk melakukan request baru ketika token masih aktif */
 const urlTokenIsNotActive = async (req, res, next) => {
     try {
-        const cloudToken = await prisma.token.findUnique({
-            where: { userId: getUser(req) },
-        });
+        let cloudToken;
+        if (getUser(req)) {
+            cloudToken = await prisma.token.findUnique({
+                where: { userId: getUser(req) },
+            });
+        } else {
+            const { email } = req.body;
+            const { id } = await prisma.user.findUnique({ where: { email } });
+            cloudToken = await prisma.token.findUnique({
+                where: { userId: id },
+            });
+        }
 
         if (!cloudToken) return next();
 
@@ -307,7 +352,7 @@ const urlTokenIsNotActive = async (req, res, next) => {
             throw new ErrorException({
                 type: "token",
                 detail: "Your token is still valid",
-                location: "User Controller",
+                location: "Auth Middlewares",
             });
         }
         return next();
@@ -350,6 +395,40 @@ const userIsVerify = async (req, res, next) => {
     }
 };
 
+const urlTokenIsMatch = async (req, res, next) => {
+    const { token } = req.query;
+    try {
+        const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
+        const cloudToken = await prisma.token.findUnique({
+            where: { userId: data.uuid },
+        });
+
+        // Check if user still have the token
+        if (!cloudToken)
+            throw new ErrorException({
+                type: "token",
+                detail: "You dont have any token",
+                location: "Auth Middleware",
+            });
+
+        // INFO: Match the token
+        const isTokenMatch = hashChecker(data?.token, cloudToken?.token);
+        if (!isTokenMatch) {
+            throw new ErrorException({
+                type: "token",
+                detail: "Your token is not match",
+                location: "Auth Middleware",
+            });
+        }
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            errors: error,
+        });
+    }
+};
+
 module.exports = {
     loginRequired,
     allowedRole,
@@ -366,4 +445,6 @@ module.exports = {
     urlTokenIsNotActive,
     userIsVerify,
     userNotVerify,
+    emailIsExist,
+    urlTokenIsMatch,
 };

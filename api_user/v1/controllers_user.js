@@ -15,7 +15,7 @@ const { ErrorException } = require("../../services/responseHandler");
 const { resError, resSuccess } = require("../../services/responseHandler");
 const { random: stringGenerator, uuid } = require("@supercharge/strings");
 const bcrypt = require("bcrypt");
-const { sendEmail } = require("../../services/mailing");
+const { sendEmail, urlTokenGenerator } = require("../../services/mailing");
 const e = require("express");
 const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
@@ -473,23 +473,9 @@ exports.emailVerification = async (req, res) => {
 };
 
 exports.verifyingEmail = async (req, res) => {
-    const { token } = req.query;
     let verificationSuccess;
     try {
         const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
-        const cloudToken = await prisma.token.findUnique({
-            where: { userId: data.uuid },
-        });
-
-        // INFO: Match the token
-        const isTokenMatch = hashChecker(data.token, cloudToken.token);
-        if (!isTokenMatch) {
-            throw new ErrorException({
-                type: "token",
-                detail: "Your token is not match",
-                location: "User Controller",
-            });
-        }
 
         // INFO: If all data valid or success
         verificationSuccess = await prisma.user.update({
@@ -507,6 +493,78 @@ exports.verifyingEmail = async (req, res) => {
             data: verificationSuccess,
         });
     } catch (error) {
+        return resError({ res, errors: error });
+    }
+};
+
+exports.sendResetPassword = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const { id: uuid } = await prisma.user.findUnique({ where: { email } });
+        const token = stringGenerator(32);
+        const secret = createJwtToken({ uuid, token }, 60 * 5);
+
+        const cloudToken = await prisma.token.findUnique({
+            where: { userId: uuid },
+        });
+
+        // If not exist then create
+        if (!cloudToken) {
+            await prisma.token.create({
+                data: {
+                    userId: uuid,
+                    token: hasher(token),
+                    expiredAt: new Date(new Date().getTime() + 5 * 60000),
+                },
+            });
+        } else {
+            await prisma.token.update({
+                where: {
+                    id: cloudToken.id,
+                },
+                data: {
+                    token: hasher(token),
+                    expiredAt: new Date(new Date().getTime() + 5 * 60000),
+                },
+            });
+        }
+
+        let url = urlTokenGenerator(req, secret);
+        await sendEmail(email, "Reset password", url);
+
+        return resSuccess({
+            res,
+            title: "Success send reset link to your mail",
+            data: url,
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
+    }
+};
+
+exports.resetPassword = async (req, res) => {
+    const { password } = req.body;
+    const { token } = req.query;
+    try {
+        const { uuid, token: urlToken } = verifyJwt(
+            urlDecrypter(token.replaceAll("#", "="))
+        );
+        const newPass = await prisma.user.update({
+            where: { id: uuid },
+            data: { password: hasher(password) },
+        });
+
+        await prisma.token.delete({
+            where: { userId: uuid },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success reset your password",
+            data: newPass,
+        });
+    } catch (error) {
+        console.log(error);
         return resError({ res, errors: error });
     }
 };

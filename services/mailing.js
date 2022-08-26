@@ -1,4 +1,5 @@
 const nodemailer = require("nodemailer");
+const { urlEncrypter } = require("./auth");
 
 /**
  * This function for sending email
@@ -25,4 +26,18 @@ const sendEmail = async (user_mail, subject, message) => {
     });
 };
 
-module.exports = { sendEmail };
+const urlTokenGenerator = (req, url) => {
+    let finalUrl;
+    if (process.env.NODE_ENV === "PRODUCTION") {
+        finalUrl = `${
+            req.hostname
+        }/api/v1/user/reset-password/?token=${urlEncrypter(url)}`;
+    } else {
+        finalUrl = `${req.hostname}:${
+            process.env.PORT
+        }/api/v1/user/reset-password/?token=${urlEncrypter(url)}`;
+    }
+    return finalUrl;
+};
+
+module.exports = { sendEmail, urlTokenGenerator };
