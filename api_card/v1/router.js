@@ -12,6 +12,7 @@ const {
 const { body, param } = require("express-validator");
 const { formChacker } = require("../../middlewares/formMiddleware");
 const card = require("./controllers_card");
+const { apiValidation } = require("../../middlewares/apiKeyMiddlewares");
 
 // CARD ROUTER
 router.get("/u/available", loginRequired, allowedRole("USER"), card.userCards);
@@ -54,6 +55,7 @@ router.post(
     body("cardNumber").notEmpty(),
     body("pin").notEmpty().isLength(6),
     formChacker,
+    apiValidation,
     card.cardRegistration
 ); // HW API
 router.post(

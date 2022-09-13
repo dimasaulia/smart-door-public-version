@@ -188,6 +188,20 @@ searchBtn.addEventListener("click", (e) => {
         func: userListLoader,
     });
 });
+
+document.addEventListener("keyup", (e) => {
+    const search = usernameForm.value;
+    e.preventDefault();
+    if (e.key === "Enter" && search.length > 0) {
+        e.preventDefault();
+        userConatiner.textContent = "";
+        generalDataLoader({
+            url: `/api/v1/user/list?search=${search}`,
+            func: userListLoader,
+        });
+    }
+});
+
 // INFO: Load More User List
 showMoreBtn.addEventListener("click", (e) => {
     e.preventDefault();

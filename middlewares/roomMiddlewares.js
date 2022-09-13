@@ -143,7 +143,28 @@ const cardIsHaveAccess = async (req, res, next) => {
     }
 };
 
+const roomIsActive = async (req, res, next) => {
+    const ruid = req.params.ruid || req.body.ruid || req.query.ruid;
+    try {
+        const room = await prisma.room.findUnique({
+            where: {
+                ruid,
+            },
+        });
+
+        if (!room.isActive) throw "Room not activate yet";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: error,
+            errors: "Room not activate yet",
+        });
+    }
+};
+
 module.exports = {
+    roomIsActive,
     roomIsExist,
     roomRequestNotExist,
     roomAccessNotExist,

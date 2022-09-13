@@ -19,6 +19,7 @@ const {
     roomAccessNotExist,
     isRoomTurePin,
     cardIsHaveAccess,
+    roomIsActive,
 } = require("../../middlewares/roomMiddlewares");
 const {
     requestIsExist,
@@ -41,7 +42,7 @@ router.get(
     roomIsExist,
     room.requestRoomByUser
 );
-router.get("/u/list", loginRequired, allowedRole("USER"), room.list);
+router.get("/u/list", loginRequired, allowedRole("USER"), room.activeRoomList);
 router.get(
     "/u/accesable/:cardNumber",
     loginRequired,
@@ -66,6 +67,7 @@ router.post(
     cardIsExist,
     isUserCard,
     roomIsExist,
+    roomIsActive,
     roomRequestNotExist,
     roomAccessNotExist,
     room.roomRequest

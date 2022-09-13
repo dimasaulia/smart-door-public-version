@@ -1,5 +1,7 @@
 const roomConatiner = document.querySelector(".room--list-container");
-
+const showMoreBtn = document.querySelector("#showMore");
+const roomnameForm = document.querySelector("#roomname");
+const searchBtn = document.querySelector(".input-group-prepend");
 const del = ({ url, element }) => {
     startLoader();
 
@@ -40,10 +42,10 @@ const deleteRoom = ({ url, roomName, element }) => {
     });
 };
 
-const roomListTemplate = ({ name, ruid }) => {
+const roomListTemplate = ({ name, ruid, id }) => {
     return `
     <div
-        class="room--list-item mt-3 d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" data-ruid="${ruid}" data-room-name="${name}">
+        class="room--list-item mt-3 d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" data-ruid="${ruid}" data-id="${id}" data-room-name="${name}">
         <div class="room-profile d-flex flex-column flex-sm-row justify-content-start align-items-center">
             <div class="room-profile-picture">
                 <img src="/image/icon_room.svg" alt="">
@@ -70,34 +72,69 @@ const roomListTemplate = ({ name, ruid }) => {
         `;
 };
 
-startLoader();
-fetch("/api/v1/room/list")
-    .then((res) => res.json())
-    .then((rooms) => {
-        rooms.data.forEach((room) => {
-            roomConatiner.insertAdjacentHTML(
-                "afterbegin",
-                roomListTemplate(room)
-            );
-        });
-        closeLoader();
+const roomListLoader = (data) => {
+    data.forEach((room) => {
+        roomConatiner.insertAdjacentHTML("beforeend", roomListTemplate(room));
+    });
 
-        document.querySelectorAll(".room--list-item").forEach((room) => {
-            const ruid = room.getAttribute("data-ruid");
-            const name = room.getAttribute("data-room-name");
-            const url = `/api/v1/room/delete/${ruid}`;
-            const del_btn = room.children[1].children[1];
-            del_btn.addEventListener("click", (e) => {
-                e.preventDefault();
-                deleteRoom({ url, element: room });
-            });
-        });
-    })
-    .catch((err) => {
-        closeLoader();
-        showToast({
-            theme: "danger",
-            title: "Server error",
-            desc: "Gagal memuat data, coba lagi!",
+    document.querySelectorAll(".room--list-item").forEach((room) => {
+        const ruid = room.getAttribute("data-ruid");
+        const name = room.getAttribute("data-room-name");
+        const url = `/api/v1/room/delete/${ruid}`;
+        const del_btn = room.children[1].children[1];
+        del_btn.addEventListener("click", (e) => {
+            e.preventDefault();
+            deleteRoom({ url, element: room });
         });
     });
+};
+
+// INFO: First Load Room List
+generalDataLoader({ url: "/api/v1/room/list", func: roomListLoader });
+
+// INFO: First Load Search User List
+searchBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const search = roomnameForm.value;
+    roomConatiner.textContent = "";
+    generalDataLoader({
+        url: `/api/v1/room/list?search=${search}`,
+        func: roomListLoader,
+    });
+});
+
+document.addEventListener("keyup", (e) => {
+    const search = roomnameForm.value;
+    e.preventDefault();
+    if (e.key === "Enter" && search.length > 0) {
+        e.preventDefault();
+        roomConatiner.textContent = "";
+        generalDataLoader({
+            url: `/api/v1/room/list?search=${search}`,
+            func: roomListLoader,
+        });
+    }
+});
+
+document.querySelector(".serach--form").addEventListener("submit", (e) => {
+    e.preventDefault();
+});
+
+// INFO: Load More Room List
+showMoreBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const cursor = lastCursorFinder(".room--list-item", "id");
+    const search = roomnameForm.value;
+    if (search.length > 0) {
+        generalDataLoader({
+            url: `/api/v1/room/list/?cursor=${cursor}&search=${search}`,
+            func: roomListLoader,
+        });
+    }
+    if (search.length === 0) {
+        generalDataLoader({
+            url: `/api/v1/room/list/?cursor=${cursor}`,
+            func: roomListLoader,
+        });
+    }
+});

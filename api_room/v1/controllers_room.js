@@ -5,6 +5,7 @@ const {
 } = require("../../services/responseHandler");
 const { getUser, hashChecker, hasher } = require("../../services/auth");
 const { PrismaClient } = require("@prisma/client");
+const { random: stringGenerator } = require("@supercharge/strings");
 const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
@@ -34,19 +35,40 @@ prisma.$use(async (params, next) => {
  */
 exports.getOrCreateRoom = async (req, res) => {
     const ruid = req.body.ruid; // stands for room unique id
+    let getRoom;
     try {
-        const getRoom = await prisma.room.findUnique({
-            where: {
-                ruid: ruid,
-            },
-        });
+        if (ruid) {
+            getRoom = await prisma.room.findUnique({
+                where: {
+                    ruid: ruid,
+                },
+            });
+        }
 
         // jika ruangan belum ada (!null berarti true)
         if (!getRoom) {
+            let ruid = stringGenerator(16);
+            let generateRUID = true;
+            while (generateRUID) {
+                const ruidIsEmpty = await prisma.room.findUnique({
+                    where: {
+                        ruid: ruid,
+                    },
+                });
+
+                if (!ruidIsEmpty) {
+                    generateRUID = false;
+                    break;
+                }
+
+                ruid = stringGenerator(16);
+            }
+
             const newRoom = await prisma.room.create({
                 data: {
                     ruid: ruid,
                     name: ruid,
+                    pin: hasher(process.env.DEFAULT_HW_PIN),
                 },
             });
             return resSuccess({
@@ -63,6 +85,7 @@ exports.getOrCreateRoom = async (req, res) => {
             data: getRoom,
         });
     } catch (err) {
+        console.log(err);
         return resError({ res, errors: err });
     }
 };
@@ -187,18 +210,103 @@ exports.list = async (req, res) => {
 };
 
 /**
+ * Fungsi untuk menampilkan daftar ruangan aktif yang terpaginasi
+ */
+exports.activeRoomList = async (req, res) => {
+    const { search, cursor } = req.query;
+    let roomList;
+    try {
+        if (search) {
+            if (!cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        name: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                        isActive: true,
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
+
+            if (cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        name: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                        isActive: true,
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
+        }
+
+        if (!search) {
+            if (!cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        isActive: true,
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
+            if (cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        isActive: true,
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
+        }
+
+        return resSuccess({
+            res,
+            title: "Success listed all room",
+            data: roomList,
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
+    }
+};
+
+/**
  * Fungsi untuk memperbaharui informasi suatu ruangan
  */
 exports.update = async (req, res) => {
     const { ruid } = req.params; // stands for room unique id
-    const { roomName } = req.body;
+    const { roomName: name, isActive } = req.body;
     try {
         const updatedRoom = await prisma.room.update({
             where: {
                 ruid: ruid,
             },
             data: {
-                name: roomName,
+                name,
+                isActive,
             },
         });
 
@@ -382,6 +490,7 @@ exports.roomRequest = async (req, res) => {
             data: request,
         });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: "Gagal meminta ruangan",
