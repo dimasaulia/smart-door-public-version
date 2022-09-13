@@ -31,6 +31,15 @@ const apiValidation = async (req, res, next) => {
                 detail: "Missing API ID & API Key",
                 location,
             });
+        const { secret: serverSideSecret } = await prisma.api_Key.findUnique({
+            where: { id },
+        });
+        if (!(serverSideSecret === secret))
+            throw new ErrorException({
+                type: "Api Key",
+                detail: "API ID and/or API Key not match",
+                location,
+            });
         return next();
     } catch (error) {
         return resError({
