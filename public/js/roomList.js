@@ -72,6 +72,24 @@ const roomListTemplate = ({ name, ruid, id }) => {
         `;
 };
 
+const deleteHandler = () => {
+    // action for delete
+    document.querySelectorAll(".room--list-item").forEach((d) => {
+        const del_btn = d.children[1].children[1];
+        if (!d.getAttribute("data-listener")) {
+            del_btn.addEventListener("click", (e) => {
+                e.preventDefault();
+                const ruid = d.getAttribute("data-ruid");
+                const username = d.getAttribute("data-username");
+                const url = `/api/v1/room/delete/${ruid}`;
+
+                deleteRoom({ url, username, element: d });
+            });
+            d.setAttribute("data-listener", "true");
+        }
+    });
+};
+
 const roomListLoader = (data) => {
     data.forEach((room) => {
         roomConatiner.insertAdjacentHTML("beforeend", roomListTemplate(room));
@@ -81,11 +99,7 @@ const roomListLoader = (data) => {
         const ruid = room.getAttribute("data-ruid");
         const name = room.getAttribute("data-room-name");
         const url = `/api/v1/room/delete/${ruid}`;
-        const del_btn = room.children[1].children[1];
-        del_btn.addEventListener("click", (e) => {
-            e.preventDefault();
-            deleteRoom({ url, element: room });
-        });
+        deleteHandler();
     });
 };
 
