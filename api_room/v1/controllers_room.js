@@ -756,6 +756,7 @@ exports.validatePin = async (req, res) => {
     }
 };
 
+/** Fungsi untuk mengubah pin pintu */
 exports.changePin = async (req, res) => {
     const { ruid } = req.params;
     const { newPin } = req.body;

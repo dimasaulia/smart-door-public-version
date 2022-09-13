@@ -23,6 +23,7 @@ const {
 const {
     requestIsExist,
 } = require("../../middlewares/requestAccessMiddlewares");
+const { apiValidation } = require("../../middlewares/apiKeyMiddlewares");
 
 // ROOM ROUTER
 router.get("/list", loginRequired, allowedRole("ADMIN"), room.list);
@@ -69,7 +70,7 @@ router.post(
     roomAccessNotExist,
     room.roomRequest
 );
-router.post("/get-or-create", room.getOrCreateRoom); //HW API
+router.post("/get-or-create", apiValidation, room.getOrCreateRoom); //HW API
 router.post("/update/:ruid", loginRequired, allowedRole("ADMIN"), room.update);
 router.delete(
     "/delete/:ruid",
@@ -95,6 +96,7 @@ router.post(
 );
 router.post(
     "/check-in/:ruid",
+    apiValidation,
     param("ruid").notEmpty(),
     body("cardNumber").notEmpty(),
     formChacker,
@@ -104,7 +106,7 @@ router.post(
     cardIsHaveAccess,
     isTwoStepAuth,
     room.roomCheckIn
-);
+); //HW ID
 router.get(
     "/logs/:ruid",
     loginRequired,
@@ -114,6 +116,7 @@ router.get(
 );
 router.post(
     "/validate/:ruid",
+    apiValidation,
     body("pin").isLength({ min: "6", max: "6" }).notEmpty(),
     formChacker,
     roomIsExist,

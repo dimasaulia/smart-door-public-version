@@ -13,7 +13,7 @@ const {
 } = require("../../services/auth");
 const { ErrorException } = require("../../services/responseHandler");
 const { resError, resSuccess } = require("../../services/responseHandler");
-const { random: stringGenerator, uuid } = require("@supercharge/strings");
+const { random: stringGenerato } = require("@supercharge/strings");
 const bcrypt = require("bcrypt");
 const { sendEmail, urlTokenGenerator } = require("../../services/mailing");
 const e = require("express");
