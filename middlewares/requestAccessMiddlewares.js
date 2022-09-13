@@ -5,11 +5,22 @@ const prisma = new PrismaClient();
 const requestIsExist = async (req, res, next) => {
     const id =
         req.body.requestId || req.params.requestId || req.query.requestId;
+    const { ruid, cardNumber } = req.query;
+
     try {
-        const card = await prisma.room_Request.findUnique({
+        const roomRequest = await prisma.room_Request.findUnique({
             where: { id },
+            include: {
+                room: true,
+                card: true,
+            },
         });
-        if (!card) throw "Cant find room request";
+        if (!roomRequest) throw "Cant find room request";
+        if (
+            roomRequest.room.ruid !== ruid ||
+            roomRequest.card.card_number !== cardNumber
+        )
+            throw "Room request not match";
         return next();
     } catch (error) {
         return resError({
