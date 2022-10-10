@@ -72,8 +72,6 @@ router.post(
     roomAccessNotExist,
     room.roomRequest
 );
-router.post("/h/create", apiValidation, room.createRoom); //HW API
-router.get("/h/detail/:ruid", apiValidation, roomIsExist, room.detail);
 router.post("/update/:ruid", loginRequired, allowedRole("ADMIN"), room.update);
 router.delete(
     "/delete/:ruid",
@@ -98,19 +96,6 @@ router.post(
     roomAccessNotExist,
     room.pairRoomToCard
 );
-router.post(
-    "/h/check-in/:ruid",
-    apiValidation,
-    param("ruid").notEmpty(),
-    body("cardNumber").notEmpty(),
-    formChacker,
-    roomIsExist,
-    cardIsExist,
-    cardIsPair,
-    cardIsHaveAccess,
-    isTwoStepAuth,
-    room.roomCheckIn
-); //HW ID
 router.post("/get-or-create", room.getOrCreateRoom); //HW API
 router.get(
     "/logs/:ruid",
@@ -119,14 +104,6 @@ router.get(
     roomIsExist,
     room.logs
 );
-router.post(
-    "/h/validate/:ruid",
-    apiValidation,
-    body("pin").isLength({ min: "6", max: "6" }).notEmpty(),
-    formChacker,
-    roomIsExist,
-    room.validatePin
-); // HW NEW API
 router.post(
     "/validate/:ruid",
     body("pin").isLength({ min: "6", max: "6" }).notEmpty(),
@@ -150,6 +127,18 @@ router.post(
     isNewPinMatch,
     isRoomTurePin,
     room.changePin
+);
+router.post(
+    "/check-in/:ruid",
+    param("ruid").notEmpty(),
+    body("cardNumber").notEmpty(),
+    formChacker,
+    roomIsExist,
+    cardIsExist,
+    cardIsPair,
+    cardIsHaveAccess,
+    isTwoStepAuth,
+    room.roomCheckIn
 );
 
 module.exports = router;

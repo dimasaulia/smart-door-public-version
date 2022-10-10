@@ -69,47 +69,6 @@ exports.getOrCreateRoom = async (req, res) => {
 };
 
 /**
- * Fungsi yang digunakan oleh perangkat keras, fungsi nya adalah membuat perangkat
- */
-exports.createRoom = async (req, res) => {
-    try {
-        let ruid = stringGenerator(5);
-        let generateRUID = true;
-        while (generateRUID) {
-            const ruidIsEmpty = await prisma.room.findUnique({
-                where: {
-                    ruid: ruid,
-                },
-            });
-
-            if (!ruidIsEmpty) {
-                generateRUID = false;
-                break;
-            }
-
-            ruid = stringGenerator(16);
-        }
-
-        const newRoom = await prisma.room.create({
-            data: {
-                ruid: ruid,
-                name: ruid,
-                pin: hasher(process.env.DEFAULT_HW_PIN),
-            },
-        });
-        return resSuccess({
-            res,
-            title: "Success created room",
-            data: newRoom,
-            code: 201,
-        });
-    } catch (err) {
-        console.log(err);
-        return resError({ res, errors: err });
-    }
-};
-
-/**
  * Fungsi untuk menampilkan informasi suatu ruangan berdasarkan RUID (Room Unique ID)
  */
 exports.detail = async (req, res) => {

@@ -51,13 +51,20 @@ router.get(
     card.detail
 );
 router.post(
+    "/register",
+    body("cardNumber").notEmpty(),
+    body("pin").notEmpty().isLength(6),
+    formChacker,
+    card.cardRegistration
+); // HW OLD API
+router.post(
     "/h/register",
     body("cardNumber").notEmpty(),
     body("pin").notEmpty().isLength(6),
     formChacker,
     apiValidation,
     card.cardRegistration
-); // HW API
+); // HW NEW API
 router.post(
     "/update/:cardNumber",
     loginRequired,
