@@ -11,14 +11,54 @@ const prisma = new PrismaClient();
 /**
  * Fungsi yang digunakan oleh perangkat keras, fungsi nya adalah membuat perangkat
  */
+exports.createDevice = async (req, res) => {
+    try {
+        let duid = stringGenerator(5);
+        let generateDUID = true;
+        while (generateDUID) {
+            const ruidIsEmpty = await prisma.device.findUnique({
+                where: {
+                    device_id: duid,
+                },
+            });
+
+            if (!ruidIsEmpty) {
+                generateDUID = false;
+                break;
+            }
+
+            duid = stringGenerator(5);
+        }
+
+        const newDevice = await prisma.device.create({
+            data: {
+                device_id: duid,
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success register device",
+            data: newDevice,
+            code: 201,
+        });
+    } catch (err) {
+        console.log(err);
+        return resError({ res, errors: err });
+    }
+};
+
+/**
+ * Fungsi yang digunakan untuk menautkan perangkat dengan ruangan yang akan di buat
+ */
 exports.createRoom = async (req, res) => {
+    const { name, duid } = req.body;
     try {
         let ruid = stringGenerator(5);
         let generateRUID = true;
         while (generateRUID) {
             const ruidIsEmpty = await prisma.room.findUnique({
                 where: {
-                    ruid: ruid,
+                    ruid,
                 },
             });
 
@@ -32,18 +72,20 @@ exports.createRoom = async (req, res) => {
 
         const newRoom = await prisma.room.create({
             data: {
-                ruid: ruid,
-                name: ruid,
+                ruid,
+                name,
+                isActive: true,
                 pin: hasher(process.env.DEFAULT_HW_PIN),
+                device: { connect: { device_id: duid } },
             },
         });
+
         return resSuccess({
             res,
-            title: "Success created room",
+            title: "Success pairing room and device",
             data: newRoom,
-            code: 201,
         });
-    } catch (err) {
+    } catch (error) {
         console.log(err);
         return resError({ res, errors: err });
     }
@@ -53,39 +95,18 @@ exports.createRoom = async (req, res) => {
  * Fungsi untuk menampilkan informasi suatu ruangan berdasarkan RUID (Room Unique ID)
  */
 exports.detail = async (req, res) => {
-    const ruid = req.params.ruid; // stands for room unique id
+    const { duid } = req.params; // stands for room unique id
     try {
-        const detailRoom = await prisma.room.findUnique({
+        const detailRoom = await prisma.device.findUnique({
             where: {
-                ruid: ruid,
+                device_id: duid,
             },
-        });
-
-        const numberOfVisitor = await prisma.rooms_Records.count({
-            where: {
-                room: {
-                    ruid,
-                },
-            },
-        });
-        const accaptableUser = await prisma.card.count({
-            where: {
-                room: {
-                    some: {
-                        ruid,
-                    },
-                },
-            },
-        });
-
-        const requestUser = await prisma.room_Request.count({
-            where: { room: { ruid } },
         });
 
         return resSuccess({
             res,
-            title: "Succes get room information",
-            data: { detailRoom, numberOfVisitor, accaptableUser, requestUser },
+            title: "Succes get device information",
+            data: detailRoom,
         });
     } catch (err) {
         return resError({ res, errors: err, code: 422 });

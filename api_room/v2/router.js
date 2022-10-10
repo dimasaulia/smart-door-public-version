@@ -10,15 +10,32 @@ const {
 const {
     roomIsExist,
     cardIsHaveAccess,
+    deviceIsExist,
+    deviceNotPair,
 } = require("../../middlewares/roomMiddlewares");
 const { formChacker } = require("../../middlewares/formMiddleware");
+const {
+    loginRequired,
+    allowedRole,
+} = require("../../middlewares/authMiddlewares");
 
-router.post("/h/init", apiValidation, room.createRoom); //HW API
-router.get("/h/detail/:ruid", apiValidation, roomIsExist, room.detail);
 router.post(
-    "/h/check-in/:ruid",
+    "/pair/",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    body("name").notEmpty().withMessage("Room Name required"),
+    body("duid").notEmpty().withMessage("Device Form required"),
+    deviceIsExist,
+    deviceNotPair,
+    formChacker,
+    room.createRoom
+);
+router.post("/h/init", apiValidation, room.createDevice); //HW API
+router.get("/h/detail/:duid", apiValidation, deviceIsExist, room.detail);
+router.post(
+    "/h/check-in/:duid",
     apiValidation,
-    param("ruid").notEmpty(),
+    param("duid").notEmpty(),
     body("cardNumber").notEmpty(),
     formChacker,
     roomIsExist,

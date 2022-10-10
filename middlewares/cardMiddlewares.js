@@ -142,8 +142,13 @@ const isNewPinMatch = (req, res, next) => {
 
 /** Fungsi untuk melakukan validasi apakah user mengaktifkan dual step authentication, jika tidak user langsung diberi akses ke rungan, jika user mengaktifkan dual step auth maka validasi pin akan di aktifkan */
 const isTwoStepAuth = async (req, res, next) => {
-    const { ruid } = req.params;
-
+    const { duid } = req.params;
+    const {
+        room: { ruid },
+    } = await prisma.device.findUnique({
+        where: { device_id: duid },
+        select: { room: true },
+    });
     // check if card use two step authentication, if card not use this feature response with true
     const cardNumber =
         req.body.cardNumber || req.params.cardNumber || req.query.cardNumber;
@@ -154,6 +159,22 @@ const isTwoStepAuth = async (req, res, next) => {
     });
 
     if (!card.isTwoStepAuth) {
+        await prisma.rooms_Records.create({
+            data: {
+                Card: {
+                    connect: {
+                        card_number: cardNumber.replaceAll(" ", ""),
+                    },
+                },
+                room: {
+                    connect: {
+                        ruid,
+                    },
+                },
+                isSuccess: true,
+            },
+        });
+
         return resSuccess({
             res,
             title: `Success open the room (${ruid})`,

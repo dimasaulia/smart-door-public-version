@@ -82,6 +82,16 @@ model Room {
   lastOnline  DateTime?
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
+  device      Device?
+}
+
+model Device {
+  id        String   @id @default(cuid())
+  device_id String   @unique
+  room      Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  roomId    String?  @unique
 }
 
 model Api_Key {
@@ -93,8 +103,8 @@ model Api_Key {
 
 model Room_Request {
   id        String   @id @default(cuid())
-  card      Card     @relation(fields: [cardId], references: [id])
-  room      Room     @relation(fields: [roomId], references: [id])
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   roomId    String

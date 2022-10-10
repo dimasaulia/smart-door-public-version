@@ -91,7 +91,7 @@ router.post(
     cardIsExist,
     cardIsPair,
     roomIsExist,
-    // roomIsActive,
+    roomIsActive,
     requestIsExist,
     roomAccessNotExist,
     room.pairRoomToCard
