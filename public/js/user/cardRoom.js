@@ -67,35 +67,38 @@ generalDataLoader({
 const requestRoom = async () => {
     const requestRoom = await document.querySelectorAll(".request");
     requestRoom.forEach((room) => {
-        room.addEventListener("click", (e) => {
-            e.preventDefault();
-            const url = room.getAttribute("href");
-            fetch(url, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
-                .then((res) => {
-                    if (!res.ok) throw res.json();
-                    return res.json();
+        if (!room.getAttribute("data-listener")) {
+            room.addEventListener("click", (e) => {
+                e.preventDefault();
+                const url = room.getAttribute("href");
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                 })
-                .then((data) => {
-                    showToast({
-                        theme: "success",
-                        title: "Successfully request a room",
-                        desc: `Permintaan ruangan berhasil dilakukan`,
+                    .then((res) => {
+                        if (!res.ok) throw res.json();
+                        return res.json();
+                    })
+                    .then((data) => {
+                        showToast({
+                            theme: "success",
+                            title: "Successfully request a room",
+                            desc: `Permintaan ruangan berhasil dilakukan`,
+                        });
+                    })
+                    .catch(async (err) => {
+                        const errors = await err;
+                        showToast({
+                            theme: "danger",
+                            desc: errors.message,
+                            title: "Failed request a room",
+                        });
                     });
-                })
-                .catch(async (err) => {
-                    const errors = await err;
-                    showToast({
-                        theme: "danger",
-                        desc: errors.message,
-                        title: "Failed request a room",
-                    });
-                });
-        });
+            });
+            room.setAttribute("data-listener", "true");
+        }
     });
 };
 
