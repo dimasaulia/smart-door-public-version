@@ -4,20 +4,8 @@ const { resError, ErrorException } = require("../services/responseHandler");
 const prisma = new PrismaClient();
 
 const roomIsExist = async (req, res, next) => {
-    const duid = req.params.duid || req.body.duid || req.query.duid;
     const ruid = req.params.ruid || req.body.ruid || req.query.ruid;
     try {
-        if (duid) {
-            const device = await prisma.device.findUnique({
-                where: {
-                    device_id: duid,
-                },
-                include: { room: true },
-            });
-            if (!device?.room) throw "Can't find the room by the device id";
-            if (device?.room) return next();
-        }
-
         if (ruid) {
             const room = await prisma.room.findUnique({
                 where: {
@@ -27,6 +15,26 @@ const roomIsExist = async (req, res, next) => {
             if (!room) throw "Can't find the room by the room id";
             if (room) return next();
         }
+    } catch (error) {
+        return resError({
+            res,
+            title: error,
+            errors: error,
+        });
+    }
+};
+
+const roomIsPair = async (req, res, next) => {
+    try {
+        const duid = req.params.duid || req.body.duid || req.query.duid;
+        const device = await prisma.device.findUnique({
+            where: {
+                device_id: duid,
+            },
+            include: { room: true },
+        });
+        if (!device?.room) throw "Room is not pair yet";
+        if (device?.room) return next();
     } catch (error) {
         return resError({
             res,
@@ -58,16 +66,29 @@ const deviceIsExist = async (req, res, next) => {
 
 const deviceNotPair = async (req, res, next) => {
     const duid = req.params.duid || req.body.duid || req.query.duid;
+    const ruid = req.params.ruid || req.body.ruid || req.query.ruid;
     try {
-        const device = await prisma.device.findUnique({
-            where: {
-                device_id: duid,
-            },
-            select: { room: true },
-        });
+        if (ruid) {
+            const room = await prisma.room.findUnique({
+                where: { ruid },
+                select: { device: true },
+            });
 
-        if (device?.room) throw "The device already pair";
-        if (!device?.room) return next();
+            if (room.device.device_id === duid) {
+                return next();
+            }
+        }
+
+        if (duid) {
+            const device = await prisma.device.findUnique({
+                where: {
+                    device_id: duid,
+                },
+                select: { room: true },
+            });
+            if (device?.room) throw "The device already pair";
+            if (!device?.room) return next();
+        }
     } catch (error) {
         return resError({
             res,
@@ -233,4 +254,5 @@ module.exports = {
     cardIsHaveAccess,
     deviceIsExist,
     deviceNotPair,
+    roomIsPair,
 };

@@ -6,6 +6,7 @@ const {
 } = require("../../services/responseHandler");
 const { random: stringGenerator } = require("@supercharge/strings");
 const { hashChecker, hasher } = require("../../services/auth");
+const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 const prisma = new PrismaClient();
 
 /**
@@ -195,14 +196,15 @@ exports.roomCheckIn = async (req, res) => {
 
 /** Fungsi untuk validasi pin pintu */
 exports.validatePin = async (req, res) => {
-    const { ruid } = req.params;
+    const { duid } = req.params;
     const { pin } = req.body;
     try {
-        const { pin: hashPin } = await prisma.room.findUnique({
-            where: { ruid },
+        const device = await prisma.device.findUnique({
+            where: { device_id: duid },
+            select: { room: true },
         });
 
-        const validate = hashChecker(pin, hashPin);
+        const validate = hashChecker(pin, device.room.pin);
         if (!validate)
             throw new ErrorException({
                 type: "room",
@@ -214,6 +216,120 @@ exports.validatePin = async (req, res) => {
             res,
             title: "Success to validate pin",
             data: { validate },
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Failed to validate pin",
+            errors: error,
+        });
+    }
+};
+
+/** Fungsi untuk menampilkan daftar perangkat */
+exports.deviceList = async (req, res) => {
+    const { search, cursor } = req.query;
+    let deviceList;
+    try {
+        if (search) {
+            if (!cursor) {
+                deviceList = await prisma.device.findMany({
+                    where: {
+                        device_id: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                    },
+                    orderBy: {
+                        createdAt: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
+
+            if (cursor) {
+                deviceList = await prisma.device.findMany({
+                    where: {
+                        device_id: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                    },
+                    orderBy: {
+                        createdAt: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
+        }
+
+        if (!search) {
+            if (!cursor) {
+                deviceList = await prisma.device.findMany({
+                    orderBy: {
+                        createdAt: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
+            if (cursor) {
+                deviceList = await prisma.device.findMany({
+                    orderBy: {
+                        createdAt: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
+        }
+
+        return resSuccess({
+            res,
+            title: "Success listed all device",
+            data: deviceList,
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            title: "Failed to list device",
+            errors: error,
+        });
+    }
+};
+
+/** Fungsi untuk menghapus device */
+exports.deviceDelete = async (req, res) => {
+    const { duid } = req.params;
+    try {
+        const deviceInfo = await prisma.device.findUnique({
+            where: { device_id: duid },
+            select: { room: true },
+        });
+
+        if (deviceInfo?.room) {
+            console.log("WORK");
+            await prisma.device.update({
+                where: { device_id: duid },
+                data: { room: { update: { isActive: false } } },
+            });
+        }
+
+        const device = await prisma.device.delete({
+            where: { device_id: duid },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success delete device, set room to false",
+            data: { device },
         });
     } catch (error) {
         return resError({

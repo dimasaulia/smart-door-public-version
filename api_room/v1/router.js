@@ -20,6 +20,9 @@ const {
     isRoomTurePin,
     cardIsHaveAccess,
     roomIsActive,
+    deviceIsExist,
+    deviceNotPair,
+    roomIsPair,
 } = require("../../middlewares/roomMiddlewares");
 const {
     requestIsExist,
@@ -66,13 +69,21 @@ router.post(
     allowedRole("USER"),
     cardIsExist,
     isUserCard,
-    roomIsExist,
+    roomIsPair,
     roomIsActive,
     roomRequestNotExist,
     roomAccessNotExist,
     room.roomRequest
 );
-router.post("/update/:ruid", loginRequired, allowedRole("ADMIN"), room.update);
+router.post(
+    "/update/:ruid",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    roomIsExist,
+    deviceIsExist,
+    deviceNotPair,
+    room.update
+);
 router.delete(
     "/delete/:ruid",
     loginRequired,
