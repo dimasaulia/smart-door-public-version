@@ -72,7 +72,8 @@ router.post(
     roomAccessNotExist,
     room.roomRequest
 );
-router.post("/get-or-create", apiValidation, room.getOrCreateRoom); //HW API
+router.post("/h/create", apiValidation, room.createRoom); //HW API
+router.get("/h/detail/:ruid", apiValidation, roomIsExist, room.detail);
 router.post("/update/:ruid", loginRequired, allowedRole("ADMIN"), room.update);
 router.delete(
     "/delete/:ruid",
@@ -98,7 +99,7 @@ router.post(
     room.pairRoomToCard
 );
 router.post(
-    "/check-in/:ruid",
+    "/h/check-in/:ruid",
     apiValidation,
     param("ruid").notEmpty(),
     body("cardNumber").notEmpty(),
@@ -110,6 +111,7 @@ router.post(
     isTwoStepAuth,
     room.roomCheckIn
 ); //HW ID
+router.post("/get-or-create", room.getOrCreateRoom); //HW API
 router.get(
     "/logs/:ruid",
     loginRequired,
@@ -118,14 +120,20 @@ router.get(
     room.logs
 );
 router.post(
-    "/validate/:ruid",
+    "/h/validate/:ruid",
     apiValidation,
     body("pin").isLength({ min: "6", max: "6" }).notEmpty(),
     formChacker,
     roomIsExist,
     room.validatePin
-); // HW API
-
+); // HW NEW API
+router.post(
+    "/validate/:ruid",
+    body("pin").isLength({ min: "6", max: "6" }).notEmpty(),
+    formChacker,
+    roomIsExist,
+    room.validatePin
+); // HW OLD API
 router.post(
     "/change-pin/:ruid",
     loginRequired,

@@ -35,40 +35,19 @@ prisma.$use(async (params, next) => {
  */
 exports.getOrCreateRoom = async (req, res) => {
     const ruid = req.body.ruid; // stands for room unique id
-    let getRoom;
     try {
-        if (ruid) {
-            getRoom = await prisma.room.findUnique({
-                where: {
-                    ruid: ruid,
-                },
-            });
-        }
+        const getRoom = await prisma.room.findUnique({
+            where: {
+                ruid: ruid,
+            },
+        });
 
         // jika ruangan belum ada (!null berarti true)
         if (!getRoom) {
-            let ruid = stringGenerator(16);
-            let generateRUID = true;
-            while (generateRUID) {
-                const ruidIsEmpty = await prisma.room.findUnique({
-                    where: {
-                        ruid: ruid,
-                    },
-                });
-
-                if (!ruidIsEmpty) {
-                    generateRUID = false;
-                    break;
-                }
-
-                ruid = stringGenerator(16);
-            }
-
             const newRoom = await prisma.room.create({
                 data: {
                     ruid: ruid,
                     name: ruid,
-                    pin: hasher(process.env.DEFAULT_HW_PIN),
                 },
             });
             return resSuccess({
@@ -83,6 +62,46 @@ exports.getOrCreateRoom = async (req, res) => {
             res,
             title: "Succes get room information",
             data: getRoom,
+        });
+    } catch (err) {
+        return resError({ res, errors: err });
+    }
+};
+
+/**
+ * Fungsi yang digunakan oleh perangkat keras, fungsi nya adalah membuat perangkat
+ */
+exports.createRoom = async (req, res) => {
+    try {
+        let ruid = stringGenerator(5);
+        let generateRUID = true;
+        while (generateRUID) {
+            const ruidIsEmpty = await prisma.room.findUnique({
+                where: {
+                    ruid: ruid,
+                },
+            });
+
+            if (!ruidIsEmpty) {
+                generateRUID = false;
+                break;
+            }
+
+            ruid = stringGenerator(16);
+        }
+
+        const newRoom = await prisma.room.create({
+            data: {
+                ruid: ruid,
+                name: ruid,
+                pin: hasher(process.env.DEFAULT_HW_PIN),
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success created room",
+            data: newRoom,
+            code: 201,
         });
     } catch (err) {
         console.log(err);

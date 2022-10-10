@@ -51,7 +51,7 @@ router.get(
     card.detail
 );
 router.post(
-    "/register",
+    "/h/register",
     body("cardNumber").notEmpty(),
     body("pin").notEmpty().isLength(6),
     formChacker,

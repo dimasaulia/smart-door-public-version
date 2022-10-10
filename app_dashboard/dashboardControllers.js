@@ -107,3 +107,15 @@ exports.roomDetail = (req, res) => {
 
     res.render("roomDetail", data);
 };
+
+exports.roomEdit = (req, res) => {
+    const { ruid } = req.params;
+    const data = {
+        room: "bg-neutral-4",
+        styles: ["/style/roomEdit.css"],
+        scripts: ["/js/roomEdit.js"],
+        ruid,
+    };
+
+    res.render("roomEdit", data);
+};

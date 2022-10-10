@@ -10,7 +10,7 @@ const { urlEncrypter } = require("./auth");
 const sendEmail = async (user_mail, subject, message) => {
     let transporter = nodemailer.createTransport({
         host: process.env.MAIL_SERVER,
-        port: 587,
+        port: Number(process.env.MAIL_PORT),
         secure: false, // true for 465, false for other ports
         auth: {
             user: process.env.MAIL_USER, // generated ethereal user
@@ -19,7 +19,7 @@ const sendEmail = async (user_mail, subject, message) => {
     });
 
     let info = await transporter.sendMail({
-        from: '"Smart Door Service" <no-replay@smartdoorservice.com>', // sender address
+        from: '"Template Service" <no-replay@templateservice.com>', // sender address
         to: user_mail, // list of receivers
         subject,
         html: message,

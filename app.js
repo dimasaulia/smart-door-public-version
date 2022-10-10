@@ -9,7 +9,7 @@ const expbs = require("express-handlebars");
 const { urlErrorHandler } = require("./services/responseHandler");
 app.io = io;
 
-/*
+const path = require("path");
 const livereload = require("livereload");
 const connectLiveReload = require("connect-livereload");
 const liveReloadServer = livereload.createServer();
@@ -20,7 +20,7 @@ liveReloadServer.server.once("connection", () => {
     }, 50);
 });
 app.use(connectLiveReload());
-*/
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());

@@ -38,4 +38,11 @@ router.get(
     dashboard.roomDetail
 );
 
+router.get(
+    "/room/edit/:ruid",
+    loginRequired,
+    allowedRole("ADMIN"),
+    dashboard.roomEdit
+);
+
 module.exports = router;

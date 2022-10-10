@@ -13,7 +13,7 @@ const {
 } = require("../../services/auth");
 const { ErrorException } = require("../../services/responseHandler");
 const { resError, resSuccess } = require("../../services/responseHandler");
-const { random: stringGenerato } = require("@supercharge/strings");
+const { random: stringGenerator } = require("@supercharge/strings");
 const bcrypt = require("bcrypt");
 const { sendEmail, urlTokenGenerator } = require("../../services/mailing");
 const e = require("express");
@@ -414,7 +414,7 @@ exports.emailVerification = async (req, res) => {
         const { email, id: uuid } = await prisma.user.findUnique({
             where: { id: getUser(req) },
         });
-        const token = stringGenerator(64);
+        const token = stringGenerator(32);
         const secret = createJwtToken({ uuid, token }, 60 * 5);
 
         // If not exist then create
@@ -466,6 +466,7 @@ exports.emailVerification = async (req, res) => {
 
 exports.verifyingEmail = async (req, res) => {
     let verificationSuccess;
+    const { token } = req.query;
     try {
         const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
 
@@ -485,6 +486,7 @@ exports.verifyingEmail = async (req, res) => {
             data: verificationSuccess,
         });
     } catch (error) {
+        console.log(error);
         return resError({ res, errors: error });
     }
 };
@@ -534,6 +536,7 @@ exports.sendResetPassword = async (req, res) => {
             data: url,
         });
     } catch (error) {
+        console.log(error);
         return resError({ res, errors: error });
     }
 };
@@ -560,7 +563,6 @@ exports.resetPassword = async (req, res) => {
             data: newPass,
         });
     } catch (error) {
-        console.log(error);
         return resError({ res, errors: error });
     }
 };

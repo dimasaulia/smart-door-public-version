@@ -58,7 +58,7 @@ const roomListTemplate = ({ name, ruid, id }) => {
         </div>
 
         <div class="d-flex mt-3 mt-sm-0 mb-4 mb-sm-0">
-            <a href="">
+            <a href="/dashboard/room/edit/${ruid}">
                 <img src="/image/icon_edit.svg" alt="" class="form-icons">
             </a>
             <a href="" class="ms-3">
