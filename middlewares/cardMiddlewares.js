@@ -149,7 +149,7 @@ const isTwoStepAuth = async (req, res, next) => {
         req.body.cardNumber || req.params.cardNumber || req.query.cardNumber;
 
     const card = await prisma.card.findUnique({
-        where: { card_number: cardNumber },
+        where: { card_number: cardNumber.replaceAll(" ", "") },
         include: { room: true },
     });
 

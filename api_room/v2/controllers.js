@@ -127,7 +127,7 @@ exports.roomCheckIn = async (req, res) => {
                 location: "Room Controller",
             });
 
-        const reocrd = await prisma.rooms_Records.create({
+        await prisma.rooms_Records.create({
             data: {
                 Card: {
                     connect: {
@@ -148,7 +148,7 @@ exports.roomCheckIn = async (req, res) => {
             title: `Success open the room (${room.ruid})`,
         });
     } catch (error) {
-        const reocrd = await prisma.rooms_Records.create({
+        await prisma.rooms_Records.create({
             data: {
                 Card: {
                     connect: {
@@ -167,6 +167,7 @@ exports.roomCheckIn = async (req, res) => {
             res,
             title: "Failed to open the room",
             errors: error,
+            code: 401,
         });
     }
 };
