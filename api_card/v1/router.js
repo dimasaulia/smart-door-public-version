@@ -107,4 +107,11 @@ router.post(
     isTurePin,
     card.changeAuthType
 );
+router.delete(
+    "/delete/:cardNumber",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    cardIsExist,
+    card.delete
+);
 module.exports = router;

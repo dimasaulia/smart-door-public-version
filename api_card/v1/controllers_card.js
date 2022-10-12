@@ -513,3 +513,18 @@ exports.changeAuthType = async (req, res) => {
         });
     }
 };
+
+/** Menghapus kartu yang sudah terdafatr */
+exports.delete = async (req, res) => {
+    const { cardNumber: card_number } = req.params;
+    try {
+        const card = await prisma.card.delete({ where: { card_number } });
+        return resSuccess({ res, data: card, title: "Success delete card" });
+    } catch (error) {
+        return resError({
+            res,
+            title: error,
+            errors: error,
+        });
+    }
+};
