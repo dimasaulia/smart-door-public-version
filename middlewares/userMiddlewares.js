@@ -25,9 +25,11 @@ const usernameIsExist = async (req, res, next) => {
             where: {
                 username,
             },
+            include: { role: true },
         });
 
         if (!user) throw "Can't find the username";
+        if (user.role.name !== "USER") throw "Can't pair card to user";
         next();
     } catch (error) {
         return resError({ res, title: error });

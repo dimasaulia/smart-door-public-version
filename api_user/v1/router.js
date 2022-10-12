@@ -36,8 +36,12 @@ router.get("/list", loginRequired, allowedRole("ADMIN"), user.list);
 router.post(
     "/register",
     body("username").notEmpty(),
-    body("email").isEmail().trim(),
-    body("password").isLength({ min: "8" }),
+    body("email").isEmail().withMessage("Please enter valid email").trim(),
+    body("password")
+        .isStrongPassword()
+        .withMessage(
+            "Password must have at least 8 characters, have a combination of numbers, uppercase, lowercase letters and unique characters"
+        ),
     formChacker,
     userIsNotExist,
     emailIsNotExist,
@@ -117,8 +121,12 @@ router.get(
 router.post(
     "/reset-password/",
     logoutRequired,
-    query("token").notEmpty(),
-    body("password").notEmpty(),
+    query("token").notEmpty().withMessage("Can't find token from your url"),
+    body("password")
+        .isStrongPassword()
+        .withMessage(
+            "Password must have at least 8 characters, have a combination of numbers, uppercase, lowercase letters and unique characters"
+        ),
     formChacker,
     urlTokenIsValid,
     urlTokenIsMatch,

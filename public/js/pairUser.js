@@ -3,19 +3,6 @@ const cardId = document.querySelector("#card-id");
 const btn = document.querySelector("#pairButton");
 const pairButtonn = document.querySelector("#pairButton");
 
-var availableTutorials = [
-    "ActionScript",
-    "Bootstrap",
-    "C",
-    "C++",
-    "java",
-    "Javascript",
-    "Kotlin",
-    "python",
-    "Go",
-    "Siwft",
-];
-
 $("#username").autocomplete({
     source: "/api/v1/user/search",
 });
