@@ -236,6 +236,7 @@ exports.search = async (req, res) => {
             username: true,
             id: true,
         },
+        take: 15,
     });
 
     searchResult.forEach((user) => {
