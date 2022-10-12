@@ -143,6 +143,9 @@ const isNewPinMatch = (req, res, next) => {
 /** Fungsi untuk melakukan validasi apakah user mengaktifkan dual step authentication, jika tidak user langsung diberi akses ke rungan, jika user mengaktifkan dual step auth maka validasi pin akan di aktifkan */
 const isTwoStepAuth = async (req, res, next) => {
     const { duid } = req.params;
+    if (req.body?.pin) {
+        return next();
+    }
     const {
         room: { ruid },
     } = await prisma.device.findUnique({

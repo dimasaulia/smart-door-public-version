@@ -36,7 +36,6 @@ const roomIsPair = async (req, res, next) => {
         if (!room?.device) throw "Room is not pair yet";
         if (room?.device) return next();
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: error,
@@ -57,7 +56,6 @@ const deviceIsPair = async (req, res, next) => {
         if (!device?.room) throw "Device is not pair yet";
         if (device?.room) return next();
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: error,
@@ -237,7 +235,6 @@ const cardIsHaveAccess = async (req, res, next) => {
             where: { device_id: duid },
             select: { room: true },
         });
-        console.log("RUID ", ruid);
         const room = await prisma.room.findUnique({
             where: {
                 ruid,

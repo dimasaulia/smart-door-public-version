@@ -497,7 +497,6 @@ exports.roomRequest = async (req, res) => {
             data: request,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Gagal meminta ruangan",

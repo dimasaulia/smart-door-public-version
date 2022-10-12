@@ -16,8 +16,7 @@ const apiIDIsExist = async (req, res, next) => {
     } catch (error) {
         return resError({
             res,
-            title: error["Api Key"].detail,
-            errors: `${error["Api Key"].detail} at ${error["Api Key"].location}`,
+            title: "Cant find API",
         });
     }
 };
@@ -44,8 +43,7 @@ const apiValidation = async (req, res, next) => {
     } catch (error) {
         return resError({
             res,
-            title: error["Api Key"].detail,
-            errors: `${error["Api Key"].detail} at ${error["Api Key"].location}`,
+            title: "Cant find the api",
         });
     }
 };

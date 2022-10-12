@@ -487,7 +487,6 @@ exports.verifyingEmail = async (req, res) => {
             data: verificationSuccess,
         });
     } catch (error) {
-        console.log(error);
         return resError({ res, errors: error });
     }
 };
@@ -537,7 +536,6 @@ exports.sendResetPassword = async (req, res) => {
             data: url,
         });
     } catch (error) {
-        console.log(error);
         return resError({ res, errors: error });
     }
 };

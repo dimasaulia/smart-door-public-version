@@ -43,7 +43,6 @@ exports.createDevice = async (req, res) => {
             code: 201,
         });
     } catch (err) {
-        console.log(err);
         return resError({ res, errors: err });
     }
 };
@@ -87,7 +86,6 @@ exports.createRoom = async (req, res) => {
             data: newRoom,
         });
     } catch (error) {
-        console.log(err);
         return resError({ res, errors: err });
     }
 };
@@ -118,7 +116,14 @@ exports.detail = async (req, res) => {
  * Fungsi ini akan digunakan perangkat keras. Fungsi yang berguna untuk mengecek kartu, pin dan ruangan yang akan dimasuki user,
  */
 exports.roomCheckIn = async (req, res) => {
-    const { ruid } = req.params;
+    const { duid } = req.params;
+    const {
+        room: { ruid },
+    } = await prisma.device.findUnique({
+        where: { device_id: duid },
+        select: { room: true },
+    });
+    // che
     const { cardNumber, pin } = req.body;
     try {
         const room = await prisma.room.findUnique({
@@ -217,7 +222,6 @@ exports.validatePin = async (req, res) => {
             data: { validate },
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Failed to validate pin",
@@ -296,7 +300,6 @@ exports.deviceList = async (req, res) => {
             data: deviceList,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Failed to list device",
@@ -315,7 +318,6 @@ exports.deviceDelete = async (req, res) => {
         });
 
         if (deviceInfo?.room) {
-            console.log("WORK");
             await prisma.device.update({
                 where: { device_id: duid },
                 data: { room: { update: { isActive: false } } },
