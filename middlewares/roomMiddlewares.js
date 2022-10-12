@@ -26,6 +26,27 @@ const roomIsExist = async (req, res, next) => {
 
 const roomIsPair = async (req, res, next) => {
     try {
+        const ruid = req.params.ruid || req.body.ruid || req.query.ruid;
+        const room = await prisma.room.findUnique({
+            where: {
+                ruid,
+            },
+            include: { device: true },
+        });
+        if (!room?.device) throw "Room is not pair yet";
+        if (room?.device) return next();
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            title: error,
+            errors: error,
+        });
+    }
+};
+
+const deviceIsPair = async (req, res, next) => {
+    try {
         const duid = req.params.duid || req.body.duid || req.query.duid;
         const device = await prisma.device.findUnique({
             where: {
@@ -33,9 +54,10 @@ const roomIsPair = async (req, res, next) => {
             },
             include: { room: true },
         });
-        if (!device?.room) throw "Room is not pair yet";
+        if (!device?.room) throw "Device is not pair yet";
         if (device?.room) return next();
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: error,
@@ -176,6 +198,34 @@ const isRoomTurePin = async (req, res, next) => {
     }
 };
 
+const isDeviceTurePin = async (req, res, next) => {
+    const { oldPin } = req.body;
+    const { duid } = req.params;
+
+    try {
+        const { pin } = await prisma.device.findUnique({
+            where: {
+                device_id: duid,
+            },
+        });
+        const matchPin = hashChecker(oldPin, pin);
+
+        if (!matchPin)
+            throw new ErrorException({
+                type: "room",
+                detail: "Your pin is incorrect, try again",
+                location: "Room Middelware",
+            });
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: `${error.room.type} error at ${error.room.location}`,
+            errors: error.room.detail,
+        });
+    }
+};
+
 const cardIsHaveAccess = async (req, res, next) => {
     const { cardNumber } = req.body;
     const { duid } = req.params;
@@ -255,4 +305,6 @@ module.exports = {
     deviceIsExist,
     deviceNotPair,
     roomIsPair,
+    deviceIsPair,
+    isDeviceTurePin,
 };

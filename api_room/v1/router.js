@@ -123,23 +123,6 @@ router.post(
     room.validatePin
 ); // HW OLD API
 router.post(
-    "/change-pin/:ruid",
-    loginRequired,
-    allowedRole("ADMIN"),
-    param("ruid").notEmpty(),
-    body("newPin").notEmpty().isNumeric().isLength({ min: "6", max: "6" }),
-    body("confirmNewPin")
-        .notEmpty()
-        .isNumeric()
-        .isLength({ min: "6", max: "6" }),
-    body("oldPin").notEmpty().isNumeric().isLength({ min: "6", max: "6" }),
-    formChacker,
-    roomIsExist,
-    isNewPinMatch,
-    isRoomTurePin,
-    room.changePin
-);
-router.post(
     "/check-in/:ruid",
     param("ruid").notEmpty(),
     body("cardNumber").notEmpty(),

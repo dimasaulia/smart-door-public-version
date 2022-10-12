@@ -532,9 +532,6 @@ exports.userAccessableRoom = async (req, res) => {
                         name: "asc",
                     },
                     take: ITEM_LIMIT,
-                    include: {
-                        device: true,
-                    },
                 });
             }
 
@@ -559,9 +556,6 @@ exports.userAccessableRoom = async (req, res) => {
                     cursor: {
                         id: cursor,
                     },
-                    include: {
-                        device: true,
-                    },
                 });
             }
         }
@@ -585,9 +579,6 @@ exports.userAccessableRoom = async (req, res) => {
                         name: "asc",
                     },
                     take: ITEM_LIMIT,
-                    include: {
-                        device: true,
-                    },
                 });
             }
             if (cursor) {
@@ -611,9 +602,6 @@ exports.userAccessableRoom = async (req, res) => {
                     skip: 1,
                     cursor: {
                         id: cursor,
-                    },
-                    include: {
-                        device: true,
                     },
                 });
             }
@@ -879,33 +867,6 @@ exports.validatePin = async (req, res) => {
         return resError({
             res,
             title: "Failed to validate pin",
-            errors: error,
-        });
-    }
-};
-
-/** Fungsi untuk mengubah pin pintu */
-exports.changePin = async (req, res) => {
-    const { ruid } = req.params;
-    const { newPin } = req.body;
-
-    try {
-        const room = await prisma.room.update({
-            where: { ruid },
-            data: {
-                pin: hasher(newPin),
-            },
-        });
-
-        return resSuccess({
-            res,
-            title: "Success change pin",
-            data: room,
-        });
-    } catch (error) {
-        return resError({
-            res,
-            title: "Failed to change pin",
             errors: error,
         });
     }

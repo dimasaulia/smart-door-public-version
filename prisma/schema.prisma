@@ -74,7 +74,6 @@ model Room {
   id          String          @id @default(cuid())
   ruid        String          @unique
   name        String?
-  pin         String          @default("$2b$10$93H.6AQWHWxlq4IQuT1cgu2oCi7OtgyTjYuWlgcq9beN2xPLSgFUW")
   isActive    Boolean         @default(false)
   card        Card[]
   records     Rooms_Records[]
@@ -89,6 +88,7 @@ model Device {
   id        String   @id @default(cuid())
   device_id String   @unique
   room      Room?    @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  pin       String   @default("$2b$10$93H.6AQWHWxlq4IQuT1cgu2oCi7OtgyTjYuWlgcq9beN2xPLSgFUW")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   roomId    String?  @unique

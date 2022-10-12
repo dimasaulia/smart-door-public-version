@@ -201,10 +201,9 @@ exports.validatePin = async (req, res) => {
     try {
         const device = await prisma.device.findUnique({
             where: { device_id: duid },
-            select: { room: true },
         });
 
-        const validate = hashChecker(pin, device.room.pin);
+        const validate = hashChecker(pin, device.pin);
         if (!validate)
             throw new ErrorException({
                 type: "room",
@@ -218,6 +217,7 @@ exports.validatePin = async (req, res) => {
             data: { validate },
         });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: "Failed to validate pin",
@@ -335,6 +335,33 @@ exports.deviceDelete = async (req, res) => {
         return resError({
             res,
             title: "Failed to validate pin",
+            errors: error,
+        });
+    }
+};
+
+/** Fungsi untuk mengubah pin device pintu */
+exports.changePin = async (req, res) => {
+    const { duid } = req.params;
+    const { newPin } = req.body;
+
+    try {
+        const device = await prisma.device.update({
+            where: { device_id: duid },
+            data: {
+                pin: hasher(newPin),
+            },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success change pin",
+            data: device,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Failed to change pin",
             errors: error,
         });
     }
