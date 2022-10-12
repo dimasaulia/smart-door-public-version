@@ -131,6 +131,9 @@ exports.list = async (req, res) => {
                         name: "asc",
                     },
                     take: ITEM_LIMIT,
+                    include: {
+                        device: true,
+                    },
                 });
             }
 
@@ -150,6 +153,9 @@ exports.list = async (req, res) => {
                     cursor: {
                         id: cursor,
                     },
+                    include: {
+                        device: true,
+                    },
                 });
             }
         }
@@ -161,6 +167,9 @@ exports.list = async (req, res) => {
                         name: "asc",
                     },
                     take: ITEM_LIMIT,
+                    include: {
+                        device: true,
+                    },
                 });
             }
             if (cursor) {
@@ -172,6 +181,9 @@ exports.list = async (req, res) => {
                     skip: 1,
                     cursor: {
                         id: cursor,
+                    },
+                    include: {
+                        device: true,
                     },
                 });
             }
@@ -208,6 +220,9 @@ exports.activeRoomList = async (req, res) => {
                         name: "asc",
                     },
                     take: ITEM_LIMIT,
+                    include: {
+                        device: true,
+                    },
                 });
             }
 
@@ -228,6 +243,9 @@ exports.activeRoomList = async (req, res) => {
                     cursor: {
                         id: cursor,
                     },
+                    include: {
+                        device: true,
+                    },
                 });
             }
         }
@@ -242,6 +260,9 @@ exports.activeRoomList = async (req, res) => {
                         name: "asc",
                     },
                     take: ITEM_LIMIT,
+                    include: {
+                        device: true,
+                    },
                 });
             }
             if (cursor) {
@@ -256,6 +277,9 @@ exports.activeRoomList = async (req, res) => {
                     skip: 1,
                     cursor: {
                         id: cursor,
+                    },
+                    include: {
+                        device: true,
                     },
                 });
             }
@@ -508,6 +532,9 @@ exports.userAccessableRoom = async (req, res) => {
                         name: "asc",
                     },
                     take: ITEM_LIMIT,
+                    include: {
+                        device: true,
+                    },
                 });
             }
 
@@ -532,6 +559,9 @@ exports.userAccessableRoom = async (req, res) => {
                     cursor: {
                         id: cursor,
                     },
+                    include: {
+                        device: true,
+                    },
                 });
             }
         }
@@ -555,6 +585,9 @@ exports.userAccessableRoom = async (req, res) => {
                         name: "asc",
                     },
                     take: ITEM_LIMIT,
+                    include: {
+                        device: true,
+                    },
                 });
             }
             if (cursor) {
@@ -578,6 +611,9 @@ exports.userAccessableRoom = async (req, res) => {
                     skip: 1,
                     cursor: {
                         id: cursor,
+                    },
+                    include: {
+                        device: true,
                     },
                 });
             }
