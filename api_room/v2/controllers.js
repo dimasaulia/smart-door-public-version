@@ -75,8 +75,12 @@ exports.createRoom = async (req, res) => {
                 ruid,
                 name,
                 isActive: true,
-                pin: hasher(process.env.DEFAULT_HW_PIN),
-                device: { connect: { device_id: duid } },
+                device: {
+                    create: {
+                        device_id: duid,
+                        pin: hasher(process.env.DEFAULT_HW_PIN),
+                    },
+                },
             },
         });
 
