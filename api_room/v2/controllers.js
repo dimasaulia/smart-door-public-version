@@ -86,6 +86,7 @@ exports.createRoom = async (req, res) => {
             data: newRoom,
         });
     } catch (error) {
+        console.log(error);
         return resError({ res, errors: error });
     }
 };
