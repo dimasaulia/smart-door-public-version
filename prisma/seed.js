@@ -1,8 +1,64 @@
 const { PrismaClient } = require("@prisma/client");
-const { user, role } = require("./superAdmin");
+const { user, role, rooms } = require("./superAdmin");
 const prisma = new PrismaClient();
 
 async function main() {
+    for (let room of rooms) {
+        const { name } = room;
+        let duid = stringGenerator(5);
+        let generateDUID = true;
+        while (generateDUID) {
+            const ruidIsEmpty = await prisma.device.findUnique({
+                where: {
+                    device_id: duid,
+                },
+            });
+
+            if (!ruidIsEmpty) {
+                generateDUID = false;
+                break;
+            }
+
+            duid = stringGenerator(5);
+        }
+
+        const newDevice = await prisma.device.create({
+            data: {
+                device_id: duid,
+            },
+        });
+
+        let ruid = stringGenerator(5);
+        let generateRUID = true;
+        while (generateRUID) {
+            const ruidIsEmpty = await prisma.room.findUnique({
+                where: {
+                    ruid,
+                },
+            });
+
+            if (!ruidIsEmpty) {
+                generateRUID = false;
+                break;
+            }
+
+            ruid = stringGenerator(5);
+        }
+
+        const newRoom = await prisma.room.create({
+            data: {
+                ruid,
+                name,
+                isActive: true,
+                device: {
+                    connect: {
+                        device_id: duid,
+                    },
+                },
+            },
+        });
+    }
+
     for (let r of role) {
         const { name } = r;
         await prisma.role.create({
