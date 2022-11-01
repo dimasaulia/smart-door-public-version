@@ -19,8 +19,8 @@ liveReloadServer.server.once("connection", () => {
         liveReloadServer.refresh("/");
     }, 50);
 });
+app.use(require("express-status-monitor")());
 app.use(connectLiveReload());
-
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());

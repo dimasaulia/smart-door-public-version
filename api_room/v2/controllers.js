@@ -372,3 +372,51 @@ exports.changePin = async (req, res) => {
         });
     }
 };
+
+/**
+ * Fungsi untuk menautkan ruangan dengan kartu, fungsi ini akan memberi akses kepada kartu untuk mengakses ruangan tertentu
+ */
+exports.pairRoomToCard = async (req, res) => {
+    const { ruid, cardNumber } = req.query;
+    try {
+        const updatedRoom = await prisma.room.update({
+            where: {
+                ruid,
+            },
+            data: {
+                card: {
+                    connect: {
+                        card_number: cardNumber,
+                    },
+                },
+            },
+            include: {
+                card: {
+                    where: {
+                        card_number: cardNumber,
+                    },
+                    include: {
+                        user: true,
+                    },
+                },
+            },
+        });
+
+        await prisma.room_Request.deleteMany({
+            where: { card: { card_number: cardNumber }, room: { ruid } },
+        });
+
+        return resSuccess({
+            res,
+            title: "Sukses memberi akses",
+            data: updatedRoom,
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            title: "Gagal memberi akses ruangan",
+            errors: error,
+        });
+    }
+};

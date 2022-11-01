@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const room = require("./controllers");
 const { apiValidation } = require("../../middlewares/apiKeyMiddlewares");
-const { param, body } = require("express-validator");
+const { param, body, query } = require("express-validator");
 const {
     cardIsExist,
     cardIsPair,
@@ -17,12 +17,17 @@ const {
     deviceIsPair,
     isRoomTurePin,
     isDeviceTurePin,
+    roomIsActive,
+    roomAccessNotExist,
 } = require("../../middlewares/roomMiddlewares");
 const { formChacker } = require("../../middlewares/formMiddleware");
 const {
     loginRequired,
     allowedRole,
 } = require("../../middlewares/authMiddlewares");
+const {
+    requestIsExist,
+} = require("../../middlewares/requestAccessMiddlewares");
 
 router.post(
     "/device/pair/",
@@ -65,8 +70,23 @@ router.post(
     isDeviceTurePin,
     room.changePin
 );
+router.post(
+    "/pair",
+    loginRequired,
+    allowedRole("ADMIN"),
+    query("ruid").notEmpty(),
+    query("cardNumber").notEmpty(),
+    formChacker,
+    cardIsExist,
+    cardIsPair,
+    roomIsExist,
+    roomIsActive,
+    // requestIsExist,
+    roomAccessNotExist,
+    room.pairRoomToCard
+);
 router.post("/h/init", apiValidation, room.createDevice); //HW API
-router.get("/h/detail/:duid", apiValidation, deviceIsExist, room.detail);
+router.get("/h/detail/:duid", apiValidation, deviceIsExist, room.detail); //HW API
 router.post(
     "/h/check-in/:duid",
     apiValidation,

@@ -1,11 +1,15 @@
 const { PrismaClient } = require("@prisma/client");
 const { user, role, rooms } = require("./superAdmin");
+const { random: stringGenerator } = require("@supercharge/strings");
 const prisma = new PrismaClient();
 
 async function main() {
+    const secret = stringGenerator(32);
+    const key = await prisma.api_Key.create({ data: { secret } });
+
     for (let room of rooms) {
         const { name } = room;
-        let duid = stringGenerator(5);
+        let duid = "Hge40";
         let generateDUID = true;
         while (generateDUID) {
             const ruidIsEmpty = await prisma.device.findUnique({
@@ -28,7 +32,7 @@ async function main() {
             },
         });
 
-        let ruid = stringGenerator(5);
+        let ruid = "yuiOB";
         let generateRUID = true;
         while (generateRUID) {
             const ruidIsEmpty = await prisma.room.findUnique({
