@@ -4,8 +4,9 @@ const { random: stringGenerator } = require("@supercharge/strings");
 const prisma = new PrismaClient();
 
 async function main() {
-    const secret = stringGenerator(32);
-    const key = await prisma.api_Key.create({ data: { secret } });
+    const secret = process.env.SEED_API_KEY;
+    const id = process.env.SEED_API_ID;
+    const key = await prisma.api_Key.create({ data: { id, secret } });
 
     for (let room of rooms) {
         const { name } = room;
