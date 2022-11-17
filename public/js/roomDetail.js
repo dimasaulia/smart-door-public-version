@@ -3,6 +3,8 @@ const roomIdContainer = document.querySelector(".room-id");
 const ruid = roomIdContainer.getAttribute("data-ruid");
 const roomNameContainer = document.querySelector("#room-name");
 const ruidContainer = document.querySelector("#ruid");
+const duidContainer = document.querySelector("#duid");
+const onlineContainer = document.querySelector("#online");
 const itemContainer = document.querySelector(".item-container");
 const accessContainer = document.querySelector(".activity-access");
 const visitorContainer = document.querySelector("#visitor");
@@ -13,16 +15,6 @@ const logsBtn = document.querySelector("#logs");
 const userBtn = document.querySelector("#user-btn");
 const showMoreRequestBtn = document.querySelector("#request-show-more");
 let mode = "USER"; // antoher value is LOG
-
-const days = (date) => {
-    return new Intl.DateTimeFormat("id", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-        hour: "numeric",
-        minute: "numeric",
-    }).format(new Date(date));
-};
 
 const accaptableUserTemplate = ({
     card_name,
@@ -78,6 +70,10 @@ const basicInfoLoader = (data) => {
     roomIdContainer.textContent = `${data.detailRoom.name.toUpperCase()} Detail`;
     roomNameContainer.textContent = data.detailRoom.name.toUpperCase();
     ruidContainer.textContent = data.detailRoom.ruid;
+    duidContainer.textContent = data.detailRoom.device.device_id;
+    onlineContainer.textContent = data.detailRoom.device.lastOnline
+        ? days(data.detailRoom.device.lastOnline)
+        : "-";
     visitorContainer.textContent = data.numberOfVisitor;
     numberOfUserContainer.textContent = data.accaptableUser;
     numberOfRequestUserContainer.textContent = data.requestUser;

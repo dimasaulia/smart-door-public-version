@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../../prisma/client");
 const {
     ErrorException,
     resError,
@@ -7,7 +7,6 @@ const {
 const { random: stringGenerator } = require("@supercharge/strings");
 const { hashChecker, hasher } = require("../../services/auth");
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
-const prisma = new PrismaClient();
 
 /**
  * Fungsi yang digunakan oleh perangkat keras, fungsi nya adalah membuat perangkat
@@ -34,6 +33,7 @@ exports.createDevice = async (req, res) => {
         const newDevice = await prisma.device.create({
             data: {
                 device_id: duid,
+                lastOnline: new Date(),
             },
         });
         return resSuccess({
@@ -100,6 +100,11 @@ exports.createRoom = async (req, res) => {
 exports.detail = async (req, res) => {
     const { duid } = req.params; // stands for room unique id
     try {
+        await prisma.device.update({
+            where: { device_id: duid },
+            data: { lastOnline: new Date() },
+        });
+
         const detailRoom = await prisma.device.findUnique({
             where: {
                 device_id: duid,
@@ -109,6 +114,27 @@ exports.detail = async (req, res) => {
         return resSuccess({
             res,
             title: "Succes get device information",
+            data: detailRoom,
+        });
+    } catch (err) {
+        return resError({ res, errors: err, code: 422 });
+    }
+};
+
+/**
+ * Fungsi untuk melakukan update kapan terkahir kalinya perangkat dalam kondisi online
+ */
+exports.onlineUpdate = async (req, res) => {
+    const { duid } = req.params; // stands for room unique id
+    try {
+        const detailRoom = await prisma.device.update({
+            where: { device_id: duid },
+            data: { lastOnline: new Date() },
+        });
+
+        return resSuccess({
+            res,
+            title: "Succes update device last online information",
             data: detailRoom,
         });
     } catch (err) {

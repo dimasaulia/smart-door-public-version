@@ -1,4 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../../prisma/client");
 const {
     setAuthCookie,
     getUser,
@@ -17,7 +17,6 @@ const { random: stringGenerator } = require("@supercharge/strings");
 const bcrypt = require("bcrypt");
 const { sendEmail, urlTokenGenerator } = require("../../services/mailing");
 const e = require("express");
-const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 
 exports.login = async (req, res) => {

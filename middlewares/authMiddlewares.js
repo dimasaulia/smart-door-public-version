@@ -8,8 +8,7 @@ const {
     urlDecrypter,
     hashChecker,
 } = require("../services/auth");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../prisma/client");
 
 const loginRequired = (req, res, next) => {
     const jwtToken = getJwtToken(req);

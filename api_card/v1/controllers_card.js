@@ -1,7 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../../prisma/client");
 const { getUser, hasher } = require("../../services/auth");
 const { resSuccess, resError } = require("../../services/responseHandler");
-const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 1;
 
 exports.listOfUnRegisterCard = async (req, res) => {

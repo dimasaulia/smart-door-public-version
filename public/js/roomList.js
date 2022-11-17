@@ -42,7 +42,7 @@ const deleteRoom = ({ url, roomName, element }) => {
     });
 };
 
-const roomListTemplate = ({ name, ruid, id }) => {
+const roomListTemplate = ({ name, ruid, id, device }) => {
     return `
     <div
         class="room--list-item mt-3 d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" data-ruid="${ruid}" data-id="${id}" data-room-name="${name}">
@@ -53,7 +53,12 @@ const roomListTemplate = ({ name, ruid, id }) => {
 
             <div class="ms-sm-4 ms-0 mt-3 mt-sm-0">
                 <h5 class="fw-bold text-blue-4">${name}</h5>
-                <p class="text-blue-3">${ruid}</p>
+                <p class="text-blue-3">Room ID ${ruid} | Device ID ${
+        device.device_id
+    }</p>
+                <p class="text-blue-3">Last seen ${days(
+                    device.lastOnline
+                )} WIB</p>
             </div>
         </div>
 

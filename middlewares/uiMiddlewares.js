@@ -2,8 +2,7 @@ require("dotenv").config;
 const jwt = require("jsonwebtoken");
 const { resError } = require("../services/responseHandler");
 const { getJwtToken, getUser } = require("../services/auth");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../prisma/client");
 
 const loginRequired = (req, res, next) => {
     const token = getJwtToken(req);

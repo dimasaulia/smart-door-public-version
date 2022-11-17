@@ -1,6 +1,5 @@
 const { ErrorException, resError } = require("../services/responseHandler");
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const prisma = require("../prisma/client");
 
 const roleIDIsExist = async (req, res, next) => {
     const { roleId } = req.params;

@@ -1,7 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../prisma/client");
 const { user, role, rooms } = require("./superAdmin");
 const { random: stringGenerator } = require("@supercharge/strings");
-const prisma = new PrismaClient();
 
 async function main() {
     const secret = process.env.SEED_API_KEY;

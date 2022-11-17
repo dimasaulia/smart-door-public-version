@@ -1,7 +1,6 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../prisma/client");
 const { hashChecker } = require("../services/auth");
 const { resError, ErrorException } = require("../services/responseHandler");
-const prisma = new PrismaClient();
 
 const roomIsExist = async (req, res, next) => {
     const ruid = req.params.ruid || req.body.ruid || req.query.ruid;

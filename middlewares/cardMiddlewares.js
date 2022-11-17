@@ -1,11 +1,10 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../prisma/client");
 const {
     resError,
     ErrorException,
     resSuccess,
 } = require("../services/responseHandler");
 const { getUser, hashChecker } = require("../services/auth");
-const prisma = new PrismaClient();
 
 const cardIsExist = async (req, res, next) => {
     const cardNumber =

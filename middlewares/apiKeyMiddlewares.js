@@ -1,6 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../prisma/client");
 const { ErrorException, resError } = require("../services/responseHandler");
-const prisma = new PrismaClient();
 const location = "API Key Middlewares";
 const apiIDIsExist = async (req, res, next) => {
     const { id } = req.params;

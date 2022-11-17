@@ -1,11 +1,10 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../../prisma/client");
 const { random: stringGenerator } = require("@supercharge/strings");
 const {
     resSuccess,
     resError,
     ErrorException,
 } = require("../../services/responseHandler");
-const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
 /** Fungsi untuk membuat API KEY Untuk pintu */

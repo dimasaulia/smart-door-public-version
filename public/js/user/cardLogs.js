@@ -10,21 +10,6 @@ const loadMoreBtn = document.querySelector("#load-more");
 const authTypeForm = document.querySelector("#auth-type");
 const formCardName = form.cardName;
 
-const days = (date) => {
-    return new Intl.DateTimeFormat("id", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    }).format(new Date(date));
-};
-
-const times = (date) => {
-    return new Intl.DateTimeFormat("id", {
-        hour: "numeric",
-        minute: "numeric",
-    }).format(new Date(date));
-};
-
 const logsTemplate = ({ createdAt, name, number, id, status }) => {
     return `
     <div class="log-info row p-2" data-cursor=${id}>
@@ -35,9 +20,7 @@ const logsTemplate = ({ createdAt, name, number, id, status }) => {
             <p class="fw-bold text-neutral-2">${name}</p>
         </div>
         <div class="col-3">
-            <p class="fw-bold text-neutral-2">${days(createdAt)}, ${times(
-        createdAt
-    )} WIB</p>
+            <p class="fw-bold text-neutral-2">${days(createdAt)} WIB</p>
         </div>
         <div class="col-3">
             <p class="fw-bold text-neutral-2">${status}</p>

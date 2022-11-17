@@ -1,6 +1,4 @@
-const { PrismaClient } = require("@prisma/client");
-
-const prisma = new PrismaClient();
+const prisma = require("../prisma/client");
 
 exports.dashboard = async (req, res) => {
     const unRegisterCard = await prisma.card.count({

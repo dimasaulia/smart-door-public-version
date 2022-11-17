@@ -4,9 +4,8 @@ const {
     ErrorException,
 } = require("../../services/responseHandler");
 const { getUser, hashChecker, hasher } = require("../../services/auth");
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../../prisma/client");
 const { random: stringGenerator } = require("@supercharge/strings");
-const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
 // INFO: Prisma middleware to encrypt default room pin
@@ -77,6 +76,9 @@ exports.detail = async (req, res) => {
         const detailRoom = await prisma.room.findUnique({
             where: {
                 ruid: ruid,
+            },
+            include: {
+                device: true,
             },
         });
 

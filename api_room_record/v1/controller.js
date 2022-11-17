@@ -1,6 +1,5 @@
-const { PrismaClient } = require("@prisma/client");
+const prisma = require("../../prisma/client");
 const { resSuccess, resError } = require("../../services/responseHandler");
-const prisma = new PrismaClient();
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
 /** Fungsi untuk menampilkan seluruh data log atau room record */
