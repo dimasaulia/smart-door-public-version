@@ -57,7 +57,7 @@ const roomListTemplate = ({ name, ruid, id, device }) => {
         device.device_id
     }</p>
                 <p class="text-blue-3">Last seen: ${
-                    device.lastOnline ? days(device.lastOnline) + "WIB" : "-"
+                    device.lastOnline ? days(device.lastOnline) + " WIB" : "-"
                 } </p>
             </div>
         </div>
