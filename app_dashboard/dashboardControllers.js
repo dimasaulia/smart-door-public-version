@@ -1,5 +1,6 @@
 const prisma = require("../prisma/client");
-const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
+// const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
+const ITEM_LIMIT = 2;
 
 exports.dashboard = async (req, res) => {
     const unRegisterCard = await prisma.card.count({
@@ -137,4 +138,32 @@ exports.apiList = async (req, res) => {
         },
     };
     res.render("api", data);
+};
+
+exports.hardware = async (req, res) => {
+    const hardwareList = await prisma.device.findMany({
+        orderBy: { createdAt: "asc" },
+        take: ITEM_LIMIT,
+    });
+    const data = {
+        hardware: "bg-neutral-4",
+        styles: ["/style/api.css"],
+        scripts: ["/js/hardware.js"],
+        hardwareList,
+        helpers: {
+            inc(value, options) {
+                return parseInt(value) + 1;
+            },
+            days(value, options) {
+                return `${Intl.DateTimeFormat("id", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                }).format(new Date(value))} WIB`;
+            },
+        },
+    };
+    res.render("hardware", data);
 };

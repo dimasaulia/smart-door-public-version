@@ -129,6 +129,9 @@ const showAlertConfirm = ({ theme, title, desc, link, exec, btn }) => {
                 e.preventDefault();
                 exec();
                 d.parentElement.parentElement.classList.remove("active");
+                setTimeout(() => {
+                    div.remove();
+                }, 500);
                 return true;
             });
         }
@@ -141,6 +144,9 @@ const showAlertConfirm = ({ theme, title, desc, link, exec, btn }) => {
             item.addEventListener("click", (e) => {
                 e.preventDefault();
                 item.parentElement.parentElement.classList.remove("active");
+                setTimeout(() => {
+                    div.remove();
+                }, 500);
                 return false;
             });
         });

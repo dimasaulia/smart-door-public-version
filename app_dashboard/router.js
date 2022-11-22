@@ -53,4 +53,13 @@ router.get(
     dashboard.apiList
 );
 
+// HARDWARE
+
+router.get(
+    "/hardware",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    dashboard.hardware
+);
+
 module.exports = router;
