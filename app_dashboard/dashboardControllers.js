@@ -1,4 +1,5 @@
 const prisma = require("../prisma/client");
+const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 
 exports.dashboard = async (req, res) => {
     const unRegisterCard = await prisma.card.count({
@@ -116,4 +117,24 @@ exports.roomEdit = (req, res) => {
     };
 
     res.render("roomEdit", data);
+};
+
+exports.apiList = async (req, res) => {
+    const apiListData = await prisma.api_Key.findMany({
+        select: { id: true, secret: true, createdAt: true },
+        orderBy: { createdAt: "asc" },
+        take: ITEM_LIMIT,
+    });
+    const data = {
+        api: "bg-neutral-4",
+        styles: ["/style/api.css"],
+        scripts: ["/js/api.js"],
+        apiListData,
+        helpers: {
+            inc(value, options) {
+                return parseInt(value) + 1;
+            },
+        },
+    };
+    res.render("api", data);
 };

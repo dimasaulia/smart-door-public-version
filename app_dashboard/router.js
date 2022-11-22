@@ -45,4 +45,12 @@ router.get(
     dashboard.roomEdit
 );
 
+// API
+router.get(
+    "/api",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    dashboard.apiList
+);
+
 module.exports = router;

@@ -10,7 +10,7 @@ const { apiIDIsExist } = require("../../middlewares/apiKeyMiddlewares");
 
 router.post("/generate", loginRequired, allowedRole("ADMIN"), api.createApiKey);
 router.get("/list", loginRequired, allowedRole("ADMIN"), api.apiKeyList);
-router.post(
+router.delete(
     "/delete/:id",
     loginRequired,
     allowedRole("ADMIN"),

@@ -28,28 +28,59 @@ exports.createApiKey = async (req, res) => {
 
 /** Fungsi Untuk Menampilkan semua daftar API KEY */
 exports.apiKeyList = async (req, res) => {
-    const { cursor } = req.query;
+    const { cursor, search } = req.query;
     let apiKeyList;
     try {
-        if (!cursor) {
-            apiKeyList = await prisma.api_Key.findMany({
-                orderBy: {
-                    createdAt: "asc",
-                },
-                take: ITEM_LIMIT,
-            });
+        if (!search) {
+            if (!cursor) {
+                apiKeyList = await prisma.api_Key.findMany({
+                    orderBy: {
+                        createdAt: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
+            if (cursor) {
+                apiKeyList = await prisma.api_Key.findMany({
+                    orderBy: {
+                        createdAt: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
         }
-        if (cursor) {
-            apiKeyList = await prisma.api_Key.findMany({
-                orderBy: {
-                    createdAt: "asc",
-                },
-                take: ITEM_LIMIT,
-                skip: 1,
-                cursor: {
-                    id: cursor,
-                },
-            });
+
+        if (search) {
+            if (!cursor) {
+                apiKeyList = await prisma.api_Key.findMany({
+                    where: {
+                        secret: { contains: search, mode: "insensitive" },
+                    },
+                    orderBy: {
+                        createdAt: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
+            if (cursor) {
+                apiKeyList = await prisma.api_Key.findMany({
+                    where: {
+                        secret: { contains: search, mode: "insensitive" },
+                    },
+                    orderBy: {
+                        createdAt: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
         }
 
         return resSuccess({

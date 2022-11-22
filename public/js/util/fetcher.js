@@ -10,7 +10,9 @@ async function setter({
     url,
     body = null,
     successMsg = "Success execute task",
+    successBody = successMsg,
 }) {
+    startLoader();
     let response;
     if (body) {
         response = await fetch(url, {
@@ -30,6 +32,7 @@ async function setter({
             method: "POST",
         });
     }
+    closeLoader();
 
     const data = await response.json();
 
@@ -50,7 +53,7 @@ async function setter({
         showToast({
             theme: "success",
             title: successMsg,
-            desc: data.message,
+            desc: successBody,
         });
         return { success: true, data: data.data };
     }

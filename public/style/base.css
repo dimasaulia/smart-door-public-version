@@ -208,6 +208,31 @@
     box-shadow: -1px 2px 8px rgba(0, 0, 0, 0.25);
 }
 
+.hover-tool {
+    position: relative;
+}
+
+.hover-tool::before {
+    background: rgb(var(--color-blue-4)) !important;
+    border-radius: 7px;
+    bottom: 1.75rem;
+    color: rgb(var(--color-neutral-7)) !important;
+    content: attr(data-hover);
+    opacity: 0;
+    padding: 5px 10px;
+    position: absolute;
+    right: 50%;
+    transform: translate(50%, 0);
+    transition: visibility 0s, opacity 250ms linear;
+    visibility: hidden;
+    z-index: 3;
+}
+
+.hover-tool:hover:before {
+    opacity: 1;
+    visibility: visible;
+}
+
 input:focus,
 input:active {
     box-shadow: none !important;
