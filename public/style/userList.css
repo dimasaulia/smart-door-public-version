@@ -1,17 +1,23 @@
 .input-group-prepend {
     background: white !important;
     border-radius: 1px solid grey !important;
+    font-size: 10px !important;
+}
+
+input:active,
+input {
+    border: none !important;
+}
+
+.form-icons {
+    cursor: pointer;
+    width: 25px !important;
 }
 
 #username,
 #roomname,
 #userRole {
     border: none !important;
-}
-
-.form-icons {
-    cursor: pointer;
-    width: 30px !important;
 }
 
 .user-profile-picture {
@@ -53,8 +59,19 @@
     cursor: pointer;
 }
 
+@media only screen and (max-width: 720px) {
+    .form-icons {
+        width: 20px !important;
+    }
+
+    #generate-button {
+        font-size: 0.8rem !important;
+    }
+}
+
 @media only screen and (max-width: 576px) {
     .user--list-item {
         height: auto;
     }
+
 }

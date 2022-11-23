@@ -1,0 +1,25 @@
+.card-form {
+    width: auto;
+}
+
+.form-group {
+    width: 28em !important;
+}
+
+label {
+    white-space: nowrap;
+}
+
+.card-form .form-label {
+    width: 12rem !important;
+}
+
+@media only screen and (max-width: 576px) {
+    .form-group {
+        width: 25em !important;
+    }
+
+    .card-form .form-label {
+        width: 12rem !important;
+    }
+}
