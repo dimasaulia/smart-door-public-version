@@ -86,6 +86,38 @@ exports.userList = async (req, res) => {
     res.render("userList", data);
 };
 
+exports.createroom = async (req, res) => {
+    const hardwareList = await prisma.device.findMany({
+        orderBy: { createdAt: "asc" },
+        take: ITEM_LIMIT,
+        where: {
+            roomId: null,
+        },
+    });
+    const data = {
+        room: "bg-neutral-4",
+        styles: ["/style/api.css", "/style/createroom.css"],
+        scripts: ["/js/createroom.js"],
+        hardwareList,
+        helpers: {
+            inc(value, options) {
+                return parseInt(value) + 1;
+            },
+            days(value, options) {
+                return `${Intl.DateTimeFormat("id", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                }).format(new Date(value))} WIB`;
+            },
+        },
+    };
+
+    res.render("createroom", data);
+};
+
 exports.roomList = async (req, res) => {
     const data = {
         room: "bg-neutral-4",

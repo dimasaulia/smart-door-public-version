@@ -101,7 +101,6 @@ const apiTemplate = (data, id) => {
 };
 
 const apiFirtsLoader = (data) => {
-    apiContainer.textContent = " ";
     data.forEach((api, id) => {
         const apiLength = document.querySelectorAll(".api--list-item");
         apiContainer.insertAdjacentHTML(
@@ -142,6 +141,7 @@ showMoreBtn.addEventListener("click", (e) => {
 searchBtn.addEventListener("click", (e) => {
     e.preventDefault();
     const search = apiForm.value;
+    apiContainer.textContent = " ";
     generalDataLoader({
         url: `/api/v1/api-management/list?search=${search}`,
         func: apiFirtsLoader,

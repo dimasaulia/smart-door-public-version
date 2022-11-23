@@ -11,6 +11,8 @@ async function setter({
     body = null,
     successMsg = "Success execute task",
     successBody = successMsg,
+    failedMsg = "Something Wrong",
+    failedBody = "we are sorry can't execute your task",
 }) {
     startLoader();
     let response;
@@ -39,12 +41,12 @@ async function setter({
     if (!data.success) {
         showToast({
             theme: "danger",
-            title: "Something wrong",
+            title: failedMsg,
             desc:
                 data.data.err ||
                 data.data.error ||
                 data.data.errors ||
-                "we are sorry can't execute your task",
+                failedBody,
         });
         return { success: false, data: data.data };
     }

@@ -1,6 +1,7 @@
 const showMoreBtn = document.querySelector("#showMore");
 const hwForm = document.querySelector("#hw");
 const hwContainer = document.querySelector(".hw-container");
+const searhcBtn = document.querySelector(".input-group-prepend");
 
 const del = ({ url, element }) => {
     startLoader();
@@ -87,7 +88,6 @@ const hardwareListLoader = (data) => {
 showMoreBtn.addEventListener("click", (e) => {
     e.preventDefault();
     const cursor = lastCursorFinder(".hardware--list-item", "id");
-    console.log(cursor);
     const search = hwForm.value;
     if (search.length === 0) {
         generalDataLoader({
@@ -101,4 +101,14 @@ showMoreBtn.addEventListener("click", (e) => {
             func: hardwareListLoader,
         });
     }
+});
+
+searhcBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    hwContainer.textContent = "";
+    const search = hwForm.value;
+    generalDataLoader({
+        url: `/api/v2/room/device/list?search=${search}`,
+        func: hardwareListLoader,
+    });
 });

@@ -263,7 +263,7 @@ exports.validatePin = async (req, res) => {
 
 /** Fungsi untuk menampilkan daftar perangkat */
 exports.deviceList = async (req, res) => {
-    const { search, cursor } = req.query;
+    const { search, cursor, available } = req.query;
     let deviceList;
     try {
         if (search) {
@@ -325,9 +325,78 @@ exports.deviceList = async (req, res) => {
             }
         }
 
+        if (available === "true") {
+            if (search) {
+                if (!cursor) {
+                    deviceList = await prisma.device.findMany({
+                        where: {
+                            device_id: {
+                                contains: search,
+                                mode: "insensitive",
+                            },
+                            roomId: null,
+                        },
+                        orderBy: {
+                            createdAt: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                    });
+                }
+
+                if (cursor) {
+                    deviceList = await prisma.device.findMany({
+                        where: {
+                            device_id: {
+                                contains: search,
+                                mode: "insensitive",
+                            },
+                            roomId: null,
+                        },
+                        orderBy: {
+                            createdAt: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                        skip: 1,
+                        cursor: {
+                            id: cursor,
+                        },
+                    });
+                }
+            }
+
+            if (!search) {
+                if (!cursor) {
+                    deviceList = await prisma.device.findMany({
+                        where: {
+                            roomId: null,
+                        },
+                        orderBy: {
+                            createdAt: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                    });
+                }
+                if (cursor) {
+                    deviceList = await prisma.device.findMany({
+                        where: {
+                            roomId: null,
+                        },
+                        orderBy: {
+                            createdAt: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                        skip: 1,
+                        cursor: {
+                            id: cursor,
+                        },
+                    });
+                }
+            }
+        }
+
         return resSuccess({
             res,
-            title: "Success listed all device",
+            title: "Success listed available device",
             data: deviceList,
         });
     } catch (error) {

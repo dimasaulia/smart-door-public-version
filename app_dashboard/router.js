@@ -32,6 +32,13 @@ router.get(
 );
 
 router.get(
+    "/room/create",
+    loginRequired,
+    allowedRole("ADMIN"),
+    dashboard.createroom
+);
+
+router.get(
     "/room/detail/:ruid",
     loginRequired,
     allowedRole("ADMIN"),
