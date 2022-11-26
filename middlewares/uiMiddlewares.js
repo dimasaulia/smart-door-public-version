@@ -32,6 +32,14 @@ const loginRequired = (req, res, next) => {
     });
 };
 
+const logoutRequired = (req, res, next) => {
+    const jwtToken = getJwtToken(req);
+
+    // check if token exits
+    if (jwtToken) return res.redirect("/");
+    next();
+};
+
 const allowedRole = (...roles) => {
     return async (req, res, next) => {
         const user = await prisma.user.findUnique({
@@ -55,4 +63,4 @@ const allowedRole = (...roles) => {
     };
 };
 
-module.exports = { loginRequired, allowedRole };
+module.exports = { loginRequired, allowedRole, logoutRequired };

@@ -16,7 +16,7 @@ const { resError, resSuccess } = require("../../services/responseHandler");
 const { random: stringGenerator } = require("@supercharge/strings");
 const bcrypt = require("bcrypt");
 const { sendEmail, urlTokenGenerator } = require("../../services/mailing");
-const e = require("express");
+const { days } = require("../../services/timeformater");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 
 exports.login = async (req, res) => {
@@ -414,7 +414,7 @@ exports.emailVerification = async (req, res) => {
         const { email, id: uuid } = await prisma.user.findUnique({
             where: { id: getUser(req) },
         });
-        const token = stringGenerator(32);
+        const token = stringGenerator(24);
         const secret = createJwtToken({ uuid, token }, 60 * 5);
 
         // If not exist then create
@@ -494,9 +494,9 @@ exports.sendResetPassword = async (req, res) => {
     const { email } = req.body;
     try {
         const { id: uuid } = await prisma.user.findUnique({ where: { email } });
-        const token = stringGenerator(32);
+        const token = stringGenerator(24);
         const secret = createJwtToken({ uuid, token }, 60 * 5);
-
+        const expiredAt = new Date(new Date().getTime() + 5 * 60000);
         const cloudToken = await prisma.token.findUnique({
             where: { userId: uuid },
         });
@@ -507,7 +507,7 @@ exports.sendResetPassword = async (req, res) => {
                 data: {
                     userId: uuid,
                     token: hasher(token),
-                    expiredAt: new Date(new Date().getTime() + 5 * 60000),
+                    expiredAt,
                 },
             });
         } else {
@@ -517,17 +517,19 @@ exports.sendResetPassword = async (req, res) => {
                 },
                 data: {
                     token: hasher(token),
-                    expiredAt: new Date(new Date().getTime() + 5 * 60000),
+                    expiredAt,
                 },
             });
         }
 
-        const url = urlTokenGenerator(
-            req,
-            "/api/v1/user/reset-password/",
-            secret
+        const url = urlTokenGenerator(req, "auth/reset", secret);
+        await sendEmail(
+            email,
+            "Reset password",
+            `Reset your password via the following link ${url}, your token active until ${days(
+                expiredAt
+            )}`
         );
-        await sendEmail(email, "Reset password", url);
 
         return resSuccess({
             res,
@@ -543,9 +545,7 @@ exports.resetPassword = async (req, res) => {
     const { password } = req.body;
     const { token } = req.query;
     try {
-        const { uuid, token: urlToken } = verifyJwt(
-            urlDecrypter(token.replaceAll("#", "="))
-        );
+        const { uuid, token: urlToken } = verifyJwt(token);
         const newPass = await prisma.user.update({
             where: { id: uuid },
             data: { password: hasher(password) },

@@ -24,3 +24,12 @@ module.exports.forget = (req, res) => {
     };
     res.render("forgetpassword", data);
 };
+
+module.exports.reset = (req, res) => {
+    const data = {
+        styles: ["/style/auth.css"],
+        scripts: ["/js/reset.js"],
+        layout: "auth.hbs",
+    };
+    res.render("reset", data);
+};

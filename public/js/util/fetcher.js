@@ -43,13 +43,12 @@ async function setter({
             theme: "danger",
             title: failedMsg,
             desc:
+                failedBody ||
                 data.data.err ||
                 data.data.error ||
                 data.data.errors.email.detail ||
-                data.data.errors ||
-                failedBody,
+                data.data.errors,
         });
-        console.log(data.data.errors.email.detail);
         return { success: false, data: data.data };
     }
 

@@ -45,7 +45,6 @@ const chooseHandler = (duid) => {
 showMoreBtn.addEventListener("click", (e) => {
     e.preventDefault();
     const cursor = lastCursorFinder(".hardware--list-item", "id");
-    console.log(cursor);
     const search = hwForm.value;
     if (search.length === 0) {
         generalDataLoader({

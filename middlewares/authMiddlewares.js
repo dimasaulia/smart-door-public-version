@@ -294,8 +294,9 @@ const notCurrentUser = async (req, res, next) => {
 const urlTokenIsValid = async (req, res, next) => {
     try {
         const { token } = req.query;
-        const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
-        if (!(data?.uuid && data?.token)) throw "(Mid): Your token is Invalid";
+        const data = verifyJwt(token);
+        if (!(data?.uuid && data?.token))
+            throw "Your token is Invalid or expired";
         return next();
     } catch (error) {
         return resError({
@@ -305,10 +306,11 @@ const urlTokenIsValid = async (req, res, next) => {
     }
 };
 
+/** Memastikan token user tidak kadaluarsa */
 const urlTokenNotExpired = async (req, res, next) => {
     const { token } = req.query;
     try {
-        const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
+        const data = verifyJwt(token);
         const cloudToken = await prisma.token.findUnique({
             where: { userId: data.uuid },
         });
@@ -334,10 +336,12 @@ const urlTokenIsNotActive = async (req, res, next) => {
     try {
         let cloudToken;
         if (getUser(req)) {
+            //digunaka ketika user mengirim email verifikasi
             cloudToken = await prisma.token.findUnique({
                 where: { userId: getUser(req) },
             });
         } else {
+            //digunakan ketika user mengirim reset password
             const { email } = req.body;
             const { id } = await prisma.user.findUnique({ where: { email } });
             cloudToken = await prisma.token.findUnique({
@@ -397,7 +401,7 @@ const userIsVerify = async (req, res, next) => {
 const urlTokenIsMatch = async (req, res, next) => {
     const { token } = req.query;
     try {
-        const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
+        const data = verifyJwt(token.replaceAll("#", "="));
         const cloudToken = await prisma.token.findUnique({
             where: { userId: data.uuid },
         });

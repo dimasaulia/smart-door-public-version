@@ -155,5 +155,4 @@ generateBtn.addEventListener("click", async (e) => {
         successMsg: "Success generate API",
         successBody: "Please click show more to see new api",
     });
-    console.log(data);
 });

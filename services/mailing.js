@@ -27,14 +27,9 @@ const sendEmail = async (user_mail, subject, message) => {
 };
 
 const urlTokenGenerator = (req, endpoint, token) => {
-    let finalUrl;
-    if (process.env.NODE_ENV === "PRODUCTION") {
-        finalUrl = `${req.hostname}${endpoint}?token=${urlEncrypter(token)}`;
-    } else {
-        finalUrl = `${req.hostname}:${
-            process.env.PORT
-        }${endpoint}?token=${urlEncrypter(token)}`;
-    }
+    let finalUrl = `${req.protocol}://${req.get(
+        "host"
+    )}/${endpoint}?token=${token}`;
     return finalUrl;
 };
 

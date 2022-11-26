@@ -7,6 +7,6 @@ submit.addEventListener("click", async (e) => {
     const resp = await setter({
         url: "/api/v1/user/send-reset-password/",
         body: { email: email },
-        failedBody: "Cant finnd email",
+        failedBody: "Failed generate new token",
     });
 });

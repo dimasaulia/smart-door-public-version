@@ -115,9 +115,7 @@ const decrypter = (text) => {
 };
 
 const urlDecrypter = (text) => {
-    var originalText = CryptoJS.enc.Base64.parse(text).toString(
-        CryptoJS.enc.Utf8
-    );
+    var originalText = CryptoJS.enc.Base64.parse(text).toString();
     return originalText;
 };
 
