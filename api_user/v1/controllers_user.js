@@ -166,6 +166,7 @@ exports.update = async (req, res) => {
             },
             data: {
                 password: hasher(newPassword),
+                updatedAt: new Date(Date.now() - 1000),
             },
         });
 
@@ -227,6 +228,7 @@ exports.profileUpdate = async (req, res) => {
                         full_name,
                     },
                 },
+                updatedAt: new Date(Date.now() - 1000),
             },
         });
         return resSuccess({

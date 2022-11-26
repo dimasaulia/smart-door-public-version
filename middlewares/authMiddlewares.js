@@ -21,7 +21,6 @@ const loginRequired = (req, res, next) => {
             code: 401,
         });
 
-    // verify token
     jwt.verify(jwtToken, process.env.SECRET, async (err, decode) => {
         if (!err) {
             // find user
@@ -32,9 +31,19 @@ const loginRequired = (req, res, next) => {
                 select: {
                     id: true,
                     username: true,
+                    updatedAt: true,
                 },
             });
-            if (user) return next();
+
+            if (
+                new Date(Number(decode.iat * 1000)) < new Date(user.updatedAt)
+            ) {
+                return resError({
+                    res,
+                    title: "Some information change, please relogin",
+                    code: 401,
+                });
+            }
 
             if (!user)
                 return resError({
@@ -42,6 +51,8 @@ const loginRequired = (req, res, next) => {
                     title: "Cant find the user",
                     code: 401,
                 });
+
+            if (user) return next();
         } else {
             return resError({
                 res,

@@ -45,6 +45,8 @@ passwordBtn.addEventListener("click", async (e) => {
         },
         failedBody: "Sorry cant update your password",
     });
+    document.querySelector("#oldPassword").value = "";
+    document.querySelector("#newPassord").value = "";
 });
 
 try {
