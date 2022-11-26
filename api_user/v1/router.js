@@ -55,7 +55,27 @@ router.post(
     defaultRoleIsExist,
     user.login
 );
-router.post("/update", loginRequired, allowedRole("ADMIN"), user.update);
+router.post(
+    "/update",
+    loginRequired,
+    body("oldPassword").notEmpty(),
+    body("newPassword")
+        .isStrongPassword()
+        .withMessage(
+            "Password must have at least 8 characters, have a combination of numbers, uppercase, lowercase letters and unique characters"
+        ),
+    formChacker,
+    user.update
+);
+router.post(
+    "/profile/update",
+    loginRequired,
+    body("username").notEmpty().withMessage("Name required"),
+    body("email").notEmpty().isEmail().withMessage("Email required"),
+    body("full_name").notEmpty().withMessage("Full name required"),
+    formChacker,
+    user.profileUpdate
+);
 router.delete(
     "/delete/:id",
     loginRequired,
@@ -92,7 +112,7 @@ router.post(
     notCurrentUser,
     user.setUserRole
 );
-router.get(
+router.post(
     "/email-send-verification/",
     loginRequired,
     userNotVerify,

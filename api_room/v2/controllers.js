@@ -90,7 +90,6 @@ exports.createRoom = async (req, res) => {
             data: newRoom,
         });
     } catch (error) {
-        console.log(error);
         return resError({ res, errors: error });
     }
 };
@@ -508,7 +507,6 @@ exports.pairRoomToCard = async (req, res) => {
             data: updatedRoom,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Gagal memberi akses ruangan",

@@ -4,10 +4,6 @@ const {
     getUser,
     hasher,
     createJwtToken,
-    encrypter,
-    decrypter,
-    urlEncrypter,
-    urlDecrypter,
     verifyJwt,
     hashChecker,
 } = require("../../services/auth");
@@ -159,36 +155,87 @@ exports.update = async (req, res) => {
         // CEK OLD PASSWORD MATCH
         const oldPassword = req.body.oldPassword;
         const newPassword = req.body.newPassword;
-        const passCompare = bcrypt.compareSync(oldPassword, user.password);
+        const passCompare = hashChecker(oldPassword, user.password);
 
         if (user === null) throw "User not found";
         if (!passCompare) throw "Password not match";
-
-        const saltRounds = 10;
-        const salt = bcrypt.genSaltSync(saltRounds);
-        const newHashPassword = bcrypt.hashSync(newPassword, salt);
 
         const updatedUser = await prisma.user.update({
             where: {
                 id: getUser(req),
             },
             data: {
-                username: req.body.name,
-                password: newHashPassword,
-                roleId: user.roleId,
+                password: hasher(newPassword),
             },
         });
 
-        res.status(201).json({
-            code: 201,
-            title: "Succsessfully update",
-            updatedUser,
+        setAuthCookie({ res, uuid: user.id }); //update cookies
+
+        return resSuccess({ res, code: 201, body: updatedUser });
+    } catch (err) {
+        return resError({ res, title: "Failed update password", errors: err });
+    }
+};
+
+exports.profileUpdate = async (req, res) => {
+    try {
+        const { email, full_name, username } = req.body;
+        const id = getUser(req);
+        const currentData = await prisma.user.findUnique({
+            where: { id },
+        });
+
+        // if user try change username
+        if (username != currentData.username) {
+            const checkUser = await prisma.user.findUnique({
+                where: { username },
+            });
+            // if username already exist throw error
+            if (checkUser)
+                throw new ErrorException({
+                    type: "username",
+                    detail: "User already exist or register",
+                });
+        }
+
+        // if user try change email
+        if (email != currentData.email) {
+            const checkUser = await prisma.user.findUnique({
+                where: { email },
+            });
+            // if email already exist throw error
+            if (checkUser)
+                throw new ErrorException({
+                    type: "email",
+                    detail: "Email already exist or register",
+                });
+        }
+
+        const newData = await prisma.user.update({
+            where: {
+                id,
+            },
+            data: {
+                username,
+                email,
+                isVerified:
+                    email === currentData.email
+                        ? currentData.isVerified
+                        : false,
+                profil: {
+                    update: {
+                        full_name,
+                    },
+                },
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success update your profile",
+            data: newData,
         });
     } catch (err) {
-        res.status(422).json({
-            code: 422,
-            msg: err,
-        });
+        return resError({ res, errors: err, title: "Failed update profile" });
     }
 };
 
@@ -448,7 +495,7 @@ exports.emailVerification = async (req, res) => {
 
         const url = urlTokenGenerator(
             req,
-            "/api/v1/user/email-verifying/",
+            "api/v1/user/email-verifying/",
             secret
         );
 
@@ -468,7 +515,7 @@ exports.verifyingEmail = async (req, res) => {
     let verificationSuccess;
     const { token } = req.query;
     try {
-        const data = verifyJwt(urlDecrypter(token.replaceAll("#", "=")));
+        const data = verifyJwt(token);
 
         // INFO: If all data valid or success
         verificationSuccess = await prisma.user.update({
@@ -480,11 +527,12 @@ exports.verifyingEmail = async (req, res) => {
             where: { userId: data.uuid },
         });
 
-        return resSuccess({
-            res,
-            title: "Email successfully verified",
-            data: verificationSuccess,
-        });
+        // return resSuccess({
+        //     res,
+        //     title: "Email successfully verified",
+        //     data: verificationSuccess,
+        // });
+        return res.redirect("/profile");
     } catch (error) {
         return resError({ res, errors: error });
     }
