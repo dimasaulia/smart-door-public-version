@@ -109,7 +109,7 @@ router.get(
     urlTokenIsMatch,
     user.verifyingEmail
 );
-router.get(
+router.post(
     "/send-reset-password/",
     logoutRequired,
     body("email").notEmpty().isEmail(),

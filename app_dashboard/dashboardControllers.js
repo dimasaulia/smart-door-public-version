@@ -140,13 +140,40 @@ exports.roomDetail = (req, res) => {
     res.render("roomDetail", data);
 };
 
-exports.roomEdit = (req, res) => {
+exports.roomEdit = async (req, res) => {
     const { ruid } = req.params;
+    const roomDetail = await prisma.room.findUnique({
+        where: { ruid },
+        include: { device: true },
+    });
+    const hardwareList = await prisma.device.findMany({
+        orderBy: { createdAt: "asc" },
+        take: ITEM_LIMIT,
+        where: {
+            roomId: null,
+        },
+    });
     const data = {
         room: "bg-neutral-4",
-        styles: ["/style/roomEdit.css"],
-        scripts: ["/js/roomEdit.js"],
+        styles: ["/style/api.css", "/style/createroom.css"],
+        scripts: ["/js/roomupdate.js"],
+        hardwareList,
         ruid,
+        roomDetail,
+        helpers: {
+            inc(value, options) {
+                return parseInt(value) + 1;
+            },
+            days(value, options) {
+                return `${Intl.DateTimeFormat("id", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                }).format(new Date(value))} WIB`;
+            },
+        },
     };
 
     res.render("roomEdit", data);

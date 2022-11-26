@@ -15,3 +15,12 @@ module.exports.register = (req, res) => {
     };
     res.render("register", data);
 };
+
+module.exports.forget = (req, res) => {
+    const data = {
+        styles: ["/style/auth.css"],
+        scripts: ["/js/forgot.js"],
+        layout: "auth.hbs",
+    };
+    res.render("forgetpassword", data);
+};

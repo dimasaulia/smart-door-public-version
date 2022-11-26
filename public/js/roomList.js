@@ -48,7 +48,7 @@ const roomListTemplate = ({ name, ruid, id, device }) => {
         class="room--list-item mt-3 d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" data-ruid="${ruid}" data-id="${id}" data-room-name="${name}">
         <div class="room-profile d-flex flex-column flex-sm-row justify-content-start align-items-center">
             <div class="room-profile-picture">
-                <img src="/image/icon_room.svg" alt="">
+                <img src="/image/icon_room.svg" alt="Profil">
             </div>
 
             <div class="ms-sm-4 ms-0 mt-3 mt-sm-0">

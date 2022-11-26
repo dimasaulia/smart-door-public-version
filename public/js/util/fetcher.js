@@ -45,9 +45,11 @@ async function setter({
             desc:
                 data.data.err ||
                 data.data.error ||
+                data.data.errors.email.detail ||
                 data.data.errors ||
                 failedBody,
         });
+        console.log(data.data.errors.email.detail);
         return { success: false, data: data.data };
     }
 
