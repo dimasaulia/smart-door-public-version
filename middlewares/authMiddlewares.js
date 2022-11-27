@@ -171,14 +171,6 @@ const userIsExist = async (req, res, next) => {
             },
             select: {
                 id: true,
-                username: true,
-                password: true,
-                email: true,
-                role: {
-                    select: {
-                        name: true,
-                    },
-                },
             },
         });
 

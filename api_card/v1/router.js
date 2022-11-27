@@ -2,12 +2,14 @@ const router = require("express").Router();
 const {
     loginRequired,
     allowedRole,
+    userIsExist,
 } = require("../../middlewares/authMiddlewares");
 const {
     cardIsExist,
     isUserCard,
     isTurePin,
     isNewPinMatch,
+    cardIsPair,
 } = require("../../middlewares/cardMiddlewares");
 const { body, param } = require("express-validator");
 const { formChacker } = require("../../middlewares/formMiddleware");
@@ -113,5 +115,15 @@ router.delete(
     allowedRole("ADMIN", "OPERATOR"),
     cardIsExist,
     card.delete
+);
+router.post(
+    "/unpair",
+    body("username").notEmpty(),
+    body("cardNumber").notEmpty(),
+    formChacker,
+    cardIsExist,
+    cardIsPair,
+    userIsExist,
+    card.unpairUserToCard
 );
 module.exports = router;

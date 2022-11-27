@@ -527,3 +527,37 @@ exports.delete = async (req, res) => {
         });
     }
 };
+
+/** Melepaskan tautan user dan kartu */
+exports.unpairUserToCard = async (req, res) => {
+    try {
+        const { username, cardNumber } = req.body;
+        const card = await prisma.user.update({
+            where: {
+                username,
+            },
+            data: {
+                card: {
+                    update: {
+                        where: {
+                            card_number: cardNumber,
+                        },
+                        data: {
+                            card_status: "UNREGISTER",
+                            // room: {
+                            //     set: [], // remove access from all room
+                            // },
+                        },
+                    },
+                    disconnect: {
+                        card_number: cardNumber,
+                    },
+                },
+            },
+        });
+        return resSuccess({ res, title: "Success unpair card", data: card });
+    } catch (error) {
+        console.log(error);
+        return resError({ res, errors: error, title: "Failed unpair card" });
+    }
+};

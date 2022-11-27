@@ -266,7 +266,7 @@ exports.pairUserToCard = async (req, res) => {
         },
     });
 
-    setTimeout(() => res.json(user), 1500);
+    return resSuccess({ res, title: "Success pair card" });
 };
 
 exports.search = async (req, res) => {
