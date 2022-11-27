@@ -637,10 +637,12 @@ exports.profileAvatarUpdate = async (req, res) => {
         const path = `./public/${profil.photo}`;
         if (profil.photo) {
             FS.access(path, FS.F_OK, (err) => {
-                //file exists
-                FS.unlink(path, (err) => {
-                    if (err) throw err;
-                });
+                if (!err) {
+                    //file exists
+                    FS.unlink(path, (err) => {
+                        if (err) throw err;
+                    });
+                }
             });
         }
         return resSuccess({
