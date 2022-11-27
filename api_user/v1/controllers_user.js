@@ -635,9 +635,11 @@ exports.profileAvatarUpdate = async (req, res) => {
             },
         });
         if (profil.photo) {
-            FS.unlink(`./public/${profil.photo}`, (err) => {
-                if (err) throw err;
-            });
+            try {
+                FS.unlink(`./public/${profil.photo}`, (err) => {
+                    if (err) throw err;
+                });
+            } catch (error) {}
         }
         return resSuccess({
             res,
