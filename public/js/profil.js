@@ -5,15 +5,56 @@ const verifyBtn = document.querySelector("#verify");
 const passwordBtn = document.querySelector("#save-password");
 const form = document.querySelector("#profile-form");
 const usernameContainer = document.querySelector("#user-container");
+const imageContainer = document.querySelector(".profil-img-container");
 uploadBtnTrigger.addEventListener("click", (e) => {
     uploadForm.click();
 });
 
-uploadForm.addEventListener("change", (e) => {
+uploadForm.addEventListener("change", async (e) => {
     const fileSize = uploadForm.files[0].size / 1024 / 1024; // in MiB
+    const fileError = [];
     if (fileSize > 2) {
-        alert("File size exceeds 2 MiB");
-    } else {
+        showAlert({
+            theme: "warning",
+            title: "Failed upload photo",
+            desc: "File size exceeds 2 MiB",
+        });
+        fileError.push("File size exceeds 2 MiB");
+    }
+
+    const fileUrl = String(uploadForm.files[0].type).split("/");
+    const fileType = fileUrl[fileUrl.length - 1];
+    if (
+        !(
+            fileType === "jpg" ||
+            fileType === "jpeg" ||
+            fileType === "png" ||
+            fileType === "JPG" ||
+            fileType === "JPEG" ||
+            fileType === "PNG"
+        )
+    ) {
+        showAlert({
+            theme: "warning",
+            title: "Failed upload photo",
+            desc: "File type not allow to upload",
+        });
+        fileError.push("File type not allow");
+    }
+
+    if (fileError.length === 0) {
+        const form = new FormData();
+        form.append("avatar", uploadForm.files[0]);
+        const resp = await fileUpload({
+            url: "/api/v1/user/profile/picture/update",
+            body: form,
+            successMsg: "Success update avatar",
+            failedMsg: "Failed update avatar",
+        });
+
+        if (resp.success) {
+            imageContainer.src = resp.data.photo;
+        }
     }
 });
 

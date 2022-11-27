@@ -46,7 +46,7 @@ const loader = (data) => {
         } else {
             cardContainer.insertAdjacentHTML(
                 "afterbegin",
-                "<h2>You dont have any card yet</h2>"
+                `<img src="/image/illustration-no-card.png" class="no-card" alt="You dont have any card yet"></img>`
             );
         }
     } catch (error) {

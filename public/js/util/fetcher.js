@@ -62,6 +62,50 @@ async function setter({
     }
 }
 
+async function fileUpload({
+    url,
+    body = null,
+    successMsg = "Success execute task",
+    successBody = successMsg,
+    failedMsg = "Something Wrong",
+    failedBody = "we are sorry can't execute your task",
+}) {
+    startLoader();
+    let response;
+    if (body) {
+        response = await fetch(url, {
+            method: "POST",
+            body: body,
+        });
+    }
+    closeLoader();
+
+    const data = await response.json();
+
+    if (!data.success) {
+        showToast({
+            theme: "danger",
+            title: failedMsg,
+            desc:
+                failedBody ||
+                data.data.err ||
+                data.data.error ||
+                data.data.errors.email.detail ||
+                data.data.errors,
+        });
+        return { success: false, data: data.data };
+    }
+
+    if (data.success) {
+        showToast({
+            theme: "success",
+            title: successMsg,
+            desc: successBody,
+        });
+        return { success: true, data: data.data };
+    }
+}
+
 async function generalDataLoader({ url, func, errHandler = false }) {
     const data = await fetcher(`${url}`);
     if (!data.success) {

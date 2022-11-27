@@ -1,7 +1,36 @@
 const express = require("express");
 const router = express.Router();
+const multer = require("multer");
 const { body, query } = require("express-validator");
-
+var storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, "./public/storage/");
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        let extArray = file.mimetype.split("/");
+        let extension = extArray[extArray.length - 1];
+        cb(
+            null,
+            `${file.fieldname}-${String(file.originalname)
+                .split(".")[0]
+                .replaceAll(" ", "-")}-${uniqueSuffix}.${extension}`
+        );
+    },
+});
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 2500000, // +- 2MB
+    },
+    fileFilter(req, file, cb) {
+        if (!file.originalname.match(/\.(png|jpg|jpeg|PNG|JPG|JPEG)$/)) {
+            // upload only png and jpg format
+            return cb(new Error("Please upload a Image"));
+        }
+        cb(undefined, true);
+    },
+});
 const user = require("./controllers_user");
 const { formChacker } = require("../../middlewares/formMiddleware");
 const {
@@ -151,5 +180,10 @@ router.post(
     urlTokenIsValid,
     urlTokenIsMatch,
     user.resetPassword
+);
+router.post(
+    "/profile/picture/update",
+    upload.single("avatar"),
+    user.profileAvatarUpdate
 );
 module.exports = router;

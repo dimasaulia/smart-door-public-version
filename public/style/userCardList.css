@@ -16,14 +16,29 @@
     width: 3em;
 }
 
+.no-card {
+    display: block !important;
+    margin: 0 auto !important;
+    width: 30rem !important;
+}
+
 @media only screen and (max-width: 767px) {
     .room-icons {
         width: 1.8em;
     }
+
+    .no-card {
+        width: 20rem !important;
+    }
+
 }
 
 @media only screen and (max-width: 576) {
     .room-icons {
         width: 1.5em;
+    }
+
+    .no-card {
+        width: 15rem !important;
     }
 }

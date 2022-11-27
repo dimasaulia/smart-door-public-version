@@ -10,10 +10,10 @@ const {
 const { ErrorException } = require("../../services/responseHandler");
 const { resError, resSuccess } = require("../../services/responseHandler");
 const { random: stringGenerator } = require("@supercharge/strings");
-const bcrypt = require("bcrypt");
 const { sendEmail, urlTokenGenerator } = require("../../services/mailing");
 const { days } = require("../../services/timeformater");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
+const FS = require("fs");
 
 exports.login = async (req, res) => {
     const { username, password } = req.body;
@@ -45,7 +45,7 @@ exports.login = async (req, res) => {
             });
 
         // compare user and password
-        const auth = bcrypt.compareSync(password, user.password);
+        const auth = hashChecker(password, user.password);
         // give response if password not match
         if (!auth)
             throw new ErrorException({
@@ -612,5 +612,39 @@ exports.resetPassword = async (req, res) => {
         });
     } catch (error) {
         return resError({ res, errors: error });
+    }
+};
+
+exports.profileAvatarUpdate = async (req, res) => {
+    try {
+        const id = getUser(req);
+        const profil = await prisma.profil.findUnique({
+            where: { userId: id },
+        });
+        const update = await prisma.profil.update({
+            where: { userId: id },
+            data: {
+                photo: `${String(req.file.path)
+                    .replaceAll("\\", "/")
+                    .replace("public", "")}`,
+            },
+        });
+        if (profil.photo) {
+            FS.unlink(`./public/${profil.photo}`, (err) => {
+                if (err) throw err;
+            });
+        }
+        return resSuccess({
+            res,
+            title: "success update your profile",
+            data: update,
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            errors: error,
+            title: "Failed update your profile picture",
+        });
     }
 };
