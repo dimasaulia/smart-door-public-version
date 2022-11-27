@@ -107,6 +107,9 @@ exports.listOfRegisterCard = async (req, res) => {
                         createdAt: "asc",
                     },
                     take: ITEM_LIMIT,
+                    include: {
+                        user: true,
+                    },
                 });
             }
 
@@ -127,6 +130,9 @@ exports.listOfRegisterCard = async (req, res) => {
                     cursor: {
                         id: cursor,
                     },
+                    include: {
+                        user: true,
+                    },
                 });
             }
         }
@@ -141,6 +147,9 @@ exports.listOfRegisterCard = async (req, res) => {
                         createdAt: "asc",
                     },
                     take: ITEM_LIMIT,
+                    include: {
+                        user: true,
+                    },
                 });
             }
             if (cursor) {
@@ -155,6 +164,9 @@ exports.listOfRegisterCard = async (req, res) => {
                     skip: 1,
                     cursor: {
                         id: cursor,
+                    },
+                    include: {
+                        user: true,
                     },
                 });
             }

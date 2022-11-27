@@ -98,12 +98,12 @@ const cardListLoader = (datas) => {
 
 const unpairCardTemplate = (data) => {
     return `
-    <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3 card--list-item" id="action-${
+    <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3 card--list-item align-items-center" id="action-${
         data.card_number
     }" data-id="${data.id}">
         <span class="table-data text-center text-neutral-2">${
             data.card_number
-        }</span>
+        }<br>${data.user.username}</span>
         <p class="table-data text-center text-neutral-2">
             ${days(data.createdAt)} WIB</p>
         <a class=" table-data text-center text-neutral-2 text-danger-1 pointer" onclick="deleteHandler('${
