@@ -1,6 +1,6 @@
 const prisma = require("../prisma/client");
-// const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
-const ITEM_LIMIT = 2;
+const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
+// const ITEM_LIMIT = 5;
 
 exports.dashboard = async (req, res) => {
     const unRegisterCard = await prisma.card.count({
@@ -63,14 +63,29 @@ exports.userPairingToDashboard = async (req, res) => {
 };
 
 exports.cardList = async (req, res) => {
+    const cardList = await prisma.card.findMany({
+        where: { card_status: "UNREGISTER" },
+        orderBy: {
+            createdAt: "asc",
+        },
+        take: ITEM_LIMIT,
+    });
     const data = {
         card: "bg-neutral-4",
-        styles: ["/js/splide/css/splide.min.css", "/style/cardList.css"],
-        scripts: [
-            "/js/splide/js/splide.min.js",
-            // "/js/mountCardList.js",
-            "/js/cardList.js",
-        ],
+        styles: ["/style/cardList.css"],
+        scripts: ["/js/cardList.js"],
+        cardList,
+        helpers: {
+            days(value, options) {
+                return `${Intl.DateTimeFormat("id", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "numeric",
+                }).format(new Date(value))} WIB`;
+            },
+        },
     };
 
     res.render("list", data);

@@ -2,6 +2,7 @@ const prisma = require("../../prisma/client");
 const { getUser, hasher } = require("../../services/auth");
 const { resSuccess, resError } = require("../../services/responseHandler");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
+// const ITEM_LIMIT = 5;
 
 exports.listOfUnRegisterCard = async (req, res) => {
     let cardList;
@@ -73,12 +74,11 @@ exports.listOfUnRegisterCard = async (req, res) => {
                 });
             }
         }
-        const numberOfCard = cardList.length;
-        const cardSection = Math.ceil(numberOfCard / 6);
+
         return resSuccess({
             res,
             title: "Success listed unregister card",
-            data: { numberOfCard, cardSection, cardList },
+            data: cardList,
         });
     } catch (error) {
         return resError({
@@ -159,12 +159,11 @@ exports.listOfRegisterCard = async (req, res) => {
                 });
             }
         }
-        const numberOfCard = cardList.length;
-        const cardSection = Math.ceil(numberOfCard / 6);
+
         return resSuccess({
             res,
             title: "Success listed register card",
-            data: { numberOfCard, cardSection, cardList },
+            data: cardList,
         });
     } catch (error) {
         return resError({
@@ -531,28 +530,14 @@ exports.delete = async (req, res) => {
 /** Melepaskan tautan user dan kartu */
 exports.unpairUserToCard = async (req, res) => {
     try {
-        const { username, cardNumber } = req.body;
-        const card = await prisma.user.update({
-            where: {
-                username,
-            },
+        const { cardNumber } = req.body;
+        const card = await prisma.card.update({
+            where: { card_number: cardNumber },
             data: {
-                card: {
-                    update: {
-                        where: {
-                            card_number: cardNumber,
-                        },
-                        data: {
-                            card_status: "UNREGISTER",
-                            // room: {
-                            //     set: [], // remove access from all room
-                            // },
-                        },
-                    },
-                    disconnect: {
-                        card_number: cardNumber,
-                    },
+                user: {
+                    disconnect: true,
                 },
+                card_status: "UNREGISTER",
             },
         });
         return resSuccess({ res, title: "Success unpair card", data: card });

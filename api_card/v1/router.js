@@ -118,12 +118,10 @@ router.delete(
 );
 router.post(
     "/unpair",
-    body("username").notEmpty(),
     body("cardNumber").notEmpty(),
     formChacker,
     cardIsExist,
     cardIsPair,
-    userIsExist,
     card.unpairUserToCard
 );
 module.exports = router;

@@ -1,162 +1,207 @@
-const splideContainer = document.querySelectorAll(".splide__list");
-const cardMounting = () => {
-    document.addEventListener("DOMContentLoaded", function (event) {
-        window.addEventListener("load", function () {
-            const mount = () => {
-                new Splide("#slider1").mount();
-                new Splide("#slider2").mount();
-            };
+const showMoreBtn = document.querySelector("#show-more");
+const searchForm = document.querySelector("#search");
+const searchbBn = document.querySelector("#search-btn");
+const dataContainer = document.querySelector(".data-container");
+const cardStatus = document.querySelectorAll(".card-status");
+let viewState = "UNPAIR";
+const deleteFunction = async ({ url, element }) => {
+    const resp = await fetch(url, {
+        method: "DELETE",
+    });
 
-            function delay() {
-                setTimeout(function () {
-                    mount();
-                }, 200);
-            }
-
-            if (document.readyState == "complete") {
-                delay();
-            } else {
-                document.onreadystatechange = function () {
-                    if (document.readyState === "complete") {
-                        delay();
-                    }
-                };
-            }
+    if (resp.ok) {
+        showToast({
+            theme: "success",
+            title: "Success delete card",
+            desc: "Successfully delete card",
         });
+        document.querySelector(`#action-${element}`).remove();
+    }
+
+    if (!resp.ok) {
+        console.log(await resp.json());
+        showToast({
+            theme: "danger",
+            title: "Failed delete card",
+            desc: "Failed to delete card",
+        });
+    }
+};
+
+const deleteHandler = (id) => {
+    showAlertConfirm({
+        theme: "danger",
+        title: "Sure for delete?",
+        desc: `Are you sure you want to delete this card ${id}`,
+        link: "#",
+        btn: "Delete",
+        exec: () =>
+            deleteFunction({ url: `/api/v1/card/delete/${id}`, element: id }),
     });
 };
 
-const splideContainerTemplate = (content) => {
+const unpairFunction = async ({ url, element }) => {
+    const resp = await setter({
+        url: "/api/v1/card/unpair",
+        body: { cardNumber: element },
+        successMsg: "Success unpair card",
+        failedMsg: "Failed unpair card",
+    });
+
+    if (resp.success) {
+        document.querySelector(`#action-${element}`).remove();
+    }
+};
+
+const unpairHandler = (id) => {
+    showAlertConfirm({
+        theme: "warning",
+        title: "Sure for unpair?",
+        desc: `Are you sure you want to unpair this card ${id}`,
+        link: "#",
+        btn: "Unpair",
+        exec: () =>
+            unpairFunction({ url: `/api/v1/card/delete/${id}`, element: id }),
+    });
+};
+
+const cardTemplate = (data) => {
     return `
-    <li class="splide__slide">
-        <div class="row main--table rounded-13">
-            ${content}
-        </div>
-    </li>
+    <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3 card--list-item" id="action-${
+        data.card_number
+    }" data-id="${data.id}">
+        <span class="table-data text-center text-neutral-2">${
+            data.card_number
+        }</span>
+        <p class="table-data text-center text-neutral-2">
+            ${days(data.createdAt)} WIB</p>
+        <a class=" table-data text-center text-neutral-2 text-danger-1 pointer" onclick="deleteHandler('${
+            data.card_number
+        }')">
+            Delete
+        </a>
+        <a class="table-data pointer text-center d-flex justify-content-around pointer" href="/dashboard/card/pair/?cardId=${
+            data.card_number
+        }">
+            Pair to User
+        </a>
+    </div>
     `;
 };
 
-const slideItemTemplate = (id) => {
-    return `
-    <div class="col-12 table-item py-2 ps-3 d-flex justify-content-between">
-        <p>${id}</p>
-        <a href="/dashboard/card/pair/?cardId=${id}" class="d-flex align-items-center pair--link">Pair to user</a>
-    </div>
-`;
-};
-
-const slideItemTemplateRegister = (id) => {
-    return `
-    <div class="col-12 table-item py-2 ps-3  d-flex justify-content-between">
-        <p>${id}</p>
-    </div>
-`;
-};
-
-const loadAvailableCard = (container, url) => {
-    startLoader();
-
-    let slideItems = "";
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 5000);
-    // get Data
-    fetch(url, { signal: controller.signal })
-        .then((res) => {
-            if (res.ok) return res.json();
-            throw "Can't get server response";
-        })
-        .then((data) => {
-            cardId = 0;
-            for (let section = 0; section < data.data.cardSection; section++) {
-                for (let card = 0; card < 6; card++) {
-                    // Create value of slider container
-                    slideItems += slideItemTemplate(
-                        data.data.cardList[cardId].card_number
-                    );
-                    cardId < data.data.numberOfCard ? cardId++ : cardId;
-                    if (cardId === data.data.numberOfCard) break;
-                }
-
-                // Create slider container
-                container.insertAdjacentHTML(
-                    "beforeend",
-                    splideContainerTemplate(slideItems)
-                );
-                slideItems = ""; //clear container
-            }
-            closeLoader();
-            clearTimeout(timer);
-            new Splide("#slider1").mount();
-
-            const newDataContainer = document.querySelector(
-                ".splide__slide.is-active>.row.main--table.rounded-13"
-            );
-            insertNewCard(newDataContainer);
-        })
-        .catch((error) => {
-            closeLoader();
-            clearTimeout(timer);
-            showToast({
-                theme: "danger",
-                title: "Something wrong",
-                desc: error,
-            });
-            new Splide("#slider1").mount();
-        });
-};
-
-const loadUnavailableCard = (container, url) => {
-    let slideItems = "";
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 5000);
-    // get Data
-    fetch(url, { signal: controller.signal })
-        .then((res) => {
-            if (res.ok) return res.json();
-            throw "Can't get server response";
-        })
-        .then((data) => {
-            cardId = 0;
-            for (let section = 0; section < data.data.cardSection; section++) {
-                for (let card = 0; card < 6; card++) {
-                    // Create value of slider container
-                    slideItems += slideItemTemplateRegister(
-                        data.data.cardList[cardId].card_number
-                    );
-                    cardId < data.data.numberOfCard ? cardId++ : cardId;
-                    if (cardId === data.data.numberOfCard) break;
-                }
-
-                // Create slider container
-                container.insertAdjacentHTML(
-                    "beforeend",
-                    splideContainerTemplate(slideItems)
-                );
-                slideItems = ""; //clear container
-            }
-            closeLoader();
-            clearTimeout(timer);
-            new Splide("#slider2").mount();
-        })
-        .catch((error) => {
-            closeLoader();
-            clearTimeout(timer);
-            showToast({
-                theme: "danger",
-                title: "Something wrong",
-                desc: error,
-            });
-            new Splide("#slider2").mount();
-        });
-};
-
-loadAvailableCard(splideContainer[0], "/api/v1/card/available");
-loadUnavailableCard(splideContainer[1], "/api/v1/card/unavailable");
-showFlashToast();
-
-function insertNewCard(container) {
-    const socket = io();
-    socket.on("newRegisteredCard", (data) => {
-        container.insertAdjacentHTML("afterbegin", slideItemTemplate(data));
+const cardListLoader = (datas) => {
+    datas.forEach((data) => {
+        const apiLength = document.querySelectorAll(".card--list-item");
+        dataContainer.insertAdjacentHTML("beforeend", cardTemplate(data));
     });
-}
+};
+
+const unpairCardTemplate = (data) => {
+    return `
+    <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3 card--list-item" id="action-${
+        data.card_number
+    }" data-id="${data.id}">
+        <span class="table-data text-center text-neutral-2">${
+            data.card_number
+        }</span>
+        <p class="table-data text-center text-neutral-2">
+            ${days(data.createdAt)} WIB</p>
+        <a class=" table-data text-center text-neutral-2 text-danger-1 pointer" onclick="deleteHandler('${
+            data.card_number
+        }')">
+            Delete
+        </a>
+        <a class="table-data pointer text-center d-flex justify-content-around pointer" onclick="unpairHandler('${
+            data.card_number
+        }')">
+            Unpair
+        </a>
+    </div>
+    `;
+};
+
+const unpairCardListLoader = (datas) => {
+    datas.forEach((data) => {
+        const apiLength = document.querySelectorAll(".card--list-item");
+        dataContainer.insertAdjacentHTML("beforeend", unpairCardTemplate(data));
+    });
+};
+
+cardStatus.forEach((status) => {
+    status.addEventListener("click", () => {
+        cardStatus.forEach((status) => {
+            status.classList.remove("card-active");
+        });
+        status.classList.add("card-active");
+        viewState = status.getAttribute("data-status");
+
+        dataContainer.textContent = "";
+        if (viewState === "PAIR") {
+            generalDataLoader({
+                url: `/api/v1/card/unavailable`,
+                func: unpairCardListLoader,
+            });
+        }
+
+        if (viewState === "UNPAIR") {
+            generalDataLoader({
+                url: `/api/v1/card/available`,
+                func: cardListLoader,
+            });
+        }
+    });
+});
+
+showMoreBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const cursor = lastCursorFinder(".card--list-item", "id");
+    const search = searchForm.value;
+    if (viewState === "UNPAIR") {
+        if (search.length === 0) {
+            generalDataLoader({
+                url: `/api/v1/card/available?cursor=${cursor}`,
+                func: cardListLoader,
+            });
+        }
+        if (search.length > 0) {
+            generalDataLoader({
+                url: `/api/v1/card/available?cursor=${cursor}&search=${search}`,
+                func: cardListLoader,
+            });
+        }
+    }
+    if (viewState === "PAIR") {
+        if (search.length === 0) {
+            generalDataLoader({
+                url: `/api/v1/card/unavailable?cursor=${cursor}`,
+                func: unpairCardListLoader,
+            });
+        }
+        if (search.length > 0) {
+            generalDataLoader({
+                url: `/api/v1/card/unavailable?cursor=${cursor}&search=${search}`,
+                func: unpairCardListLoader,
+            });
+        }
+    }
+});
+
+searchbBn.addEventListener("click", (e) => {
+    e.preventDefault();
+    const search = searchForm.value;
+    dataContainer.textContent = "";
+    if (viewState === "UNPAIR") {
+        generalDataLoader({
+            url: `/api/v1/card/available?search=${search}`,
+            func: cardListLoader,
+        });
+    }
+    if (viewState === "PAIR") {
+        generalDataLoader({
+            url: `/api/v1/card/unavailable?search=${search}`,
+            func: unpairCardListLoader,
+        });
+    }
+});
+
+showFlashToast();
