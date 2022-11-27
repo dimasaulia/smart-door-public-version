@@ -26,7 +26,7 @@
     <section class="section--conatiner">
         <section class="notify">        
             <div class="loading" id="loading">
-                <div class="dot-falling" ></div>
+                <div class="dot-falling"></div>
             </div>
         </section>
 
@@ -35,16 +35,16 @@
                 <img src="/image/icon_big_logo.svg" alt="logo perusahaan">
             </section>
 
-            <section class="nav--user d-flex justify-content-start align-items-center mt-5">
-                <div
-                    class="nav--user-profile d-flex justify-content-center align-items-center bg-blue-3 rounded-circle">
-                    <p class="text-neutral-6"></p>
-                </div>
+            <span class="nav--user d-flex justify-content-start align-items-center mt-5">
+                <a href="/profile"
+                    class="nav--user-profile d-flex pointer justify-content-center align-items-center bg-blue-3 rounded-circle">
+                    <img src="{{profil_path}}" alt="Profil" id="small-profil">
+                </a>
                 <div class="nav--user-data ms-1">
                     <a class="fw-bolder text-blue-4 d-block" href="/profile" id="user-container">{{user}}</a>
                     <a class="fw-bold text-blue-4" href="/api/v1/user/logout">Logout</a>
                 </div>
-            </section>
+            </span>
 
             <section class="nav--link mt-5 d-flex flex-column align-items-center">
                 <a href="/dashboard"
@@ -56,7 +56,7 @@
                 <a href="/dashboard/card/list"
                     class="nav--link-item {{card}} mt-2 ps-5 py-2 text-blue-3 d-flex justify-content-start align-items-center">
                     <img src="/image/icon_card.svg" class="nav--link-icon ms" alt="Logo Dashboard">
-                    <p class="fw-normal ms-2"> Card </p>
+                    <p class="fw-normal ms-2">Card</p>
                 </a>
 
                 <a href="/dashboard/user/list"

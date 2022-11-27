@@ -109,10 +109,14 @@ const setUser = async (req, res, next) => {
             },
             select: {
                 username: true,
+                profil: true,
             },
         });
         res.locals.user = user.username;
+        res.locals.profil_path =
+            user.profil.photo || "/image/illustration-user.png";
         req.user = user.username;
+        req.profil_path = user.profil.photo || "/image/illustration-user.png";
         next();
     } catch (error) {
         res.locals.user = "";

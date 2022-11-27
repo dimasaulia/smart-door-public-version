@@ -21,6 +21,7 @@
 
 .nav--user-profile {
     aspect-ratio: 1/1 !important;
+    overflow: hidden;
     width: 50px !important;
 }
 

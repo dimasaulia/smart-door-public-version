@@ -6,6 +6,7 @@ const passwordBtn = document.querySelector("#save-password");
 const form = document.querySelector("#profile-form");
 const usernameContainer = document.querySelector("#user-container");
 const imageContainer = document.querySelector(".profil-img-container");
+const nanvbarAvatar = document.querySelector("#small-profil");
 uploadBtnTrigger.addEventListener("click", (e) => {
     uploadForm.click();
 });
@@ -54,6 +55,7 @@ uploadForm.addEventListener("change", async (e) => {
 
         if (resp.success) {
             imageContainer.src = resp.data.photo;
+            nanvbarAvatar.src = resp.data.photo;
         }
     }
 });
