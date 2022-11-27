@@ -634,12 +634,14 @@ exports.profileAvatarUpdate = async (req, res) => {
                     .replace("public", "")}`,
             },
         });
+        const path = `./public/${profil.photo}`;
         if (profil.photo) {
-            try {
-                FS.unlink(`./public/${profil.photo}`, (err) => {
+            FS.access(path, FS.F_OK, (err) => {
+                //file exists
+                FS.unlink(path, (err) => {
                     if (err) throw err;
                 });
-            } catch (error) {}
+            });
         }
         return resSuccess({
             res,
