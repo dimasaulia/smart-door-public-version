@@ -5,31 +5,49 @@ const { getJwtToken, getUser } = require("../services/auth");
 const prisma = require("../prisma/client");
 
 const loginRequired = (req, res, next) => {
-    const token = getJwtToken(req);
+    try {
+        const jwtToken = getJwtToken(req);
 
-    // check if token exits
-    if (!token) return res.redirect("/auth/login");
+        // check if token exits
+        if (!jwtToken) throw "JWT missing, login required";
 
-    // verify token
-    jwt.verify(token, process.env.SECRET, async (err, decode) => {
-        if (!err) {
-            // find user
-            const user = await prisma.user.findUnique({
-                where: {
-                    id: decode.id,
-                },
-                select: {
-                    id: true,
-                    username: true,
-                },
-            });
-            if (user) return next();
+        jwt.verify(jwtToken, process.env.SECRET, async (err, decode) => {
+            try {
+                if (!err) {
+                    // find user
+                    const user = await prisma.user.findUnique({
+                        where: {
+                            id: decode.id,
+                        },
+                        select: {
+                            id: true,
+                            username: true,
+                            passwordUpdatedAt: true,
+                        },
+                    });
 
-            if (!user) return res.redirect("/auth/login");
-        } else {
-            return res.redirect("/auth/login");
-        }
-    });
+                    if (
+                        new Date(Number(decode.iat * 1000)) <
+                        new Date(user.passwordUpdatedAt)
+                    ) {
+                        throw "Some information change, re-login required";
+                    }
+
+                    if (!user) throw "Can't find the user, login required";
+
+                    if (user) return next();
+                } else {
+                    throw "Token not valid, login required";
+                }
+            } catch (error) {
+                res.cookie("jwt", "", { maxAge: 1 });
+                return res.redirect("/auth/login");
+            }
+        });
+    } catch (error) {
+        res.cookie("jwt", "", { maxAge: 1 });
+        return res.redirect("/auth/login");
+    }
 };
 
 const logoutRequired = (req, res, next) => {

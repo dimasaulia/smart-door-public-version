@@ -31,13 +31,15 @@ const loginRequired = (req, res, next) => {
                 select: {
                     id: true,
                     username: true,
-                    updatedAt: true,
+                    passwordUpdatedAt: true,
                 },
             });
 
             if (
-                new Date(Number(decode.iat * 1000)) < new Date(user.updatedAt)
+                new Date(Number(decode.iat * 1000)) <
+                new Date(user.passwordUpdatedAt)
             ) {
+                res.cookie("jwt", "", { maxAge: 1 });
                 return resError({
                     res,
                     title: "Some information change, please relogin",

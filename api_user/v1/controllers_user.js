@@ -78,6 +78,7 @@ exports.register = async (req, res) => {
                 email,
                 password: hasher(password),
                 role: { connect: { name: "USER" } },
+                passwordUpdatedAt: new Date(Date.now() - 1000),
                 profil: {
                     create: {
                         full_name: username,
@@ -166,7 +167,7 @@ exports.update = async (req, res) => {
             },
             data: {
                 password: hasher(newPassword),
-                updatedAt: new Date(Date.now() - 1000),
+                passwordUpdatedAt: new Date(Date.now() - 1000),
             },
         });
 
@@ -598,7 +599,11 @@ exports.resetPassword = async (req, res) => {
         const { uuid, token: urlToken } = verifyJwt(token);
         const newPass = await prisma.user.update({
             where: { id: uuid },
-            data: { password: hasher(password) },
+
+            data: {
+                password: hasher(password),
+                passwordUpdatedAt: new Date(Date.now() - 1000),
+            },
         });
 
         await prisma.token.delete({
