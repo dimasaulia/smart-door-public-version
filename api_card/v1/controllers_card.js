@@ -220,20 +220,17 @@ exports.cardRegistration = async (req, res) => {
 };
 
 exports.detail = async (req, res) => {
-    const { cardNumber: card_number } = req.params;
-
     try {
-        const card = await prisma.card.findUnique({
-            where: {
-                card_number,
-            },
+        const { cardNumber: card_number } = req.params;
+        const cardDetail = await prisma.card.findUnique({
+            where: { card_number },
         });
-
-        res.status(200).json({ code: 200, msg: card });
+        return resSuccess({ res, data: cardDetail });
     } catch (err) {
-        res.status(500).json({
-            code: 500,
-            title: err,
+        return resError({
+            res,
+            errors: err,
+            title: "Failed get card information",
         });
     }
 };

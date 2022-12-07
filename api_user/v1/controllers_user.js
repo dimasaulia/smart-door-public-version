@@ -290,7 +290,7 @@ exports.search = async (req, res) => {
 
     searchResult.forEach((user) => {
         let { username, id } = user;
-        results.push({ value: username, label: username });
+        results.push({ value: id, label: username });
     });
 
     res.status(200).json(results);

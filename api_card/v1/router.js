@@ -50,6 +50,7 @@ router.get(
     "/detail/:cardNumber",
     loginRequired,
     allowedRole("ADMIN"),
+    cardIsExist,
     card.detail
 );
 router.post(

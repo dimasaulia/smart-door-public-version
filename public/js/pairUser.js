@@ -2,9 +2,15 @@ const form = document.querySelector("form");
 const cardId = document.querySelector("#card-id");
 const btn = document.querySelector("#pairButton");
 const pairButtonn = document.querySelector("#pairButton");
+const cardCreationTime = document.querySelector("#cardCreationTime");
 
 $("#username").autocomplete({
     source: "/api/v1/user/search",
+    select: function (event, ui) {
+        event.preventDefault();
+        document.querySelector("#username").value = ui.item.label;
+        document.querySelector("#uid").textContent = ui.item.value;
+    },
 });
 
 btn.addEventListener("click", async (e) => {
@@ -41,8 +47,27 @@ btn.addEventListener("click", async (e) => {
         const err = await error;
         showToast({
             theme: "danger",
-            title: "Gagal pairing",
-            desc: err.message || "Gagal menautkan user dan card",
+            title: "Failed to pairing",
+            desc: err.message || "Failed to pairing user and card",
         });
     }
 });
+
+const cardInfo = async () => {
+    const resp = await fetcher(
+        `/api/v1/card/detail/${cardId.textContent.replaceAll(" ", "")}`
+    );
+
+    if (!resp.success) {
+        showToast({
+            theme: "danger",
+            title: "Cant Find Card",
+            desc: "Cant find card detail information",
+        });
+    }
+    if (resp.success) {
+        cardCreationTime.textContent = days(resp.data.createdAt);
+    }
+};
+
+cardInfo();
