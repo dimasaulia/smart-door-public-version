@@ -645,8 +645,8 @@ exports.profileAvatarUpdate = async (req, res) => {
                     .replace("public", "")}`,
             },
         });
-        const path = `./public/${profil.photo}`;
-        if (profil.photo) {
+        const path = `./public${profil.photo}`;
+        if (profil.photo != "/image/illustration-user.png") {
             FS.access(path, FS.F_OK, (err) => {
                 if (!err) {
                     //file exists
