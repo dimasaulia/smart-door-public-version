@@ -54,4 +54,8 @@
     .activity-icon {
         width: 18px;
     }
+
+    .heading {
+        font-size: .8rem !important;
+    }
 }

@@ -170,7 +170,11 @@ exports.roomEdit = async (req, res) => {
     });
     const data = {
         room: "bg-neutral-4",
-        styles: ["/style/api.css", "/style/createroom.css"],
+        styles: [
+            "/style/api.css",
+            "/style/createroom.css",
+            "/style/roomEdit.css",
+        ],
         scripts: ["/js/roomupdate.js"],
         hardwareList,
         ruid,

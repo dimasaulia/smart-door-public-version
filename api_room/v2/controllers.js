@@ -6,8 +6,7 @@ const {
 } = require("../../services/responseHandler");
 const { random: stringGenerator } = require("@supercharge/strings");
 const { hashChecker, hasher } = require("../../services/auth");
-// const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
-const ITEM_LIMIT = 2;
+const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
 /**
  * Fungsi yang digunakan oleh perangkat keras, fungsi nya adalah membuat perangkat

@@ -16,10 +16,14 @@ label {
 
 @media only screen and (max-width: 576px) {
     .form-group {
-        width: 25em !important;
+        width: 100% !important;
     }
 
     .card-form .form-label {
         width: 12rem !important;
+    }
+
+    .choose {
+        font-size: 0.75rem;
     }
 }

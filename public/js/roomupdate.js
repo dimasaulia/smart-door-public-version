@@ -10,7 +10,7 @@ const ruid = document.querySelector("#data-ruid");
 
 const hardwareTemplate = (data, id) => {
     return `
-        <div class="table-row d-flex py-1 py-md-2 justify-content-between px-3 hardware--list-item" id="hw-${
+        <div class="table-row d-flex align-items-center py-1 py-md-2 justify-content-between px-3 hardware--list-item" id="hw-${
             data.id
         }" data-id=${data.id}>
             <span class="table-data align-middle text-center text-neutral-2">${id}</span>
@@ -21,7 +21,7 @@ const hardwareTemplate = (data, id) => {
             <p class="table-data text-center text-neutral-2">
                 ${days(data.createdAt)} WIB</p>
             <span
-                class="table-data text-center align-bottom text-blue-4 fw-bold pointer bg-blue-2 py-1 rounded-13" onclick="chooseHandler('${
+                class="table-data text-center align-bottom text-blue-4 fw-bold pointer bg-blue-2 py-1 rounded-13 choose" onclick="chooseHandler('${
                     data.device_id
                 }')">
                 Choose

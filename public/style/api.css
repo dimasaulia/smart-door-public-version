@@ -108,6 +108,18 @@ input {
         margin-left: .5rem;
     }
 
+    .table-data:nth-child(2) {
+        width: 25% !important;
+    }
+
+    .table-data:nth-child(3) {
+        width: 45% !important;
+    }
+
+    .table-data:nth-child(4) {
+        width: 20% !important;
+    }
+
     h3 {
         font-size: 1.2rem;
     }

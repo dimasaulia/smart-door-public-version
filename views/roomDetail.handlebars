@@ -2,19 +2,19 @@
 
 <div class="row gx-5 gy-2 gy-md-0 mt-4">
     <div class="col-md-7">
-        <div class="bg-neutral-7 ps-5 rounded-13 d-flex align-items-center py-5">
-            <img src="/image/icon_room.svg" alt="Room Icon" class="room-icon">
-            <div class="ms-3">
+        <div class="bg-neutral-7 ps-0 ps-sm-5 rounded-13 d-flex flex-column flex-sm-row align-items-center py-5">
+            <img src="/image/icon_room.svg" alt="Room Icon" class="room-icon mb-2 mb-sm-0">
+            <div class="ms-0 ms-sm-3">
                 <h3 class="fw-bold text-blue-3" id="room-name"></h3>
-                <p class="fw-bold">Door Lock ID : <span id="ruid"></span></p>
-                <p class="fw-bold">Device ID : <span id="duid"></span></p>
-                <p class="fw-bold">Last seen : <span id="online"></span></p>
+                <p class="text-blue-3">Door Lock ID : <span class="fw-bold" id="ruid"></span></p>
+                <p class="text-blue-3">Device ID : <span class="fw-bold" id="duid"></span></p>
+                <p class="text-blue-3">Last seen : <span class="fw-bold" id="online"></span></p>
             </div>
         </div>
     </div>
     <div class="col-md-5">
         <div
-            class="room-info bg-blue-3 d-flex justify-content-between align-items-center px-4 rounded-13 text-neutral-7">
+            class="room-info bg-blue-3 d-flex justify-content-between align-items-center px-4 py-2 py-sm-0 rounded-13 text-neutral-7">
             <div>
                 <h2 class="fs-1 fw-bolder" id="visitor">-</h2>
                 <p class="text-neutral-6">Number of visitor</p>
@@ -51,14 +51,14 @@
                                 <line class="cls-1" x1="24.47" y1="14.84" x2="24.56" y2="25.11"/>
                                 <line class="cls-1" x1="24.43" y1="25.34" x2="18.91" y2="30.57"/>
                         </svg>
-                        <p class="fw-bold ms-2">History</p>
+                        <p class="fw-bold ms-2 heading">History</p>
                     </div>
                 </div>
                 <div class="col-6">
                     <div
                         id="user-btn"
                         class="room-activity active py-2 rounded-5 d-flex justify-content-center align-items-center pointer">
-                        <svg alt="Accaptable user icon" class="activity-icon"  viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <svg alt="Accaptable user icon" class="activity-icon ms-2 ms-sm-0"  viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <g clip-path="url(#clip0_288_731)">
                                 <path d="M14.6665 19.25V17.4167C14.6665 16.4442 14.2802 15.5116 13.5926 14.8239C12.9049 14.1363 11.9723 13.75 10.9998 13.75H4.58317C3.61071 13.75 2.67808 14.1363 1.99045 14.8239C1.30281 15.5116 0.916504 16.4442 0.916504 17.4167V19.25" stroke="#495181" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                 <path d="M15.5835 10.0833L17.4168 11.9167L21.0835 8.25" stroke="#495181" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -70,7 +70,7 @@
                             </clipPath>
                             </defs>
                         </svg>
-                        <p class="fw-bold ms-2">Accaptable Cards</p>
+                        <p class="fw-bold ms-2 heading">Accaptable Cards</p>
                     </div>
                 </div>
             </div>
@@ -85,18 +85,14 @@
     </div>
     <div class="col-md-5">
         <div class=" bg-neutral-6 px-3 py-2 rounded-13 ">
-            <div class="row gx-4 mt-3">
-                <div class="col-6">
-                    <h3 class="fw-bold text-blue-3">Request User</h3>
-                </div>
+            <h3 class="fw-bold text-blue-3">Request User</h3>
+
+            <div class="activity-access row p-3 mt-2">    
             </div>
 
-            <div class="activity-access row p-3 mt-2">
-                
+            <div class="col-12 mt-3">
+                <p class="text-center text-neutral-1 pointer" id="request-show-more">Show More</p>
             </div>
-                <div class="col-12 mt-3">
-                    <p class="text-center text-neutral-1 pointer" id="request-show-more">Show More</p>
-                </div>
         </div>
     </div>
 </div>

@@ -52,13 +52,14 @@ const roomListTemplate = ({ name, ruid, id, device }) => {
             </div>
 
             <div class="ms-sm-4 ms-0 mt-3 mt-sm-0">
-                <h5 class="fw-bold text-blue-4">${name}</h5>
-                <p class="text-blue-3">Room ID ${ruid} | Device ID ${
-        device.device_id
-    }</p>
-                <p class="text-blue-3">Last seen: ${
+                <h5 class="fw-bolder text-blue-4">${name}</h5>
+                <p class="text-blue-3">Room ID: <span class="fw-bold"> ${ruid} </span></p>
+                <p class="text-blue-3">Device ID: <span class="fw-bold"> ${
+                    device.device_id
+                } </span></p>
+                <p class="text-blue-3">Last seen: <span class="fw-bold"> ${
                     device.lastOnline ? days(device.lastOnline) + " WIB" : "-"
-                } </p>
+                } </span> </p>
             </div>
         </div>
 
