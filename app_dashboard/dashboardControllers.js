@@ -225,7 +225,7 @@ exports.hardware = async (req, res) => {
     });
     const data = {
         hardware: "bg-neutral-4",
-        styles: ["/style/api.css"],
+        styles: ["/style/api.css", "/style/hardware.css"],
         scripts: ["/js/hardware.js"],
         hardwareList,
         helpers: {
