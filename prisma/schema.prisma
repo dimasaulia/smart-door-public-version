@@ -47,7 +47,7 @@ model Token {
 model Profil {
   id        String   @id @default(cuid())
   full_name String?
-  photo     String?
+  photo     String?  @default("/image/illustration-user.png")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    String   @unique
   createdAt DateTime @default(now())

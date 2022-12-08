@@ -298,16 +298,21 @@ exports.search = async (req, res) => {
 
 exports.list = async (req, res) => {
     try {
-        const { search, cursor } = req.query;
+        const { search, cursor, role: search_role } = req.query;
         let userList;
-
-        if (search) {
+        if (search || search_role) {
+            console.log(search_role);
             if (!cursor) {
                 userList = await prisma.user.findMany({
                     where: {
                         username: {
                             contains: search,
                             mode: "insensitive",
+                        },
+                        role: {
+                            name: {
+                                equals: search_role,
+                            },
                         },
                     },
                     orderBy: {
@@ -327,6 +332,11 @@ exports.list = async (req, res) => {
                         username: {
                             contains: search,
                             mode: "insensitive",
+                        },
+                        role: {
+                            name: {
+                                equals: search_role,
+                            },
                         },
                     },
                     orderBy: {
@@ -382,6 +392,7 @@ exports.list = async (req, res) => {
             data: userList,
         });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: "Cant get user list",

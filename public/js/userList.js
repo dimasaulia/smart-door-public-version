@@ -24,7 +24,9 @@ const userListTemplate = ({ username, id, role, profil }) => {
         <div
             class="mt-4 user--list-item d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" data-uuid=${id} data-username=${username}>
             <div class="user-profile d-flex flex-column flex-sm-row justify-content-start align-items-center">
-                <div class="user-profile-picture bg-neutral-4 rounded-circle"></div>
+                <div class="user-profile-picture bg-neutral-4 rounded-circle d-flex justify-content-center align-items-center">
+                    <img src="${profil.photo}" alt="User profile">
+                </div>
 
                 <div class="ms-4 mt-3 mt-sm-0">
                     <h5 class="fw-bold text-blue-4">${
@@ -60,13 +62,6 @@ const userListTemplate = ({ username, id, role, profil }) => {
 
 toggler.addEventListener("click", () => {
     dropDownContent.classList.toggle("active-down");
-});
-
-roleValues.forEach((f) => {
-    f.addEventListener("click", () => {
-        roleForm.value = f.getAttribute("data-role");
-        dropDownContent.classList.toggle("active-down");
-    });
 });
 
 const deleteAction = ({ url, element }) => {
@@ -168,6 +163,7 @@ const setAdminHandler = () => {
 };
 
 const userListLoader = (data) => {
+    console.log(data);
     data.forEach((user) => {
         userConatiner.insertAdjacentHTML("beforeend", userListTemplate(user));
     });
@@ -184,7 +180,7 @@ searchBtn.addEventListener("click", (e) => {
     const search = usernameForm.value;
     userConatiner.textContent = "";
     generalDataLoader({
-        url: `/api/v1/user/list?search=${search}`,
+        url: `/api/v1/user/list?search=${search}&role=${roleForm.value}`,
         func: userListLoader,
     });
 });
@@ -209,14 +205,21 @@ showMoreBtn.addEventListener("click", (e) => {
     const search = usernameForm.value;
     if (search.length > 0) {
         generalDataLoader({
-            url: `/api/v1/user/list/?cursor=${cursor}&search=${search}`,
+            url: `/api/v1/user/list/?cursor=${cursor}&search=${search}&role=${roleForm.value}`,
             func: userListLoader,
         });
     }
     if (search.length === 0) {
         generalDataLoader({
-            url: `/api/v1/user/list/?cursor=${cursor}`,
+            url: `/api/v1/user/list/?cursor=${cursor}&role=${roleForm.value}`,
             func: userListLoader,
         });
     }
+});
+
+roleValues.forEach((f) => {
+    f.addEventListener("click", () => {
+        roleForm.value = f.getAttribute("data-role");
+        dropDownContent.classList.toggle("active-down");
+    });
 });
