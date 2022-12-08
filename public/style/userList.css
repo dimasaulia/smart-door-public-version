@@ -74,4 +74,8 @@ input {
         height: auto;
     }
 
+    .room-search {
+        width: 200px !important;
+    }
+
 }
