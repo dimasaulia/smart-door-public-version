@@ -37,17 +37,15 @@ async function setter({
     closeLoader();
 
     const data = await response.json();
-
     if (!data.success) {
         showToast({
             theme: "danger",
             title: failedMsg,
             desc:
-                failedBody ||
                 data.data.err ||
                 data.data.error ||
-                data.data.errors.email.detail ||
-                data.data.errors,
+                data.data.errors ||
+                failedBody,
         });
         return { success: false, data: data.data };
     }

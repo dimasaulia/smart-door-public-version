@@ -23,15 +23,36 @@
     background: rgb(var(--color-neutral-4));
 }
 
-.request-room {
+/* .request-room {
     box-sizing: content-box;
     height: 20em;
     overflow-x: hidden;
     overflow-y: scroll;
-}
+} */
 
 @media only screen and (max-width: 576px) {
+
+    .accessable-room {
+        width: 100%;
+    }
+
     .accessable-table-container {
-        width: 25em !important;
+        width: 100% !important;
+    }
+
+    .table-data:nth-child(1) {
+        width: 10% !important;
+    }
+
+    .table-data:nth-child(2) {
+        width: 35% !important;
+    }
+
+    .table-data:nth-child(3) {
+        width: 45% !important;
+    }
+
+    .table-data:nth-child(4) {
+        width: 20% !important;
     }
 }

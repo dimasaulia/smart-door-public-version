@@ -134,12 +134,12 @@ const roomRequestNotExist = async (req, res, next) => {
                 },
             },
         });
-        if (request.length > 0) throw "Cant create room request";
+        if (request.length > 0) throw "Request already exist";
         return next();
     } catch (error) {
         return resError({
             res,
-            title: "Request sudah ada!",
+            title: "Request already exist!",
             errors: error,
         });
     }
@@ -156,7 +156,7 @@ const roomAccessNotExist = async (req, res, next) => {
                 },
             },
         });
-        if (request.length > 0) throw "Cant create room request";
+        if (request.length > 0) throw "Your card already have access";
         return next();
     } catch (error) {
         return resError({

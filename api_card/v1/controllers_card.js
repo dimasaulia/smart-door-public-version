@@ -551,7 +551,6 @@ exports.unpairUserToCard = async (req, res) => {
         });
         return resSuccess({ res, title: "Success unpair card", data: card });
     } catch (error) {
-        console.log(error);
         return resError({ res, errors: error, title: "Failed unpair card" });
     }
 };

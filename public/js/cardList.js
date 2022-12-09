@@ -19,7 +19,6 @@ const deleteFunction = async ({ url, element }) => {
     }
 
     if (!resp.ok) {
-        console.log(await resp.json());
         showToast({
             theme: "danger",
             title: "Failed delete card",

@@ -33,7 +33,7 @@
 
 }
 
-@media only screen and (max-width: 576) {
+@media only screen and (max-width: 576px) {
     .room-icons {
         width: 1.5em;
     }
@@ -41,4 +41,9 @@
     .no-card {
         width: 15rem !important;
     }
+
+    /* .card-banner {
+        margin: 0 auto;
+        width: 15rem !important;
+    } */
 }

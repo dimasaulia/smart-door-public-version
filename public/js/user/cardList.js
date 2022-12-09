@@ -6,16 +6,18 @@ const searchBtn = document.querySelector("#search");
 const cardListTemplate = ({ card_name, card_number, type, id }) => {
     return `
     <div
-        class="card--list-item mt-3 pe-sm-5 pe-0 d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 p-3 rounded-13" data-cursor=${id}>
-        <div
-            class="card-profile d-flex flex-column flex-sm-row justify-content-start align-items-center">
-            <div class="card-profile-picture">
-                <img src="/image/icon_${type}.svg" alt="">
-            </div>
+        class="card--list-item mt-3 pe-sm-5 pe-3 d-flex flex-column flex-sm-row align-items-between align-items-sm-center justify-content-between bg-neutral-7 shadow-c-1 p-3 rounded-13" data-cursor=${id}>
+        
+        <div class="card-profile-picture">
+            <img src="/image/icon_${type}.svg" alt="User card image" class="card-banner">
+        </div>
 
-            <div class="ms-4 mt-3 mt-sm-0">
+        <div
+            class="card-profile d-flex flex-column flex-sm-row justify-content-start align-items-start align-items-sm-center">
+
+            <div class="ms-0 ms-sm-4 mt-3 mt-sm-0">
                 <h5 class="fw-bold text-blue-4">${
-                    card_name || "Kartu anda"
+                    card_name || "Kartu saya"
                 }</h5>
                 <p class="text-blue-3">${card_number}</p>
             </div>
@@ -25,7 +27,7 @@ const cardListTemplate = ({ card_name, card_number, type, id }) => {
             <img src="/image/icon_room.svg" alt="" class="room-icons">
             <p class="ms-2">Room Settings</p>
         </a>
-        <a href="/card/${card_number}" class="ms-5 me-5 text-blue-3 fw-bold d-flex align-items-center mt-sm-0 mt-2">
+        <a href="/card/${card_number}" class="ms-0 ms-sm-5 me-5 text-blue-3 fw-bold d-flex align-items-center mt-sm-0 mt-2">
             <img src="/image/icon_log.svg" alt="" class="room-icons">
             <p class="ms-2">Logs</p>
         </a>

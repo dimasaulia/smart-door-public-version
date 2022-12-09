@@ -6,27 +6,43 @@ const roomContainer = document.querySelector(".request-room");
 const accessableRoomContainer = document.querySelector(
     ".accessable-table-container"
 );
-const loadMoreRoomList = document.querySelector("#load-more-room-list");
+const loadMoreRoomList = document.querySelector("#load-more");
 const loadMoreAccessableRoom = document.querySelector(
     "#load-more-accessable-room"
 );
+// const roomRequestTemplate = ({ room: { ruid, name, id }, no, cardNumber }) => {
+//     return `
+//     <div class="room-item col-12" data-room-cursor=${id}>
+//         <div class="row">
+//             <div class="col-3">
+//                 <p class="text-start">${no}</p>
+//             </div>
+//             <div class="col-3">
+//                 <p class="text-start">${ruid}</p>
+//             </div>
+//             <div class="col-3">
+//                 <p class="text-start">${name}</p>
+//             </div>
+//             <div class="col-3">
+//                 <a href="/api/v1/room/u/request?ruid=${ruid}&cardNumber=${cardNumber}" class="text-start request">Request access</a>
+//             </div>
+//         </div>
+//     </div>
+//     `;
+// };
+
 const roomRequestTemplate = ({ room: { ruid, name, id }, no, cardNumber }) => {
     return `
-    <div class="room-item col-12" data-room-cursor=${id}>
-        <div class="row">
-            <div class="col-3">
-                <p class="text-start">${no}</p>
-            </div>
-            <div class="col-3">
-                <p class="text-start">${ruid}</p>
-            </div>
-            <div class="col-3">
-                <p class="text-start">${name}</p>
-            </div>
-            <div class="col-3">
-                <a href="/api/v1/room/u/request?ruid=${ruid}&cardNumber=${cardNumber}" class="text-start request">Request access</a>
-            </div>
-        </div>
+    <div class="table-row d-flex align-items-center py-1 py-md-2 justify-content-between px-3 hardware--list-item" id="room-${id}" data-id="${id}" data-url="/api/v1/room/u/request?ruid=${ruid}&cardNumber=${cardNumber}">
+        <span class="table-data align-middle text-center text-neutral-2">${no}</span>
+        <p class="table-data text-center text-neutral-2" data-id="${ruid}">
+            ${ruid}</p>
+        <p class="table-data text-center text-neutral-2">
+            ${name}</p>
+        <span
+            class="table-data text-center align-bottom text-blue-4 fw-bold pointer bg-blue-2 py-1 rounded-13 choose" onclick="requestRoom('${id}')">
+            Request
+        </span>
     </div>
     `;
 };
@@ -64,97 +80,34 @@ generalDataLoader({
     errHandler: basicInfoErrHandler,
 });
 
-const requestRoom = async () => {
-    const requestRoom = await document.querySelectorAll(".request");
-    requestRoom.forEach((room) => {
-        if (!room.getAttribute("data-listener")) {
-            room.addEventListener("click", (e) => {
-                e.preventDefault();
-                const url = room.getAttribute("href");
-                fetch(url, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                })
-                    .then((res) => {
-                        if (!res.ok) throw res.json();
-                        return res.json();
-                    })
-                    .then((data) => {
-                        showToast({
-                            theme: "success",
-                            title: "Successfully request a room",
-                            desc: `Permintaan ruangan berhasil dilakukan`,
-                        });
-                    })
-                    .catch(async (err) => {
-                        const errors = await err;
-                        showToast({
-                            theme: "danger",
-                            desc: errors.message,
-                            title: "Failed request a room",
-                        });
-                    });
-            });
-            room.setAttribute("data-listener", "true");
-        }
+const requestRoom = async (id) => {
+    const url = document.querySelector(`#room-${id}`).getAttribute("data-url");
+    const resp = await setter({
+        url,
     });
 };
 
 // INFO: Room List
-const roomListLoader = (data) => {
-    let no = data.length;
-    data.reverse().forEach((room) => {
-        roomContainer.insertAdjacentHTML(
-            "afterbegin",
-            roomRequestTemplate({ room, no, cardNumber })
-        );
-        no--;
-    });
-    requestRoom();
-};
-
-const roomListLoaderMore = (data) => {
-    let no = document.querySelectorAll(".room-item").length + 1;
-    if (data.length === 0) {
-        showAlert({
-            theme: "warning",
-            title: "Data already load",
-            desc: "You have loaded all the data",
-        });
-    }
-
+const firstRoomListLoader = (data) => {
     data.forEach((room) => {
+        let no = document.querySelectorAll(".hardware--list-item");
         roomContainer.insertAdjacentHTML(
             "beforeend",
-            roomRequestTemplate({ room, no, cardNumber })
+            roomRequestTemplate({ room, no: no.length + 1, cardNumber })
         );
-        no++;
-    });
-    requestRoom();
-};
-
-const roomListErrHandler = (err) => {
-    showToast({
-        theme: "danger",
-        title: err,
-        desc: "Failed to load room list",
     });
 };
 
 generalDataLoader({
     url: `/api/v1/room/u/list`,
-    func: roomListLoader,
-    errHandler: roomListErrHandler,
+    func: firstRoomListLoader,
 });
 
 loadMoreRoomList.addEventListener("click", () => {
-    const cursor = lastCursorFinder(".room-item", "room-cursor");
+    const cursor = lastCursorFinder(".hardware--list-item", "id");
     generalDataLoader({
         url: `/api/v1/room/u/list?cursor=${cursor}`,
-        func: roomListLoaderMore,
-        errHandler: roomListErrHandler,
+        func: firstRoomListLoader,
     });
 });
 
