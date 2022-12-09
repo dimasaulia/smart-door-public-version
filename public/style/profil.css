@@ -32,5 +32,11 @@
 }
 
 .profile-container {
-    margin: 4rem auto !important;
+    margin: 1rem auto !important;
+}
+
+@media only screen and (max-width: 576px) {
+    #email-status {
+        font-size: 0.7rem !important;
+    }
 }

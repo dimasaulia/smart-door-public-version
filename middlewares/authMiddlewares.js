@@ -371,7 +371,7 @@ const urlTokenIsNotActive = async (req, res, next) => {
     } catch (error) {
         return resError({
             res,
-            errors: error,
+            errors: error.token.detail,
         });
     }
 };

@@ -19,7 +19,7 @@ const sendEmail = async (user_mail, subject, message) => {
     });
 
     let info = await transporter.sendMail({
-        from: '"Template Service" <no-replay@templateservice.com>', // sender address
+        from: '"Smart Room Authentication Service" <no-replay@smartroomservice.com>', // sender address
         to: user_mail, // list of receivers
         subject,
         html: message,

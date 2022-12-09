@@ -95,10 +95,11 @@ passwordBtn.addEventListener("click", async (e) => {
 try {
     verifyBtn.addEventListener("click", async (e) => {
         e.preventDefault();
-        await setter({
+        const resp = await setter({
             url: "/api/v1/user/email-send-verification",
             successMsg: "Success send verification",
             successBody: "Check your email to get verification link",
         });
+        console.log(resp);
     });
 } catch (error) {}
