@@ -3,18 +3,18 @@
 <div
     class="card-info d-flex flex-column-reverse flex-sm-row justify-content-between align-items-center align-items-sm-start mt-5">
     <form method="post" class="card-form">
-        <div class="form-group d-flex align-items-center justify-content-between">
+        <div class="form-group d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between">
             <label for="card-number" class="fw-bold text-neutral-2">Card Number</label>
             <input type="text" class="form-control rounded-13 shadow-c-1" name="cardNumber" disabled
                 id="card-number">
         </div>
 
-        <div class="form-group d-flex align-items-center justify-content-between mt-3">
+        <div class="form-group d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mt-3">
             <label for="card-name" class="fw-bold text-neutral-2">Card Name</label>
             <input type="text" class="form-control rounded-13" name="cardName" id="card-name">
         </div>
 
-        <div class="form-group d-flex align-items-center justify-content-between mt-3">
+        <div class="form-group d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between mt-3">
             <label for="card-type" class="fw-bold text-neutral-2">Card Type</label>
             <select class="form-control rounded-13" id="card-type">
                 <option value="card_atm">Bank</option>
@@ -25,7 +25,7 @@
             </select>
         </div>
 
-        <div class="form-group d-flex align-items-center justify-content-start mt-3">
+        <div class="form-group d-flex align-items-start align-items-sm-center justify-content-start mt-3">
             <label class="form-check-label fw-bold text-neutral-2 me-3" for="auth-type">Two Step Authentication</label>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" id="auth-type" title="isTwoStepAuth">
@@ -33,9 +33,9 @@
         </div>
 
 
-        <div class="form-group d-flex align-items-center justify-content-end mt-3">
-            <p class="text-center text-blue-3 pointer me-3" id="save-change">Save Change</p>
-            <a href="/card/change-pin/{{id}}" class="text-center text-blue-3">Change Pin</a>
+        <div class="form-group d-flex flex-row align-items-start align-items-sm-center justify-content-end mt-3">
+            <p class="text-center text-blue-3 pointer me-3 bg-blue-2 py-1 px-2 rounded-13" id="save-change">Save Change</p>
+            <a href="/card/change-pin/{{id}}" class="text-center text-blue-3 bg-blue-2 py-1 px-2 rounded-13">Change Pin</a>
         </div>
 
     </form>

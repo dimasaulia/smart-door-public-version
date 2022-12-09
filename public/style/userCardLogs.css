@@ -2,10 +2,12 @@
     width: 18em;
 }
 
+.card-info {
+    width: 100% !important;
+}
+
 input[type=text],
 select {
-    -webkit-appearance: inherit;
-    -moz-appearance: none;
     border: none;
     width: 20em !important;
 }
@@ -28,10 +30,6 @@ select:focus {
 .form-check-input {
     height: 1.5rem !important;
     width: 3rem !important;
-}
-
-.card-form {
-    width: auto;
 }
 
 .form-group {
@@ -72,13 +70,23 @@ label {
 }
 
 @media only screen and (max-width: 576px) {
-    .form-group {
-        width: 25em !important;
+    .card-form {
+        width: 100% !important;
     }
 
-    input,
+    .form-group {
+        width: 100% !important;
+    }
+
+    input[type=text],
     select {
         border: none;
-        width: 15em !important;
+        width: 100% !important;
     }
+
+    .form-check-input {
+        height: 1.25rem !important;
+        width: 2.5rem !important;
+    }
+
 }
