@@ -36,17 +36,21 @@ select:focus {
 }
 
 @media only screen and (max-width: 576px) {
+    .card-icon {
+        width: 100%;
+    }
+
     .card-change-pin {
-        width: 25em !important;
+        width: 100% !important;
     }
 
     .form-group {
-        width: 20em !important;
+        width: 100% !important;
     }
 
     input,
     select {
         border: none;
-        width: 12em !important;
+        width: 100% !important;
     }
 }

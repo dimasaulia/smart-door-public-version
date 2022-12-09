@@ -29,7 +29,7 @@ const cardListTemplate = ({ card_name, card_number, type, id }) => {
         </a>
         <a href="/card/${card_number}" class="ms-0 ms-sm-5 me-5 text-blue-3 fw-bold d-flex align-items-center mt-sm-0 mt-2">
             <img src="/image/icon_log.svg" alt="" class="room-icons">
-            <p class="ms-2">Logs</p>
+            <p class="ms-2">History & Card Settings</p>
         </a>
     </div>
     `;
