@@ -1,5 +1,6 @@
 node_modules
 .env
+.prod.env
 public/storage/
 !public/storage/.gitignore
 # Keep environment variables out of version control
