@@ -59,6 +59,10 @@ input {
     cursor: pointer;
 }
 
+.role-icon {
+    width: 2.5rem !important;
+}
+
 @media only screen and (max-width: 720px) {
     .form-icons {
         width: 20px !important;

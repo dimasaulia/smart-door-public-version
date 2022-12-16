@@ -19,6 +19,97 @@ const deleteUser = ({ url, username, element }) => {
     });
 };
 
+const changeRole = async (id, username, target) => {
+    document.querySelectorAll(`.role-${id}`).forEach((role) => {
+        role.childNodes[1].classList.remove("bg-blue-1");
+        role.childNodes[1].classList.remove("bg-blue-3");
+        role.childNodes[1].classList.add("bg-blue-1");
+    });
+
+    if (target === "ADMIN") {
+        const resp = await setter({
+            url: "/api/v1/role/set-user-role",
+            body: {
+                username,
+                rolename: target,
+            },
+            successMsg: "Success updated role",
+            successBody: `Success change ${username} role to ${target}`,
+        });
+        if (resp.success) {
+            document
+                .querySelector(`#admin-${id}`)
+                .childNodes[1].classList.remove("bg-blue-1");
+            document
+                .querySelector(`#admin-${id}`)
+                .childNodes[1].classList.add("bg-blue-3");
+        }
+    }
+
+    if (target === "ADMIN TEKNIS") {
+        const resp = await setter({
+            url: "/api/v1/role/set-user-role",
+            body: {
+                username,
+                rolename: target,
+            },
+            successMsg: "Success updated role",
+            successBody: `Success change ${username} role to ${target}`,
+        });
+
+        if (resp.success) {
+            document
+                .querySelector(`#teknis-${id}`)
+                .childNodes[1].classList.remove("bg-blue-1");
+            document
+                .querySelector(`#teknis-${id}`)
+                .childNodes[1].classList.add("bg-blue-3");
+        }
+    }
+
+    if (target === "OPERATOR") {
+        const resp = await setter({
+            url: "/api/v1/role/set-user-role",
+            body: {
+                username,
+                rolename: target,
+            },
+            successMsg: "Success updated role",
+            successBody: `Success change ${username} role to ${target}`,
+        });
+
+        if (resp.success) {
+            document
+                .querySelector(`#operator-${id}`)
+                .childNodes[1].classList.remove("bg-blue-1");
+            document
+                .querySelector(`#operator-${id}`)
+                .childNodes[1].classList.add("bg-blue-3");
+        }
+    }
+
+    if (target === "USER") {
+        const resp = await setter({
+            url: "/api/v1/role/set-user-role",
+            body: {
+                username,
+                rolename: target,
+            },
+            successMsg: "Success updated role",
+            successBody: `Success change ${username} role to ${target}`,
+        });
+
+        if (resp.success) {
+            document
+                .querySelector(`#user-${id}`)
+                .childNodes[1].classList.remove("bg-blue-1");
+            document
+                .querySelector(`#user-${id}`)
+                .childNodes[1].classList.add("bg-blue-3");
+        }
+    }
+};
+
 const userListTemplate = ({ username, id, role, profil }) => {
     return `
         <div
@@ -46,15 +137,32 @@ const userListTemplate = ({ username, id, role, profil }) => {
                 </a>
             </div>
 
-            ${
-                role.name === "ADMIN"
-                    ? `<div data-role=${role.name} class="pointer">
-                            <p class="bg-blue-2 text-neutral-7 py-2 px-4 rounded-13 mb-2" >Set User Role</p>
-                        </div>`
-                    : `<div data-role=${role.name} class="pointer">
-                            <a href="#" class="bg-blue-3 text-neutral-7 py-2 px-4 rounded-13 mb-2" >Set Admin Role</a>
-                        </div>`
-            }
+            <div>
+                ${
+                    role.name === "ADMIN"
+                        ? `<p class="d-inline role-${id} hover-tool pointer" id="admin-${id}" data-hover="Super Admin" onclick="changeRole('${id}', '${username}','ADMIN')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_super_admin.svg" alt="Super Admin" > </p>`
+                        : `<p class="d-inline role-${id} hover-tool pointer" id="admin-${id}" data-hover="Super Admin" onclick="changeRole('${id}', '${username}','ADMIN')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_super_admin.svg" alt="Super Admin" > </p>`
+                }
+
+                ${
+                    role.name === "ADMIN TEKNIS"
+                        ? `<p class="d-inline role-${id} hover-tool pointer" id="teknis-${id}" data-hover="Admin Teknis" onclick="changeRole('${id}', '${username}','ADMIN TEKNIS')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_admin_teknis.svg" alt="Admin Teknis" > </p>`
+                        : `<p class="d-inline role-${id} hover-tool pointer" id="teknis-${id}" data-hover="Admin Teknis" onclick="changeRole('${id}', '${username}','ADMIN TEKNIS')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_admin_teknis.svg" alt="Admin Teknis" > </p>`
+                }
+                
+                ${
+                    role.name === "OPERATOR"
+                        ? ` <p class="d-inline role-${id} hover-tool pointer" id="operator-${id}" data-hover="Operator" onclick="changeRole('${id}', '${username}','OPERATOR')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_operator.svg" alt="Operator" > </p>`
+                        : ` <p class="d-inline role-${id} hover-tool pointer" id="operator-${id}" data-hover="Operator" onclick="changeRole('${id}', '${username}','OPERATOR')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_operator.svg" alt="Operator" > </p>`
+                }
+
+                ${
+                    role.name === "USER"
+                        ? `<p class="d-inline role-${id} hover-tool pointer" id="user-${id}" data-hover="User" onclick="changeRole('${id}', '${username}','USER')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_user.svg" alt="User" > </p>`
+                        : `<p class="d-inline role-${id} hover-tool pointer" id="user-${id}" data-hover="User" onclick="changeRole('${id}', '${username}','USER')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_user.svg" alt="User" > </p>`
+                }
+                
+            </div>
             
         </div>
         `;
@@ -111,63 +219,11 @@ const deleteHandler = () => {
     });
 };
 
-const setAdminHandler = () => {
-    document.querySelectorAll(".user--list-item").forEach((d) => {
-        const updateBtn = d.children[2];
-        if (!updateBtn.getAttribute("data-listener")) {
-            const uuid = d.getAttribute("data-uuid");
-            updateBtn.addEventListener("click", async (e) => {
-                e.preventDefault();
-                const activeRole = updateBtn.getAttribute("data-role");
-                if (activeRole === "USER") {
-                    const updatedRole = await setter({
-                        url: `/api/v1/user/set-admin/${uuid}`,
-                        successMsg: "Succes update role",
-                    });
-                    if (updatedRole.success) {
-                        updateBtn.textContent = "";
-                        updateBtn.insertAdjacentHTML(
-                            "beforeend",
-                            `<p class="bg-blue-2 text-neutral-7 py-2 px-4 rounded-13 mb-2">
-                                Set User Role
-                                </p>`
-                        );
-                        updateBtn.setAttribute(
-                            "data-role",
-                            updatedRole.data.role.name
-                        );
-                    }
-                }
-
-                if (activeRole === "ADMIN") {
-                    const updatedRole = await setter({
-                        url: `/api/v1/user/set-user/${uuid}`,
-                        successMsg: "Succes update role",
-                    });
-                    if (updatedRole.success) {
-                        updateBtn.textContent = "";
-                        updateBtn.insertAdjacentHTML(
-                            "beforeend",
-                            `<a href="#" class="bg-blue-3 text-neutral-7 py-2 px-4 rounded-13 mb-2" >Set Admin Role</a>`
-                        );
-                        updateBtn.setAttribute(
-                            "data-role",
-                            updatedRole.data.role.name
-                        );
-                    }
-                }
-            });
-            updateBtn.setAttribute("data-listener", "true");
-        }
-    });
-};
-
 const userListLoader = (data) => {
     data.forEach((user) => {
         userConatiner.insertAdjacentHTML("beforeend", userListTemplate(user));
     });
     deleteHandler();
-    setAdminHandler();
 };
 
 // INFO: First Load User List
