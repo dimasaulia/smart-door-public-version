@@ -24,8 +24,32 @@ const roleIDIsExist = async (req, res, next) => {
     }
 };
 
+const roleNameIsExist = async (req, res, next) => {
+    const rolename =
+        req.body.rolename || req.params.rolename || req.query.rolename;
+    try {
+        const roleDetail = await prisma.role.findUnique({
+            where: {
+                name: rolename,
+            },
+        });
+
+        if (roleDetail === null) {
+            throw new ErrorException({
+                type: "role",
+                detail: "Role not exist",
+                location: "Role Midlleware",
+            });
+        }
+
+        return next();
+    } catch (error) {
+        return resError({ res, title: "Something Wrong", errors: error });
+    }
+};
+
 const roleNameIsNotExist = async (req, res, next) => {
-    const { name } = req.body;
+    const { rolename: name } = req.body;
     try {
         const roleDetail = await prisma.role.findUnique({
             where: {
@@ -47,4 +71,4 @@ const roleNameIsNotExist = async (req, res, next) => {
     }
 };
 
-module.exports = { roleIDIsExist, roleNameIsNotExist };
+module.exports = { roleIDIsExist, roleNameIsNotExist, roleNameIsExist };

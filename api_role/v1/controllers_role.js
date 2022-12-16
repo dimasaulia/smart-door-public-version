@@ -154,3 +154,29 @@ exports.update = async (req, res) => {
         return resError({ res, errors: error });
     }
 };
+
+exports.updateUserRole = async (req, res) => {
+    try {
+        const { username, rolename } = req.body;
+
+        const updatedRole = await prisma.role.update({
+            where: {
+                name: rolename,
+            },
+            data: {
+                user: {
+                    connect: {
+                        username,
+                    },
+                },
+            },
+        });
+        return resSuccess({
+            res,
+            title: `Success updated user role`,
+            data: updatedRole,
+        });
+    } catch (error) {
+        return resError({ res, errors: error });
+    }
+};
