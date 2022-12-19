@@ -10,7 +10,7 @@ const del = ({ url, element }) => {
         method: "DELETE",
     })
         .then((res) => {
-            if (!res.ok) throw "Something wrong";
+            if (!res.ok) throw res;
             return res.json();
         })
         .then((data) => {
@@ -22,12 +22,13 @@ const del = ({ url, element }) => {
             });
             element.remove();
         })
-        .catch((e) => {
+        .catch(async (e) => {
             closeLoader();
+            const errors = await e.json();
             showToast({
                 theme: "danger",
-                title: "Failed action",
-                desc: "Failed to delete HARDWARE",
+                title: "Failed to delete HARDWARE",
+                desc: errors.message || "Failed action",
             });
         });
 };

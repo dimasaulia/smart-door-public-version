@@ -105,7 +105,7 @@ const deviceNotPair = async (req, res, next) => {
                 },
                 select: { room: true },
             });
-            if (device?.room) throw "The device already pair";
+            if (device?.room) throw "Process stop, device has paired room";
             if (!device?.room) return next();
         }
     } catch (error) {

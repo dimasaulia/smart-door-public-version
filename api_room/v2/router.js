@@ -51,12 +51,13 @@ router.delete(
     loginRequired,
     allowedRole("ADMIN", "ADMIN TEKNIS"),
     deviceIsExist,
+    deviceNotPair,
     room.deviceDelete
 );
 router.post(
     "/device/change-pin/:duid",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     param("duid").notEmpty(),
     body("newPin").notEmpty().isNumeric().isLength({ min: "6", max: "6" }),
     body("confirmNewPin")
@@ -73,7 +74,7 @@ router.post(
 router.post(
     "/pair",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     query("ruid").notEmpty(),
     query("cardNumber").notEmpty(),
     formChacker,

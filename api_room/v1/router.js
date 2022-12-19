@@ -30,18 +30,23 @@ const {
 const { apiValidation } = require("../../middlewares/apiKeyMiddlewares");
 
 // ROOM ROUTER
-router.get("/list", loginRequired, allowedRole("ADMIN"), room.list);
+router.get(
+    "/list",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    room.list
+);
 router.get(
     "/accaptable-user/:ruid",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     roomIsExist,
     room.accaptableUser
 );
 router.get(
     "/requestUser/:ruid",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     roomIsExist,
     room.requestRoomByUser
 );
@@ -56,7 +61,7 @@ router.get(
 router.get(
     "/detail/:ruid",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     roomIsExist,
     room.detail
 );
@@ -87,14 +92,14 @@ router.post(
 router.delete(
     "/delete/:ruid",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     roomIsExist,
     room.delete
 );
 router.post(
     "/pair",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     query("ruid").notEmpty(),
     query("cardNumber").notEmpty(),
     query("requestId").notEmpty(),
@@ -111,7 +116,7 @@ router.post("/get-or-create", room.getOrCreateRoom); //HW API
 router.get(
     "/logs/:ruid",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     roomIsExist,
     room.logs
 );
@@ -133,6 +138,6 @@ router.post(
     cardIsHaveAccess,
     isTwoStepAuth,
     room.roomCheckIn
-);
+); //HW OLD API
 
 module.exports = router;

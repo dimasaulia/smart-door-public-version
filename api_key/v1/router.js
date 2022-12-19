@@ -8,12 +8,22 @@ const {
 const { formChacker } = require("../../middlewares/formMiddleware");
 const { apiIDIsExist } = require("../../middlewares/apiKeyMiddlewares");
 
-router.post("/generate", loginRequired, allowedRole("ADMIN"), api.createApiKey);
-router.get("/list", loginRequired, allowedRole("ADMIN"), api.apiKeyList);
+router.post(
+    "/generate",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    api.createApiKey
+);
+router.get(
+    "/list",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    api.apiKeyList
+);
 router.delete(
     "/delete/:id",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     param("id").notEmpty(),
     formChacker,
     apiIDIsExist,
