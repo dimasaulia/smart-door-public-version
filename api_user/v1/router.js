@@ -60,8 +60,13 @@ const {
 // USER ROUTER
 router.get("/logout", user.logout);
 router.get("/detail/:id", loginRequired, allowedRole("ADMIN"), user.detail);
-router.get("/search", loginRequired, allowedRole("ADMIN"), user.search);
-router.get("/list", loginRequired, allowedRole("ADMIN"), user.list);
+router.get(
+    "/search",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    user.search
+);
+router.get("/list", loginRequired, allowedRole("ADMIN", "OPERATOR"), user.list);
 router.post(
     "/register",
     body("username").notEmpty(),
@@ -116,7 +121,7 @@ router.delete(
 router.post(
     "/pair",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "OPERATOR"),
     cardIsExist,
     usernameIsExist,
     cardNotPair,

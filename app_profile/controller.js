@@ -1,5 +1,6 @@
 const prisma = require("../prisma/client");
 const { getUser } = require("../services/auth");
+const { layoutHandler } = require("../services/layout");
 
 exports.profile = async (req, res) => {
     const id = getUser(req);
@@ -13,7 +14,7 @@ exports.profile = async (req, res) => {
         userData,
         user_active: "bg-neutral-4",
         avatar: userData.profil.photo || "/image/illustration-user.png",
-        layout: userData.role.name === "USER" ? "userBase" : "base",
+        layout: await layoutHandler(getUser(req)),
     };
     res.render("profile", data);
 };

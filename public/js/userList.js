@@ -6,6 +6,9 @@ const usernameForm = document.querySelector("#username");
 const userConatiner = document.querySelector(".user--list-container");
 const showMoreBtn = document.querySelector("#showMore");
 const searchBtn = document.querySelector("#search");
+const roleOfUser = document
+    .querySelector("#admin-role")
+    .getAttribute("data-role");
 let isSearch = false;
 
 const deleteUser = ({ url, username, element }) => {
@@ -128,41 +131,48 @@ const userListTemplate = ({ username, id, role, profil }) => {
                 </div>
             </div>
 
-            <div class="d-flex my-4 my-sm-0">
-                <a href="">
-                    <img src="/image/icon_edit.svg" alt="" class="form-icons">
-                </a>
-                <a href="" class="ms-3">
-                    <img src="/image/icon_delete.svg" alt="" class="form-icons">
-                </a>
-            </div>
-
-            <div>
-                ${
-                    role.name === "ADMIN"
-                        ? `<p class="d-inline role-${id} hover-tool pointer" id="admin-${id}" data-hover="Super Admin" onclick="changeRole('${id}', '${username}','ADMIN')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_super_admin.svg" alt="Super Admin" > </p>`
-                        : `<p class="d-inline role-${id} hover-tool pointer" id="admin-${id}" data-hover="Super Admin" onclick="changeRole('${id}', '${username}','ADMIN')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_super_admin.svg" alt="Super Admin" > </p>`
-                }
-
-                ${
-                    role.name === "ADMIN TEKNIS"
-                        ? `<p class="d-inline role-${id} hover-tool pointer" id="teknis-${id}" data-hover="Admin Teknis" onclick="changeRole('${id}', '${username}','ADMIN TEKNIS')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_admin_teknis.svg" alt="Admin Teknis" > </p>`
-                        : `<p class="d-inline role-${id} hover-tool pointer" id="teknis-${id}" data-hover="Admin Teknis" onclick="changeRole('${id}', '${username}','ADMIN TEKNIS')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_admin_teknis.svg" alt="Admin Teknis" > </p>`
-                }
-                
-                ${
-                    role.name === "OPERATOR"
-                        ? ` <p class="d-inline role-${id} hover-tool pointer" id="operator-${id}" data-hover="Operator" onclick="changeRole('${id}', '${username}','OPERATOR')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_operator.svg" alt="Operator" > </p>`
-                        : ` <p class="d-inline role-${id} hover-tool pointer" id="operator-${id}" data-hover="Operator" onclick="changeRole('${id}', '${username}','OPERATOR')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_operator.svg" alt="Operator" > </p>`
-                }
-
-                ${
-                    role.name === "USER"
-                        ? `<p class="d-inline role-${id} hover-tool pointer" id="user-${id}" data-hover="User" onclick="changeRole('${id}', '${username}','USER')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_user.svg" alt="User" > </p>`
-                        : `<p class="d-inline role-${id} hover-tool pointer" id="user-${id}" data-hover="User" onclick="changeRole('${id}', '${username}','USER')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_user.svg" alt="User" > </p>`
-                }
-                
-            </div>
+            ${
+                roleOfUser === "ADMIN"
+                    ? `
+                    <div class="d-flex my-4 my-sm-0">
+                        <a href="">
+                            <img src="/image/icon_edit.svg" alt="" class="form-icons">
+                        </a>
+                        <a href="" class="ms-3">
+                            <img src="/image/icon_delete.svg" alt="" class="form-icons">
+                        </a>
+                    </div>
+        
+                    <div>
+                        ${
+                            role.name === "ADMIN"
+                                ? `<p class="d-inline role-${id} hover-tool pointer" id="admin-${id}" data-hover="Super Admin" onclick="changeRole('${id}', '${username}','ADMIN')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_super_admin.svg" alt="Super Admin" > </p>`
+                                : `<p class="d-inline role-${id} hover-tool pointer" id="admin-${id}" data-hover="Super Admin" onclick="changeRole('${id}', '${username}','ADMIN')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_super_admin.svg" alt="Super Admin" > </p>`
+                        }
+        
+                        ${
+                            role.name === "ADMIN TEKNIS"
+                                ? `<p class="d-inline role-${id} hover-tool pointer" id="teknis-${id}" data-hover="Admin Teknis" onclick="changeRole('${id}', '${username}','ADMIN TEKNIS')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_admin_teknis.svg" alt="Admin Teknis" > </p>`
+                                : `<p class="d-inline role-${id} hover-tool pointer" id="teknis-${id}" data-hover="Admin Teknis" onclick="changeRole('${id}', '${username}','ADMIN TEKNIS')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_admin_teknis.svg" alt="Admin Teknis" > </p>`
+                        }
+                        
+                        ${
+                            role.name === "OPERATOR"
+                                ? ` <p class="d-inline role-${id} hover-tool pointer" id="operator-${id}" data-hover="Operator" onclick="changeRole('${id}', '${username}','OPERATOR')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_operator.svg" alt="Operator" > </p>`
+                                : ` <p class="d-inline role-${id} hover-tool pointer" id="operator-${id}" data-hover="Operator" onclick="changeRole('${id}', '${username}','OPERATOR')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_operator.svg" alt="Operator" > </p>`
+                        }
+        
+                        ${
+                            role.name === "USER"
+                                ? `<p class="d-inline role-${id} hover-tool pointer" id="user-${id}" data-hover="User" onclick="changeRole('${id}', '${username}','USER')"> <img class="d-inline bg-blue-3 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_user.svg" alt="User" > </p>`
+                                : `<p class="d-inline role-${id} hover-tool pointer" id="user-${id}" data-hover="User" onclick="changeRole('${id}', '${username}','USER')"> <img class="d-inline bg-blue-1 text-neutral-7 p-1 rounded-13 role-icon" src="/image/icon_role_user.svg" alt="User" > </p>`
+                        }
+                        
+                    </div>
+            
+            `
+                    : ""
+            }
             
         </div>
         `;
@@ -223,7 +233,9 @@ const userListLoader = (data) => {
     data.forEach((user) => {
         userConatiner.insertAdjacentHTML("beforeend", userListTemplate(user));
     });
-    deleteHandler();
+    if (roleOfUser === "ADMIN") {
+        deleteHandler();
+    }
 };
 
 // INFO: First Load User List

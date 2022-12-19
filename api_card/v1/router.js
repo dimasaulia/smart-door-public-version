@@ -37,19 +37,19 @@ router.get(
 router.get(
     "/available",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "OPERATOR"),
     card.listOfUnRegisterCard // ! Will cause error in user ui
 );
 router.get(
     "/unavailable",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "OPERATOR"),
     card.listOfRegisterCard // ! Will cause error in user ui
 );
 router.get(
     "/detail/:cardNumber",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "OPERATOR"),
     cardIsExist,
     card.detail
 );
@@ -119,6 +119,8 @@ router.delete(
 );
 router.post(
     "/unpair",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
     body("cardNumber").notEmpty(),
     formChacker,
     cardIsExist,

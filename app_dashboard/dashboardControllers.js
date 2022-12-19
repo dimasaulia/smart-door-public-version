@@ -97,10 +97,15 @@ exports.cardList = async (req, res) => {
 };
 
 exports.userList = async (req, res) => {
+    const userData = await prisma.user.findUnique({
+        where: { id: getUser(req) },
+        include: { role: true },
+    });
     const data = {
         users: "bg-neutral-4",
         styles: ["/style/userList.css"],
         scripts: ["/js/userList.js"],
+        adminRole: userData.role.name,
         layout: await layoutHandler(getUser(req)),
     };
 

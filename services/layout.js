@@ -10,7 +10,9 @@ const layoutHandler = async (id) => {
             ? "base"
             : userData.role.name === "OPERATOR"
             ? "operatorBase"
-            : "adminteknisBase";
+            : userData.role.name === "ADMIN TEKNIS"
+            ? "adminteknisBase"
+            : "userBase";
     return layout;
 };
 
