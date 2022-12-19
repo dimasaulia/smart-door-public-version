@@ -26,7 +26,7 @@ const del = ({ url, element }) => {
             showToast({
                 theme: "danger",
                 title: "Delete gagal",
-                desc: "Gagal mengahpus user",
+                desc: "Gagal mengahpus ruangan",
             });
         });
 };

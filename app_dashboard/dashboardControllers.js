@@ -146,10 +146,15 @@ exports.createroom = async (req, res) => {
 };
 
 exports.roomList = async (req, res) => {
+    const userData = await prisma.user.findUnique({
+        where: { id: getUser(req) },
+        include: { role: true },
+    });
     const data = {
         room: "bg-neutral-4",
         styles: ["/style/userList.css"],
         scripts: ["/js/roomList.js"],
+        isSuperAdmin: userData.role.name === "ADMIN" ? true : false,
         layout: await layoutHandler(getUser(req)),
     };
 

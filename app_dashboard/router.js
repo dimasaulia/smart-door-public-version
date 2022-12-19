@@ -32,7 +32,7 @@ router.get(
 router.get(
     "/room/list",
     loginRequired,
-    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     dashboard.roomList
 );
 
@@ -46,7 +46,7 @@ router.get(
 router.get(
     "/room/detail/:ruid",
     loginRequired,
-    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     dashboard.roomDetail
 );
 

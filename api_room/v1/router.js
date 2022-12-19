@@ -33,20 +33,20 @@ const { apiValidation } = require("../../middlewares/apiKeyMiddlewares");
 router.get(
     "/list",
     loginRequired,
-    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     room.list
 );
 router.get(
     "/accaptable-user/:ruid",
     loginRequired,
-    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     roomIsExist,
     room.accaptableUser
 );
 router.get(
     "/requestUser/:ruid",
     loginRequired,
-    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     roomIsExist,
     room.requestRoomByUser
 );
@@ -61,7 +61,7 @@ router.get(
 router.get(
     "/detail/:ruid",
     loginRequired,
-    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     roomIsExist,
     room.detail
 );
@@ -99,7 +99,7 @@ router.delete(
 router.post(
     "/pair",
     loginRequired,
-    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     query("ruid").notEmpty(),
     query("cardNumber").notEmpty(),
     query("requestId").notEmpty(),
@@ -116,7 +116,7 @@ router.post("/get-or-create", room.getOrCreateRoom); //HW API
 router.get(
     "/logs/:ruid",
     loginRequired,
-    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     roomIsExist,
     room.logs
 );
