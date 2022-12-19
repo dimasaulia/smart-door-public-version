@@ -26,31 +26,55 @@
     <section class="section--conatiner">
         <section class="notify">        
             <div class="loading" id="loading">
-                <div class="dot-falling" ></div>
+                <div class="dot-falling"></div>
             </div>
         </section>
 
-        <nav class="nav bg-blue-2 d-flex flex-column justify-content-start align-items-center py-3" id="target--nav">
+        <nav class="nav d-flex  bg-blue-1 flex-column justify-content-start align-items-center py-3" id="target--nav">
             <section class="nav--logo bg-blue-1 p-2 rounded-13">
                 <img src="/image/icon_big_logo.svg" alt="logo perusahaan">
             </section>
 
-            <section class="nav--user {{user_active}} py-1 d-flex justify-content-start align-items-center mt-5">
-                <div
-                    class="nav--user-profile me-2 d-flex justify-content-center align-items-center bg-blue-3 rounded-circle">
-                    <img class="text-neutral-6" src="{{profil_path}}" alt="User profile" id="small-profil">
-                </div>
+            <span class="nav--user {{user_active}} py-2 d-flex justify-content-start align-items-center mt-5">
+                <a href="/profile"
+                    class="nav--user-profile me-2 d-flex pointer justify-content-center align-items-center bg-blue-3 rounded-circle">
+                    <img src="{{profil_path}}" alt="Profil" id="small-profil">
+                </a>
                 <div class="nav--user-data ms-1">
-                    <a href="/profile" class="fw-bolder text-blue-4 d-block" id="user-container">{{user}}</a>
-                    <a class="fw-ligh text-blue-4 fw-normal" href="/api/v1/user/logout">Logout</a>
+                    <a class="fw-bolder text-blue-4 d-block" href="/profile" id="user-container">{{user}}</a>
+                    <a class="fw-normal text-blue-4" href="/api/v1/user/logout">Logout</a>
                 </div>
-            </section>
+            </span>
 
             <section class="nav--link mt-5 d-flex flex-column align-items-center">
-                <a href="/dashboard/card/list"
-                    class="nav--link-item {{card}} mt-2 ps-5 py-2 text-blue-3 d-flex justify-content-start align-items-center">
-                    <img src="/image/icon_card.svg" class="nav--link-icon ms" alt="Logo Dashboard">
-                    <p class="fw-normal ms-2"> Card </p>
+                <a href="/dashboard/"
+                    class="nav--link-item {{dashboard}} mt-2 ps-5 py-2 text-blue-3 d-flex justify-content-start align-items-center">
+                    <img src="/image/icon_dashboard.svg" class="nav--link-icon ms" alt="Logo Dashboard">
+                    <p class="fw-normal ms-2">Dashboard</p>
+                </a>
+
+                <a href="/dashboard/room/list"
+                    class="nav--link-item {{room}} mt-2 ps-5 py-2 text-blue-3 d-flex justify-content-start align-items-center">
+                    <img src="/image/icon_group.svg" class="nav--link-icon" alt="Logo Dashboard">
+                    <p class="fw-normal ms-2">Room</p>
+                </a>
+
+                {{!-- <a href=""
+                    class="nav--link-item {{log}} mt-2 ps-5 py-2 text-blue-3 d-flex justify-content-start align-items-center">
+                    <img src="/image/icon_log.svg" class="nav--link-icon" alt="Logo Dashboard">
+                    <p class="fw-normal ms-2">Log</p>
+                </a> --}}
+
+                <a href="/dashboard/api"
+                    class="nav--link-item {{api}} mt-2 ps-5 py-2 text-blue-3 d-flex justify-content-start align-items-center">
+                    <img src="/image/icon_api.svg" class="nav--link-icon" alt="Logo Dashboard">
+                    <p class="fw-normal ms-2">API</p>
+                </a>
+
+                <a href="/dashboard/hardware"
+                    class="nav--link-item {{hardware}} mt-2 ps-5 py-2 text-blue-3 d-flex justify-content-start align-items-center">
+                    <img src="/image/icon_hardware.svg" class="nav--link-icon" alt="Logo Dashboard">
+                    <p class="fw-normal ms-2">HARDWARE</p>
                 </a>
             </section>
         </nav>
@@ -77,6 +101,7 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
     integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous">
 </script>
+<script src="/socket.io/socket.io.js"></script>
 <script src="/js.cookie.js"></script>
 <script src="/js/util/navbar.js"></script>
 <script src="/js/util/loader.js"></script>

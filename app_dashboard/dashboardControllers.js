@@ -1,4 +1,6 @@
 const prisma = require("../prisma/client");
+const { layoutHandler } = require("../services/layout");
+const { getUser } = require("../services/auth");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 // const ITEM_LIMIT = 5;
 
@@ -30,7 +32,8 @@ exports.dashboard = async (req, res) => {
         userCount,
         userUnPairCount,
         roomCount,
-        roomRecord: roomRecord < 9999999 ? roomRecord : "9999999+",
+        roomRecord: roomRecord < 9999 ? roomRecord : "9999+",
+        layout: await layoutHandler(getUser(req)),
     };
 
     res.render("index", data);
@@ -58,6 +61,7 @@ exports.userPairingToDashboard = async (req, res) => {
             "/js/pairUser.js",
         ],
         cardId,
+        layout: await layoutHandler(getUser(req)),
     };
     res.render("pair", data);
 };
@@ -86,6 +90,7 @@ exports.cardList = async (req, res) => {
                 }).format(new Date(value))} WIB`;
             },
         },
+        layout: await layoutHandler(getUser(req)),
     };
 
     res.render("list", data);
@@ -96,6 +101,7 @@ exports.userList = async (req, res) => {
         users: "bg-neutral-4",
         styles: ["/style/userList.css"],
         scripts: ["/js/userList.js"],
+        layout: await layoutHandler(getUser(req)),
     };
 
     res.render("userList", data);
@@ -128,6 +134,7 @@ exports.createroom = async (req, res) => {
                 }).format(new Date(value))} WIB`;
             },
         },
+        layout: await layoutHandler(getUser(req)),
     };
 
     res.render("createroom", data);
@@ -138,18 +145,20 @@ exports.roomList = async (req, res) => {
         room: "bg-neutral-4",
         styles: ["/style/userList.css"],
         scripts: ["/js/roomList.js"],
+        layout: await layoutHandler(getUser(req)),
     };
 
     res.render("roomList", data);
 };
 
-exports.roomDetail = (req, res) => {
+exports.roomDetail = async (req, res) => {
     const { ruid } = req.params;
     const data = {
         room: "bg-neutral-4",
         styles: ["/style/roomDetail.css"],
         scripts: ["/js/roomDetail.js"],
         ruid,
+        layout: await layoutHandler(getUser(req)),
     };
 
     res.render("roomDetail", data);
@@ -193,6 +202,7 @@ exports.roomEdit = async (req, res) => {
                 }).format(new Date(value))} WIB`;
             },
         },
+        layout: await layoutHandler(getUser(req)),
     };
 
     res.render("roomEdit", data);
@@ -214,6 +224,7 @@ exports.apiList = async (req, res) => {
                 return parseInt(value) + 1;
             },
         },
+        layout: await layoutHandler(getUser(req)),
     };
     res.render("api", data);
 };
@@ -242,6 +253,7 @@ exports.hardware = async (req, res) => {
                 }).format(new Date(value))} WIB`;
             },
         },
+        layout: await layoutHandler(getUser(req)),
     };
     res.render("hardware", data);
 };

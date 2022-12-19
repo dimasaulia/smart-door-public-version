@@ -11,6 +11,7 @@ exports.profile = async (req, res) => {
         styles: ["/style/profil.css"],
         scripts: ["/js/profil.js"],
         userData,
+        user_active: "bg-neutral-4",
         avatar: userData.profil.photo || "/image/illustration-user.png",
         layout: userData.role.name === "USER" ? "userBase" : "base",
     };

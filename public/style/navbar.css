@@ -16,7 +16,8 @@
 }
 
 .nav--user {
-    width: 85%;
+    padding-left: 20px;
+    width: 100%;
 }
 
 .nav--user-profile {

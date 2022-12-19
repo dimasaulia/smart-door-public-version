@@ -73,7 +73,12 @@ const allowedRole = (...roles) => {
             },
         });
         if (!roles.includes(user.role.name)) {
-            if (user.role.name === "ADMIN") return res.redirect("/dashboard");
+            if (
+                user.role.name === "ADMIN" ||
+                user.role.name === "ADMIN TEKNIS" ||
+                user.role.name === "OPERATOR"
+            )
+                return res.redirect("/dashboard");
             if (user.role.name === "USER") return res.redirect("/");
         }
 

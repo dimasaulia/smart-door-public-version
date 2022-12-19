@@ -234,10 +234,17 @@ searchBtn.addEventListener("click", (e) => {
     e.preventDefault();
     const search = usernameForm.value;
     userConatiner.textContent = "";
-    generalDataLoader({
-        url: `/api/v1/user/list?search=${search}&role=${roleForm.value}`,
-        func: userListLoader,
-    });
+    if (roleForm.value.length > 0) {
+        generalDataLoader({
+            url: `/api/v1/user/list?search=${search}&role=${roleForm.value}`,
+            func: userListLoader,
+        });
+    } else {
+        generalDataLoader({
+            url: `/api/v1/user/list?search=${search}`,
+            func: userListLoader,
+        });
+    }
 });
 
 document.addEventListener("keyup", (e) => {

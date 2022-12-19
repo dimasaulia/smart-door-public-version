@@ -3,23 +3,28 @@ const router = express.Router();
 const dashboard = require("./dashboardControllers");
 const { loginRequired, allowedRole } = require("../middlewares/uiMiddlewares");
 
-router.get("/", loginRequired, allowedRole("ADMIN"), dashboard.dashboard);
+router.get(
+    "/",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
+    dashboard.dashboard
+);
 router.get(
     "/card/list",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "OPERATOR"),
     dashboard.cardList
 );
 router.get(
     "/card/pair",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "OPERATOR"),
     dashboard.userPairingToDashboard
 );
 router.get(
     "/user/list",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "OPERATOR"),
     dashboard.userList
 );
 
@@ -27,28 +32,28 @@ router.get(
 router.get(
     "/room/list",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     dashboard.roomList
 );
 
 router.get(
     "/room/create",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     dashboard.createroom
 );
 
 router.get(
     "/room/detail/:ruid",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     dashboard.roomDetail
 );
 
 router.get(
     "/room/edit/:ruid",
     loginRequired,
-    allowedRole("ADMIN"),
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
     dashboard.roomEdit
 );
 

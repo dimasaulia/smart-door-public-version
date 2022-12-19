@@ -35,14 +35,14 @@
                 <img src="/image/icon_big_logo.svg" alt="logo perusahaan">
             </section>
 
-            <span class="nav--user d-flex justify-content-start align-items-center mt-5">
+            <span class="nav--user {{user_active}} py-2 d-flex justify-content-start align-items-center mt-5">
                 <a href="/profile"
-                    class="nav--user-profile d-flex pointer justify-content-center align-items-center bg-blue-3 rounded-circle">
+                    class="nav--user-profile me-2 d-flex pointer justify-content-center align-items-center bg-blue-3 rounded-circle">
                     <img src="{{profil_path}}" alt="Profil" id="small-profil">
                 </a>
                 <div class="nav--user-data ms-1">
                     <a class="fw-bolder text-blue-4 d-block" href="/profile" id="user-container">{{user}}</a>
-                    <a class="fw-bold text-blue-4" href="/api/v1/user/logout">Logout</a>
+                    <a class="fw-normal text-blue-4" href="/api/v1/user/logout">Logout</a>
                 </div>
             </span>
 
