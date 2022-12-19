@@ -155,6 +155,7 @@ exports.roomList = async (req, res) => {
         styles: ["/style/userList.css"],
         scripts: ["/js/roomList.js"],
         isSuperAdmin: userData.role.name === "ADMIN" ? true : false,
+        adminRole: userData.role.name,
         layout: await layoutHandler(getUser(req)),
     };
 

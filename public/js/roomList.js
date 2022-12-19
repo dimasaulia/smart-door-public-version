@@ -2,6 +2,9 @@ const roomConatiner = document.querySelector(".room--list-container");
 const showMoreBtn = document.querySelector("#showMore");
 const roomnameForm = document.querySelector("#roomname");
 const searchBtn = document.querySelector(".input-group-prepend");
+const roleOfUser = document
+    .querySelector("#admin-role")
+    .getAttribute("data-role");
 const del = ({ url, element }) => {
     startLoader();
 
@@ -63,14 +66,20 @@ const roomListTemplate = ({ name, ruid, id, device }) => {
             </div>
         </div>
 
-        <div class="d-flex mt-3 mt-sm-0 mb-4 mb-sm-0">
-            <a href="/dashboard/room/edit/${ruid}">
-                <img src="/image/icon_edit.svg" alt="" class="form-icons">
-            </a>
-            <a href="" class="ms-3">
-                <img src="/image/icon_delete.svg" alt="" class="form-icons delete-room">
-            </a>
-        </div>
+        ${
+            roleOfUser === "ADMIN"
+                ? `
+            <div class="d-flex mt-3 mt-sm-0 mb-4 mb-sm-0">
+                <a href="/dashboard/room/edit/${ruid}">
+                    <img src="/image/icon_edit.svg" alt="" class="form-icons">
+                </a>
+                <a href="" class="ms-3">
+                    <img src="/image/icon_delete.svg" alt="" class="form-icons delete-room">
+                </a>
+            </div>
+        `
+                : ""
+        }
 
         <a href="/dashboard/room/detail/${ruid}" class="bg-blue-3 text-neutral-7 py-2 px-4 rounded-13">Detail</a>
 
