@@ -10,7 +10,7 @@ async function setter({
     url,
     body = null,
     successMsg = "Success execute task",
-    successBody = successMsg,
+    successBody = "Success execute task",
     failedMsg = "Something Wrong",
     failedBody = "we are sorry can't execute your task",
 }) {
@@ -42,6 +42,7 @@ async function setter({
             theme: "danger",
             title: failedMsg,
             desc:
+                data.data.title ||
                 data.data.err ||
                 data.data.error ||
                 data.data.errors ||
@@ -53,7 +54,7 @@ async function setter({
     if (data.success) {
         showToast({
             theme: "success",
-            title: successMsg,
+            title: data.data.title || successMsg,
             desc: successBody,
         });
         return { success: true, data: data.data };
