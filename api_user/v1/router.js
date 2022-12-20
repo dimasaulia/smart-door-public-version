@@ -69,7 +69,13 @@ router.get(
 router.get("/list", loginRequired, allowedRole("ADMIN", "OPERATOR"), user.list);
 router.post(
     "/register",
-    body("username").notEmpty(),
+    body("username")
+        .notEmpty()
+        .isLength({ min: 3 })
+        .withMessage("Username minimal 3 character")
+        .not()
+        .contains(" ")
+        .withMessage("Username can't contain space"),
     body("email").isEmail().withMessage("Please enter valid email").trim(),
     body("password")
         .isStrongPassword()
