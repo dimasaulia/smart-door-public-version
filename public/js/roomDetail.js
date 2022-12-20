@@ -16,17 +16,42 @@ const userBtn = document.querySelector("#user-btn");
 const showMoreRequestBtn = document.querySelector("#request-show-more");
 let mode = "USER"; // antoher value is LOG
 
+const deleteAccessHandler = (cardNumber) => {
+    showAlertConfirm({
+        theme: "warning",
+        title: "Sure for delete?",
+        desc: `Are you sure for removing user access`,
+        link: "#",
+        btn: "Delete",
+        exec: async () => {
+            const resp = await setter({
+                url: "/api/v1/room/unpair",
+                body: {
+                    ruid,
+                    cardNumber,
+                },
+            });
+            if (resp.success) {
+                document.querySelector(`#card-id-${cardNumber}`).remove();
+            }
+        },
+    });
+};
+
 const accaptableUserTemplate = ({
     card_name,
-    user: { username },
+    user,
     updatedAt,
     id,
+    card_number,
 }) => {
     return `
     <div
-        class="accaptable-user d-flex mt-2 flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5" data-user-uuid=${id}>
-        <p href="" class="text-neutral-1">${card_name}@${username}</p>
-        <p href="" class="text-neutral-2">Memilik akses ruangan</p>
+        class="accaptable-user d-flex mt-2 flex-column flex-sm-row justify-content-between align-items-md-center p-2 bg-neutral-7 rounded-5" id="card-id-${card_number}" data-user-uuid=${id}>
+        <p href="" class="text-neutral-1">${card_name}@${
+        user?.username || "Not have user"
+    }</p>
+        <p class="text-neutral-2 bg-warning-2 p-1 rounded-10 pointer" onclick=deleteAccessHandler('${card_number}')>Hapus akses</p>
     </div>
     `;
 };
@@ -47,18 +72,16 @@ const roomLogsTemplate = ({ Card, id, createdAt, isSuccess }) => {
 };
 
 const requestUserTemplate = ({
-    card: {
-        card_number,
-        card_name,
-        user: { username },
-    },
+    card: { card_number, card_name, user },
     id,
 }) => {
     return `
     <div class="col-12 mt-3 request-user" data-request="${id}">
         <div
             class="d-flex flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5">
-            <a href="" class="text-neutral-2">${card_name}@${username}</a>
+            <a href="" class="text-neutral-2">${card_name}@${
+        user?.username || "Not paired"
+    }</a>
             <a href="/api/v1/room/pair?ruid=${ruid}&cardNumber=${card_number}&requestId=${id}" class="text-neutral-1 fw-bold request-link">Give Access</a>
         </div>
     </div>
@@ -78,6 +101,7 @@ const basicInfoLoader = (data) => {
     numberOfUserContainer.textContent = data.accaptableUser;
     numberOfRequestUserContainer.textContent = data.requestUser;
 };
+
 generalDataLoader({
     url: `/api/v1/room/detail/${ruid}`,
     func: basicInfoLoader,
@@ -172,9 +196,9 @@ const requestUserLoader = (data) => {
                     itemContainer.insertAdjacentHTML(
                         "afterbegin",
                         `<div
-                            class="accaptable-user d-flex mt-2 flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5" data-user-uuid=${data.id}>
-                            <p href="" class="text-neutral-1">${pair.data.card[0].card_name}@${pair.data.card[0].user.username}</p>
-                            <p href="" class="text-neutral-2">Memilik akses ruangan</p>
+                            class="accaptable-user d-flex mt-2 flex-column flex-sm-row justify-content-between align-items-md-center p-2 bg-neutral-7 rounded-5" data-user-uuid=${data.id}>
+                            <p class="text-neutral-1">${pair.data.card[0].card_name}@${pair.data.card[0].user.username}</p>
+                            <p class="text-neutral-2 bg-warning-2 p-1 rounded-10 pointer" onclick=deleteAccessHandler('${pair.data.card[0].card_number}') id="card-id-${pair.data.card[0].card_number}">Hapus akses</p>
                         </div>`
                     );
                 }

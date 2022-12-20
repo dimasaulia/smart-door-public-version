@@ -40,7 +40,7 @@ const cardIsPair = async (req, res, next) => {
     } catch (error) {
         return resError({
             res,
-            title: "Cant pair card",
+            title: "Card must be pair before take this action",
             errors: error,
         });
     }

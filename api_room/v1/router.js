@@ -23,6 +23,7 @@ const {
     deviceIsExist,
     deviceNotPair,
     roomIsPair,
+    roomAccessIsExist,
 } = require("../../middlewares/roomMiddlewares");
 const {
     requestIsExist,
@@ -99,7 +100,7 @@ router.delete(
 router.post(
     "/pair",
     loginRequired,
-    allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
+    allowedRole("ADMIN", "OPERATOR"),
     query("ruid").notEmpty(),
     query("cardNumber").notEmpty(),
     query("requestId").notEmpty(),
@@ -111,6 +112,18 @@ router.post(
     requestIsExist,
     roomAccessNotExist,
     room.pairRoomToCard
+);
+router.post(
+    "/unpair",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    body("ruid").notEmpty(),
+    body("cardNumber").notEmpty(),
+    formChacker,
+    cardIsExist,
+    roomIsExist,
+    roomAccessIsExist,
+    room.unPairRoomToCard
 );
 router.post("/get-or-create", room.getOrCreateRoom); //HW API
 router.get(

@@ -396,6 +396,39 @@ exports.pairRoomToCard = async (req, res) => {
 };
 
 /**
+ * Fungsi untuk melepas akses ruangan dari kartu, fungsi ini akan memberi akses kepada kartu untuk mengakses ruangan tertentu
+ */
+exports.unPairRoomToCard = async (req, res) => {
+    const { ruid, cardNumber, requestId: id } = req.body;
+    try {
+        const updatedRoom = await prisma.room.update({
+            where: {
+                ruid,
+            },
+            data: {
+                card: {
+                    disconnect: {
+                        card_number: cardNumber,
+                    },
+                },
+            },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success remove card access",
+            data: updatedRoom,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Failed remove card access",
+            errors: error,
+        });
+    }
+};
+
+/**
  * Fungsi ini akan digunakan perangkat keras. Fungsi yang berguna untuk mengecek kartu, pin dan ruangan yang akan dimasuki user,
  */
 exports.roomCheckIn = async (req, res) => {

@@ -167,6 +167,33 @@ const roomAccessNotExist = async (req, res, next) => {
     }
 };
 
+const roomAccessIsExist = async (req, res, next) => {
+    try {
+        // const { ruid, cardNumber: card_number } = req.query;
+        const ruid = req.query.ruid || req.query.ruid || req.params.ruid;
+        const card_number =
+            req.query.cardNumber ||
+            req.body.cardNumber ||
+            req.params.cardNumber;
+        const request = await prisma.room.findMany({
+            where: {
+                ruid,
+                card: {
+                    some: { card_number },
+                },
+            },
+        });
+        if (request.length < 1) throw "Your card not have access";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: "Your card not have access",
+            errors: error,
+        });
+    }
+};
+
 const isRoomTurePin = async (req, res, next) => {
     const { oldPin } = req.body;
     const { ruid } = req.params;
@@ -302,5 +329,6 @@ module.exports = {
     deviceNotPair,
     roomIsPair,
     deviceIsPair,
+    roomAccessIsExist,
     isDeviceTurePin,
 };
