@@ -29,9 +29,9 @@ const startScanning = async () => {
         });
     } catch (error) {
         showAlert({
-            theme: "success",
-            title: "successfully pair user",
-            desc: "User and card successfuly paired",
+            theme: "warning",
+            title: "Cant activate this feature",
+            desc: error,
         });
     }
 };
