@@ -100,6 +100,5 @@ try {
             successMsg: "Success send verification",
             successBody: "Check your email to get verification link",
         });
-        console.log(resp);
     });
 } catch (error) {}

@@ -7,6 +7,7 @@
 }
 
 input[type=text],
+input[type=password],
 select {
     border: none;
     width: 20em !important;
@@ -15,6 +16,9 @@ select {
 input[type=text]:active,
 input[type=text]:disabled,
 input[type=text]:focus,
+input[type=password]:active,
+input[type=password]:disabled,
+input[type=password]:focus,
 select:active,
 select:disabled,
 select:focus {
@@ -69,6 +73,14 @@ label {
     border-bottom-right-radius: 10px;
 }
 
+.permission {
+    width: 100% !important;
+}
+
+.clear-toggle {
+    width: 100% !important;
+}
+
 @media only screen and (max-width: 576px) {
     .card-form {
         width: 100% !important;
@@ -79,6 +91,7 @@ label {
     }
 
     input[type=text],
+    input[type=password],
     select {
         border: none;
         width: 100% !important;

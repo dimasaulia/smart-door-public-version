@@ -27,6 +27,12 @@ router.get(
     allowedRole("ADMIN", "OPERATOR"),
     dashboard.userList
 );
+router.get(
+    "/card/scan",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    dashboard.scanCard
+);
 
 // ROOM
 router.get(

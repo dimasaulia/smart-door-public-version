@@ -268,3 +268,12 @@ exports.hardware = async (req, res) => {
     };
     res.render("hardware", data);
 };
+
+exports.scanCard = async (req, res) => {
+    const data = {
+        card: "bg-neutral-4",
+        styles: ["/style/userCardLogs.css"],
+        scripts: ["/js/cardScan.js"],
+    };
+    res.render("scanCard", data);
+};

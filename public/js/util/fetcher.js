@@ -42,7 +42,7 @@ async function setter({
             theme: "danger",
             title: failedMsg,
             desc:
-                data.title ||
+                data.message ||
                 data.data.err ||
                 data.data.error ||
                 data.data.errors ||

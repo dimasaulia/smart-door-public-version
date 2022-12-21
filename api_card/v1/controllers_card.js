@@ -190,31 +190,32 @@ exports.listOfRegisterCard = async (req, res) => {
  * Controller untuk meregistrasi kartu (menambahkan kartu ke database)
  */
 exports.cardRegistration = async (req, res) => {
-    const { pin, cardNumber } = req.body;
+    const { pin, cardNumber, isTwoStepAuth = true } = req.body;
 
     try {
         const registeredCard = await prisma.card.create({
             data: {
                 card_number: cardNumber.replaceAll(" ", ""),
                 pin: hasher(pin),
+                isTwoStepAuth,
             },
         });
 
         req.app.io.emit("newRegisteredCard", registeredCard.card_number);
 
-        res.status(201).json({
-            code: 201,
-            title: "Succsesfully created",
-            msg: registeredCard,
+        return resSuccess({
+            res,
+            title: "Successfully registered card",
+            data: registeredCard,
         });
     } catch (err) {
-        res.status(500).json({
-            code: 500,
+        return resError({
+            res,
             title:
                 err.code === "P2002"
                     ? "Card number has been registered"
                     : "Something Wrong",
-            msg: err,
+            errors: err,
         });
     }
 };

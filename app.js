@@ -3,8 +3,13 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const app = express();
-const http = require("http").Server(app);
-const io = require("socket.io")(http);
+const fs = require("fs");
+const options = {
+    key: fs.readFileSync("./ssl/privatekey-pnj.ac.id.key"),
+    cert: fs.readFileSync("./ssl/ssl_certificate-pnj.ac.id.crt"),
+};
+const https = require("https").createServer(options, app);
+const io = require("socket.io")(https);
 const expbs = require("express-handlebars");
 const { urlErrorHandler } = require("./services/responseHandler");
 app.io = io;
@@ -52,6 +57,6 @@ io.on("connection", (socket) => {
     });
 });
 
-http.listen(PORT, () => {
+https.listen(PORT, () => {
     console.log(`🤘 SERVER RUNNING IN PORT ${PORT}`);
 });

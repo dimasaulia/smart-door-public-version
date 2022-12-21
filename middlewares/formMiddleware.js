@@ -15,7 +15,7 @@ const formChacker = (req, res, next) => {
     } catch (error) {
         return resError({
             res,
-            title: "Something wrong",
+            title: `Invalid ${error.errors.type} value`,
             errors: error,
             code: 403,
         });

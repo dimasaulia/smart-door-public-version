@@ -55,11 +55,14 @@ router.get(
 );
 router.post(
     "/register",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
     body("cardNumber").notEmpty(),
+    body("isTwoStepAuth").notEmpty(),
     body("pin").notEmpty().isLength(6),
     formChacker,
     card.cardRegistration
-); // HW OLD API
+);
 router.post(
     "/h/register",
     body("cardNumber").notEmpty(),
