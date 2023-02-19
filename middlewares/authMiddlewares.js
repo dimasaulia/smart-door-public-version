@@ -378,7 +378,7 @@ const urlTokenIsNotActive = async (req, res, next) => {
 };
 
 /** Memastikan halaman hanya bisa diakses oleh user yang belum terverifikasi */
-const userNotVerify = async (req, res, next) => {
+const userEmailNotVerify = async (req, res, next) => {
     try {
         const { emailIsVerified } = await prisma.user.findUnique({
             where: { id: getUser(req) },
@@ -393,7 +393,7 @@ const userNotVerify = async (req, res, next) => {
     }
 };
 
-const userIsVerify = async (req, res, next) => {
+const userEmailIsVerify = async (req, res, next) => {
     try {
         const { emailIsVerified } = await prisma.user.findUnique({
             where: { id: getUser(req) },
@@ -456,8 +456,8 @@ module.exports = {
     urlTokenIsValid,
     urlTokenNotExpired,
     urlTokenIsNotActive,
-    userIsVerify,
-    userNotVerify,
+    userEmailIsVerify,
+    userEmailNotVerify,
     emailIsExist,
     urlTokenIsMatch,
 };

@@ -43,7 +43,7 @@ const {
     adminRoleIsExist,
     urlTokenIsValid,
     urlTokenIsNotActive,
-    userNotVerify,
+    userEmailNotVerify,
     logoutRequired,
     emailIsExist,
     urlTokenIsMatch,
@@ -192,7 +192,7 @@ router.post(
 router.post(
     "/email-send-verification/",
     loginRequired,
-    userNotVerify,
+    userEmailNotVerify,
     urlTokenIsNotActive,
     user.emailVerification
 );
@@ -201,7 +201,7 @@ router.get(
     loginRequired,
     query("token").notEmpty(),
     formChacker,
-    userNotVerify,
+    userEmailNotVerify,
     urlTokenIsValid,
     urlTokenIsMatch,
     user.verifyingEmail
