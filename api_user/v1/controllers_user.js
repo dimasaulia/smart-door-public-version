@@ -144,7 +144,7 @@ exports.delete = async (req, res) => {
     }
 };
 
-exports.update = async (req, res) => {
+exports.updatePassword = async (req, res) => {
     try {
         //provide default or unupdated value
         const user = await prisma.user.findUnique({
@@ -174,6 +174,31 @@ exports.update = async (req, res) => {
         setAuthCookie({ res, uuid: user.id }); //update cookies
 
         return resSuccess({ res, code: 201, body: updatedUser });
+    } catch (err) {
+        return resError({ res, title: "Failed update password", errors: err });
+    }
+};
+
+exports.adminModifyUserPassword = async (req, res) => {
+    try {
+        const { newPassword, uuid: id } = req.body;
+
+        const updatedUser = await prisma.user.update({
+            where: {
+                id,
+            },
+            data: {
+                password: hasher(newPassword),
+                passwordUpdatedAt: new Date(Date.now() - 1000),
+            },
+        });
+
+        return resSuccess({
+            res,
+            code: 201,
+            body: updatedUser,
+            title: "Success update user password",
+        });
     } catch (err) {
         return resError({ res, title: "Failed update password", errors: err });
     }
@@ -235,6 +260,68 @@ exports.profileUpdate = async (req, res) => {
         return resSuccess({
             res,
             title: "Success update your profile",
+            data: newData,
+        });
+    } catch (err) {
+        return resError({ res, errors: err, title: "Failed update profile" });
+    }
+};
+
+exports.adminModifyUserProfile = async (req, res) => {
+    try {
+        const { email, full_name, username, uuid: id } = req.body;
+        const currentData = await prisma.user.findUnique({
+            where: { id },
+        });
+
+        // if user try change username
+        if (username != currentData.username) {
+            const checkUser = await prisma.user.findUnique({
+                where: { username },
+            });
+            // if username already exist throw error
+            if (checkUser)
+                throw new ErrorException({
+                    type: "username",
+                    detail: "User already exist or register",
+                });
+        }
+
+        // if user try change email
+        if (email != currentData.email) {
+            const checkUser = await prisma.user.findUnique({
+                where: { email },
+            });
+            // if email already exist throw error
+            if (checkUser)
+                throw new ErrorException({
+                    type: "email",
+                    detail: "Email already exist or register",
+                });
+        }
+
+        const newData = await prisma.user.update({
+            where: {
+                id,
+            },
+            data: {
+                username,
+                email,
+                isVerified:
+                    email === currentData.email
+                        ? currentData.isVerified
+                        : false,
+                profil: {
+                    update: {
+                        full_name,
+                    },
+                },
+                updatedAt: new Date(Date.now() - 1000),
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success update user profile",
             data: newData,
         });
     } catch (err) {
@@ -664,6 +751,46 @@ exports.profileAvatarUpdate = async (req, res) => {
             res,
             errors: error,
             title: "Failed update your profile picture",
+        });
+    }
+};
+
+exports.adminModifyUserAvatar = async (req, res) => {
+    try {
+        const { uuid: id } = req.body;
+        const profil = await prisma.profil.findUnique({
+            where: { userId: id },
+        });
+        const update = await prisma.profil.update({
+            where: { userId: id },
+            data: {
+                photo: `${String(req.file.path)
+                    .replaceAll("\\", "/")
+                    .replace("public", "")}`,
+            },
+        });
+        const path = `./public${profil.photo}`;
+        if (profil.photo != "/image/illustration-user.png") {
+            FS.access(path, FS.F_OK, (err) => {
+                if (!err) {
+                    //file exists
+                    FS.unlink(path, (err) => {
+                        if (err) throw err;
+                    });
+                }
+            });
+        }
+        return resSuccess({
+            res,
+            title: "success update user profile",
+            data: update,
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            errors: error,
+            title: "Failed update user profile picture",
         });
     }
 };

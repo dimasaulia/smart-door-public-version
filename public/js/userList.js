@@ -135,11 +135,11 @@ const userListTemplate = ({ username, id, role, profil }) => {
                 roleOfUser === "ADMIN"
                     ? `
                     <div class="d-flex my-4 my-sm-0">
-                        <a href="">
-                            <img src="/image/icon_edit.svg" alt="" class="form-icons">
+                        <a href="/dashboard/user/edit/${username}">
+                            <img src="/image/icon_edit.svg" alt="ikon edit user" class="form-icons">
                         </a>
                         <a href="" class="ms-3">
-                            <img src="/image/icon_delete.svg" alt="" class="form-icons">
+                            <img src="/image/icon_delete.svg" alt="Ikon hapus user" class="form-icons">
                         </a>
                     </div>
         

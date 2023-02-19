@@ -112,6 +112,40 @@ exports.userList = async (req, res) => {
     res.render("userList", data);
 };
 
+exports.userEdit = async (req, res) => {
+    const { username } = req.params;
+    try {
+        const userData = await prisma.user.findUnique({
+            where: { username },
+            select: {
+                profil: {
+                    select: {
+                        photo: true,
+                        full_name: true,
+                    },
+                },
+                username: true,
+                email: true,
+                id: true,
+            },
+        });
+        const data = {
+            users: "bg-neutral-4",
+            styles: ["/style/profil.css"],
+            scripts: ["/js/userEdit.js"],
+            user_active: "bg-neutral-4",
+            avatar: userData.profil.photo || "/image/illustration-user.png",
+            userData,
+        };
+        res.render("userEdit", data);
+    } catch (error) {
+        data = {
+            errors: error,
+        };
+        res.render("erros", data);
+    }
+};
+
 exports.createroom = async (req, res) => {
     const hardwareList = await prisma.device.findMany({
         orderBy: { createdAt: "asc" },

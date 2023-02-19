@@ -47,7 +47,7 @@ uploadForm.addEventListener("change", async (e) => {
         const form = new FormData();
         form.append("avatar", uploadForm.files[0]);
         const resp = await fileUpload({
-            url: "/api/v1/user/profile/picture/update",
+            url: "/api/v1/user/update/profile/picture",
             body: form,
             successMsg: "Success update avatar",
             failedMsg: "Failed update avatar",
@@ -63,7 +63,7 @@ uploadForm.addEventListener("change", async (e) => {
 saveBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const resp = await setter({
-        url: "/api/v1/user/profile/update",
+        url: "/api/v1/user/update/profile",
         body: {
             email: form.email.value,
             full_name: form.full_name.value,
@@ -81,7 +81,7 @@ saveBtn.addEventListener("click", async (e) => {
 passwordBtn.addEventListener("click", async (e) => {
     e.preventDefault();
     const resp = await setter({
-        url: "/api/v1/user/update/",
+        url: "/api/v1/user/update/password",
         body: {
             oldPassword: document.querySelector("#oldPassword").value,
             newPassword: document.querySelector("#newPassord").value,

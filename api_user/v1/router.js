@@ -96,7 +96,7 @@ router.post(
     user.login
 );
 router.post(
-    "/update",
+    "/update/password",
     loginRequired,
     body("oldPassword").notEmpty(),
     body("newPassword")
@@ -105,16 +105,53 @@ router.post(
             "Password must have at least 8 characters, have a combination of numbers, uppercase, lowercase letters and unique characters"
         ),
     formChacker,
-    user.update
+    user.updatePassword
 );
 router.post(
-    "/profile/update",
+    "/admin/update/password",
+    loginRequired,
+    allowedRole("ADMIN"),
+    body("uuid").notEmpty().withMessage("Please provide user id"),
+    body("newPassword")
+        .isStrongPassword()
+        .withMessage(
+            "Password must have at least 8 characters, have a combination of numbers, uppercase, lowercase letters and unique characters"
+        ),
+    formChacker,
+    user.adminModifyUserPassword
+);
+router.post(
+    "/update/profile",
     loginRequired,
     body("username").notEmpty().withMessage("Name required"),
     body("email").notEmpty().isEmail().withMessage("Email required"),
     body("full_name").notEmpty().withMessage("Full name required"),
     formChacker,
     user.profileUpdate
+);
+router.post(
+    "/admin/update/profile",
+    loginRequired,
+    allowedRole("ADMIN"),
+    body("uuid").notEmpty(),
+    body("username").notEmpty().withMessage("Name required"),
+    body("email").notEmpty().isEmail().withMessage("Email required"),
+    body("full_name").notEmpty().withMessage("Full name required"),
+    formChacker,
+    user.adminModifyUserProfile
+);
+router.post(
+    "/update/profile/picture",
+    upload.single("avatar"),
+    loginRequired,
+    user.profileAvatarUpdate
+);
+router.post(
+    "/admin/update/profile/picture",
+    loginRequired,
+    allowedRole("ADMIN"),
+    upload.single("avatar"),
+    user.adminModifyUserAvatar
 );
 router.delete(
     "/delete/:id",
@@ -191,10 +228,5 @@ router.post(
     urlTokenIsValid,
     urlTokenIsMatch,
     user.resetPassword
-);
-router.post(
-    "/profile/picture/update",
-    upload.single("avatar"),
-    user.profileAvatarUpdate
 );
 module.exports = router;

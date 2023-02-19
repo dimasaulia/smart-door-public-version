@@ -290,6 +290,7 @@ const emailIsNotExist = async (req, res, next) => {
     }
 };
 
+/** Fungsi yang memastikan user yang sedang login tidak bisa menghapus dirinya sendiri */
 const notCurrentUser = async (req, res, next) => {
     const deletedUser = req.params.id;
     const token = getUser(req);

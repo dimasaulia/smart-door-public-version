@@ -22,18 +22,23 @@ router.get(
     dashboard.userPairingToDashboard
 );
 router.get(
+    "/card/scan",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    dashboard.scanCard
+);
+router.get(
     "/user/list",
     loginRequired,
     allowedRole("ADMIN", "OPERATOR"),
     dashboard.userList
 );
 router.get(
-    "/card/scan",
+    "/user/edit/:username",
     loginRequired,
-    allowedRole("ADMIN", "OPERATOR"),
-    dashboard.scanCard
+    allowedRole("ADMIN"),
+    dashboard.userEdit
 );
-
 // ROOM
 router.get(
     "/room/list",

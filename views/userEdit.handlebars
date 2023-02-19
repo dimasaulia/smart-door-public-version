@@ -1,4 +1,4 @@
-<h3 class="fw-bold text-neutral-2 mt-3">Profile</h3>
+<h3 class="fw-normal text-neutral-2 mt-3" data-uuid="{{userData.id}}">Profile For <span class="fw-bold">{{userData.username}}</span></h3>
 
 <div class="row profile-container">
     <div class="col-12 col-lg-4 p-2">
@@ -42,7 +42,6 @@
                         Email not verified
                     </p>
                 </div>
-                <p class="bg-warning-2 mt-5 px-2 py-1 rounded-15 text-neutral-1 d-inline pointer" id="verify">Verify now</p>
                 {{/if}}
 
             </div>
@@ -54,14 +53,9 @@
         <form class="bg-neutral-6 px-4 py-5 rounded-13 mt-4 mb-5" id="password">
             <h3 class="fw-bold text-blue-3 form-header">Change Password</h3>
 
-            <div class="form-group mt-4">
-                <label for="current-password" class="fw-bold fs-5 text-blue-3">Current Password</label>
-                <input type="password" class="form-control rounded-13 mt-1" id="oldPassword" name="oldPassword">
-            </div>
-
             <div class="form-group mt-3">
                 <label for="password" class="fw-bold fs-5 text-blue-3">New Password</label>
-                <input type="password" class="form-control rounded-13 mt-1" id="newPassord" name="newPassord" autocomplete="on">
+                <input type="password" class="form-control rounded-13 mt-1" id="newPassord" name="newPassord">
             </div>
 
             <button type="submit" id="save-password"
