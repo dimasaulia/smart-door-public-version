@@ -5,7 +5,8 @@ const searchBtn = document.querySelector(".input-group-prepend");
 const roleOfUser = document
     .querySelector("#admin-role")
     .getAttribute("data-role");
-const del = ({ url, element }) => {
+
+const deleteAction = ({ url, element }) => {
     startLoader();
 
     fetch(url, {
@@ -19,8 +20,8 @@ const del = ({ url, element }) => {
             closeLoader();
             showToast({
                 theme: "success",
-                title: "Delete berhasil",
-                desc: `Berhasil menghapus ${data.data.name} dari database`,
+                title: "Action complate",
+                desc: `Success delete ${data.data.name}`,
             });
             element.remove();
         })
@@ -28,27 +29,29 @@ const del = ({ url, element }) => {
             closeLoader();
             showToast({
                 theme: "danger",
-                title: "Delete gagal",
-                desc: "Gagal mengahpus ruangan",
+                title: "Action failed",
+                desc: "Failed to delete room",
             });
         });
 };
 
-const deleteRoom = ({ url, roomName, element }) => {
+const deleteToggle = (ruid, roomName) => {
+    const url = `/api/v1/room/delete/${ruid}`;
+    const element = document.getElementById("room-template-" + ruid);
     showAlertConfirm({
         theme: "danger",
-        title: "Sure for delete?",
-        desc: `apakah anda yakin menghaspus ruangan ${roomName}`,
+        title: "Delete confirmation!",
+        desc: `Are you sure you want to delete the ${roomName} room`,
         link: "#",
         btn: "Delete",
-        exec: () => del({ url, element }),
+        exec: () => deleteAction({ url, element }),
     });
 };
 
 const roomListTemplate = ({ name, ruid, id, device }) => {
     return `
     <div
-        class="room--list-item mt-3 d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" data-ruid="${ruid}" data-id="${id}" data-room-name="${name}">
+        class="room--list-item mt-3 d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" id="room-template-${ruid}" data-ruid="${ruid}" data-id="${id}" data-room-name="${name}">
         <div class="room-profile d-flex flex-column flex-sm-row justify-content-start align-items-center">
             <div class="room-profile-picture">
                 <img src="/image/icon_room.svg" alt="Profil">
@@ -71,11 +74,11 @@ const roomListTemplate = ({ name, ruid, id, device }) => {
                 ? `
             <div class="d-flex mt-3 mt-sm-0 mb-4 mb-sm-0">
                 <a href="/dashboard/room/edit/${ruid}">
-                    <img src="/image/icon_edit.svg" alt="" class="form-icons">
+                    <img src="/image/icon_edit.svg" alt="Ikon edit" class="form-icons">
                 </a>
-                <a href="" class="ms-3">
-                    <img src="/image/icon_delete.svg" alt="" class="form-icons delete-room">
-                </a>
+                <p class="ms-3" onclick="deleteToggle('${ruid}','${name}')">
+                    <img src="/image/icon_delete.svg" alt="Ikon hapus" class="form-icons delete-room">
+                </p>
             </div>
         `
                 : ""
@@ -87,34 +90,9 @@ const roomListTemplate = ({ name, ruid, id, device }) => {
         `;
 };
 
-const deleteHandler = () => {
-    // action for delete
-    document.querySelectorAll(".room--list-item").forEach((d) => {
-        const del_btn = d.children[1].children[1];
-        if (!d.getAttribute("data-listener")) {
-            del_btn.addEventListener("click", (e) => {
-                e.preventDefault();
-                const ruid = d.getAttribute("data-ruid");
-                const username = d.getAttribute("data-username");
-                const url = `/api/v1/room/delete/${ruid}`;
-
-                deleteRoom({ url, username, element: d });
-            });
-            d.setAttribute("data-listener", "true");
-        }
-    });
-};
-
 const roomListLoader = (data) => {
     data.forEach((room) => {
         roomConatiner.insertAdjacentHTML("beforeend", roomListTemplate(room));
-    });
-
-    document.querySelectorAll(".room--list-item").forEach((room) => {
-        const ruid = room.getAttribute("data-ruid");
-        const name = room.getAttribute("data-room-name");
-        const url = `/api/v1/room/delete/${ruid}`;
-        deleteHandler();
     });
 };
 

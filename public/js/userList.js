@@ -44,10 +44,10 @@ const deleteAction = ({ url, element }) => {
 // INFO: Method to show toggle
 const deleteToggle = (id, username) => {
     const url = `/api/v1/user/delete/${id}`;
-    const element = document.getElementById(id);
+    const element = document.getElementById("user-template-" + id);
     showAlertConfirm({
         theme: "danger",
-        title: "Delete confirmation?",
+        title: "Delete confirmation!",
         desc: `Are you sure you want to delete the user <b> ${username} </b>?`,
         link: "#",
         btn: "Delete",
@@ -149,7 +149,7 @@ const changeRole = async (id, username, target) => {
 const userListTemplate = ({ username, id, role, profil }) => {
     return `
         <div
-            class="mt-4 user--list-item d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" id="${id}" data-uuid=${id} data-username=${username}>
+            class="mt-4 user--list-item d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" id="user-template-${id}" data-uuid=${id} data-username=${username}>
             <div class="user-profile d-flex flex-column flex-sm-row justify-content-start align-items-center">
                 <div class="user-profile-picture bg-neutral-4 rounded-circle d-flex justify-content-center align-items-center">
                     <img src="${profil.photo}" alt="User profile">
