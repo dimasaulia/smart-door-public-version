@@ -3,4 +3,5 @@ node_modules
 .prod.env
 public/storage/
 !public/storage/.gitignore
+.VSCodeCounter
 # Keep environment variables out of version control

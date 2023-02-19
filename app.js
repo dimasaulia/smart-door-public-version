@@ -8,8 +8,10 @@ const options = {
     key: fs.readFileSync("./ssl/privatekey-pnj.ac.id.key"),
     cert: fs.readFileSync("./ssl/ssl_certificate-pnj.ac.id.crt"),
 };
-const https = require("https").createServer(options, app);
-const io = require("socket.io")(https);
+const http = require("http").Server(app);
+// const https = require("https").createServer(options, app);
+// const io = require("socket.io")(https);
+const io = require("socket.io")(http);
 const expbs = require("express-handlebars");
 const { urlErrorHandler } = require("./services/responseHandler");
 app.io = io;
@@ -44,7 +46,7 @@ app.engine(
 app.set("views", "views");
 app.set("view engine", "handlebars");
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8000;
 const ROUTER = require("./router");
 
 app.use("/", ROUTER);
@@ -57,6 +59,10 @@ io.on("connection", (socket) => {
     });
 });
 
-https.listen(PORT, () => {
+// https.listen(PORT, () => {
+//     console.log(`🤘 SERVER RUNNING IN PORT ${PORT}`);
+// });
+
+http.listen(PORT, () => {
     console.log(`🤘 SERVER RUNNING IN PORT ${PORT}`);
 });

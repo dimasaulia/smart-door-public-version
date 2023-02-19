@@ -33,8 +33,9 @@ submit.addEventListener("click", async (e) => {
             if (err) {
                 const errors = err.data.errors;
                 for (const error in errors) {
-                    document.querySelector(`#${error}--error`).textContent =
-                        errors[error].detail;
+                    document.querySelector(
+                        `#${errors.errors.type}--error`
+                    ).textContent = errors[error].detail;
                 }
             }
         });
