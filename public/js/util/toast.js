@@ -4,7 +4,7 @@ const toastTemplate = (title, desc, color, icon) => {
         <div class="toastMsg d-flex align-items-center me-2 me-sm-5">
             <img src="${icon}" alt="" class="toast--icon me-2">
             <div>
-                <h4 class="fw-bold">${title}</h4>
+                <h5 class="fw-bold">${title}</h5>
                 <p>${desc}</p>
             </div>
         </div>

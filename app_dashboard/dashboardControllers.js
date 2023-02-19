@@ -93,7 +93,7 @@ exports.cardList = async (req, res) => {
         layout: await layoutHandler(getUser(req)),
     };
 
-    res.render("list", data);
+    res.render("cardList", data);
 };
 
 exports.userList = async (req, res) => {

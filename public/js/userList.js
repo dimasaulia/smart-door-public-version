@@ -11,11 +11,44 @@ const roleOfUser = document
     .getAttribute("data-role");
 let isSearch = false;
 
-const deleteUser = ({ url, username, element }) => {
-    const del = showAlertConfirm({
+// INFO: Method to delete user
+const deleteAction = ({ url, element }) => {
+    startLoader();
+
+    fetch(url, {
+        method: "DELETE",
+    })
+        .then((res) => {
+            if (!res.ok) throw "Something wrong";
+            return res.json();
+        })
+        .then((data) => {
+            closeLoader();
+            showToast({
+                theme: "success",
+                title: "Delete success",
+                desc: `Successfully delete ${data.data.username}`,
+            });
+            element.remove();
+        })
+        .catch((e) => {
+            closeLoader();
+            showToast({
+                theme: "danger",
+                title: "Delete failed",
+                desc: "Failed to delete user",
+            });
+        });
+};
+
+// INFO: Method to show toggle
+const deleteToggle = (id, username) => {
+    const url = `/api/v1/user/delete/${id}`;
+    const element = document.getElementById(id);
+    showAlertConfirm({
         theme: "danger",
-        title: "Sure for delete?",
-        desc: `Apakah anda yakin menghaspus, <b> ${username} </b>?`,
+        title: "Delete confirmation?",
+        desc: `Are you sure you want to delete the user <b> ${username} </b>?`,
         link: "#",
         btn: "Delete",
         exec: () => deleteAction({ url, element }),
@@ -116,7 +149,7 @@ const changeRole = async (id, username, target) => {
 const userListTemplate = ({ username, id, role, profil }) => {
     return `
         <div
-            class="mt-4 user--list-item d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" data-uuid=${id} data-username=${username}>
+            class="mt-4 user--list-item d-flex flex-column flex-sm-row align-items-center justify-content-between bg-neutral-7 shadow-c-1 px-5 py-3 rounded-13" id="${id}" data-uuid=${id} data-username=${username}>
             <div class="user-profile d-flex flex-column flex-sm-row justify-content-start align-items-center">
                 <div class="user-profile-picture bg-neutral-4 rounded-circle d-flex justify-content-center align-items-center">
                     <img src="${profil.photo}" alt="User profile">
@@ -131,18 +164,18 @@ const userListTemplate = ({ username, id, role, profil }) => {
                 </div>
             </div>
 
+            <div class="d-flex my-4 my-sm-0">
+                <a href="/dashboard/user/edit/${username}">
+                    <img src="/image/icon_edit.svg" alt="ikon edit user" class="form-icons">
+                </a>
+                <p class="ms-3" onclick="deleteToggle('${id}','${username}')">
+                    <img src="/image/icon_delete.svg" alt="Ikon hapus user" class="form-icons">
+                </p>
+            </div>
+
             ${
                 roleOfUser === "ADMIN"
-                    ? `
-                    <div class="d-flex my-4 my-sm-0">
-                        <a href="/dashboard/user/edit/${username}">
-                            <img src="/image/icon_edit.svg" alt="ikon edit user" class="form-icons">
-                        </a>
-                        <a href="" class="ms-3">
-                            <img src="/image/icon_delete.svg" alt="Ikon hapus user" class="form-icons">
-                        </a>
-                    </div>
-        
+                    ? `        
                     <div>
                         ${
                             role.name === "ADMIN"
@@ -182,66 +215,16 @@ toggler.addEventListener("click", () => {
     dropDownContent.classList.toggle("active-down");
 });
 
-const deleteAction = ({ url, element }) => {
-    startLoader();
-
-    fetch(url, {
-        method: "DELETE",
-    })
-        .then((res) => {
-            if (!res.ok) throw "Something wrong";
-            return res.json();
-        })
-        .then((data) => {
-            closeLoader();
-            showToast({
-                theme: "success",
-                title: "Delete berhasil",
-                desc: `Berhasil menghapus ${data.data.username} dari database`,
-            });
-            element.remove();
-        })
-        .catch((e) => {
-            closeLoader();
-            showToast({
-                theme: "danger",
-                title: "Delete gagal",
-                desc: "Gagal mengahpus user",
-            });
-        });
-};
-
-const deleteHandler = () => {
-    // action for delete
-    document.querySelectorAll(".user--list-item").forEach((d) => {
-        const del_btn = d.children[1].children[1];
-        if (!d.getAttribute("data-listener")) {
-            del_btn.addEventListener("click", (e) => {
-                e.preventDefault();
-                const uuid = d.getAttribute("data-uuid");
-                const username = d.getAttribute("data-username");
-                const url = `/api/v1/user/delete/${uuid}`;
-
-                deleteUser({ url, username, element: d });
-            });
-            d.setAttribute("data-listener", "true");
-        }
-    });
-};
-
 const userListLoader = (data) => {
     data.forEach((user) => {
         userConatiner.insertAdjacentHTML("beforeend", userListTemplate(user));
     });
-    if (roleOfUser === "ADMIN") {
-        deleteHandler();
-    }
 };
 
 // INFO: First Load User List
 generalDataLoader({ url: "/api/v1/user/list", func: userListLoader });
 
-// INFO: First Load Search User List
+// INFO: First Load when user perform Searching
 searchBtn.addEventListener("click", (e) => {
     e.preventDefault();
     const search = usernameForm.value;

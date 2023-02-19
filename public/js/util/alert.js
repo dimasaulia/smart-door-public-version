@@ -19,10 +19,10 @@ const alertConfirmTemplate = (icon, title, desc, color, link, btn) => {
         <h3 class="fw-bold mt-4">${title}</h3>
         <p class="mt-2">${desc}</p>
         <div>
-            <a class="mt-5 mb-4 shadow-c-1 fw-bolder text-neutral-7 btn ${color}1 py-2 px-4 rounded-13 link" data-link="${link}" href=${link}>${
+            <a class="mt-5 mb-4 shadow-c-1 fw-bolder text-neutral-7 btn ${color}2 py-2 px-4 rounded-13 link" data-link="${link}" href=${link}>${
         btn || "Done"
     }</a>
-            <p class="ms-3 mt-5 mb-4 shadow-c-1 fw-bolder text-neutral-7 btn ${color}2 py-2 px-4 rounded-13 close-alert">Cancel</p>
+            <p class="ms-3 mt-5 mb-4 shadow-c-1 fw-bolder text-neutral-7 btn ${color}1 py-2 px-4 rounded-13 close-alert">Cancel</p>
         </div>
     `;
 };
