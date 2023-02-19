@@ -14,7 +14,7 @@ Table User {
   id String [pk]
   username String [unique, not null]
   email String [unique, not null]
-  isVerified Boolean [not null, default: false]
+  emailIsVerified Boolean [not null, default: false]
   password String [not null]
   role Role [not null]
   roleId String [not null]

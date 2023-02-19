@@ -245,9 +245,9 @@ exports.profileUpdate = async (req, res) => {
             data: {
                 username,
                 email,
-                isVerified:
+                emailIsVerified:
                     email === currentData.email
-                        ? currentData.isVerified
+                        ? currentData.emailIsVerified
                         : false,
                 profil: {
                     update: {
@@ -307,9 +307,9 @@ exports.adminModifyUserProfile = async (req, res) => {
             data: {
                 username,
                 email,
-                isVerified:
+                emailIsVerified:
                     email === currentData.email
-                        ? currentData.isVerified
+                        ? currentData.emailIsVerified
                         : false,
                 profil: {
                     update: {
@@ -619,7 +619,7 @@ exports.verifyingEmail = async (req, res) => {
         // INFO: If all data valid or success
         verificationSuccess = await prisma.user.update({
             where: { id: data.uuid },
-            data: { isVerified: true },
+            data: { emailIsVerified: true },
         });
 
         await prisma.token.delete({

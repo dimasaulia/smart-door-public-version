@@ -380,10 +380,10 @@ const urlTokenIsNotActive = async (req, res, next) => {
 /** Memastikan halaman hanya bisa diakses oleh user yang belum terverifikasi */
 const userNotVerify = async (req, res, next) => {
     try {
-        const { isVerified } = await prisma.user.findUnique({
+        const { emailIsVerified } = await prisma.user.findUnique({
             where: { id: getUser(req) },
         });
-        if (isVerified) throw "Your email already verified";
+        if (emailIsVerified) throw "Your email already verified";
         return next();
     } catch (error) {
         return resError({
@@ -395,10 +395,10 @@ const userNotVerify = async (req, res, next) => {
 
 const userIsVerify = async (req, res, next) => {
     try {
-        const { isVerified } = await prisma.user.findUnique({
+        const { emailIsVerified } = await prisma.user.findUnique({
             where: { id: getUser(req) },
         });
-        if (!isVerified) throw "Your email not verified";
+        if (!emailIsVerified) throw "Your email not verified";
         return next();
     } catch (error) {
         return resError({
