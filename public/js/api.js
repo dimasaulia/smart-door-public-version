@@ -5,6 +5,7 @@ const apiContainer = document.querySelector(".api-container");
 const searchBtn = document.querySelector("#search-button");
 const generateBtn = document.querySelector("#generate-button");
 let showMoreCount = 0;
+
 const copyHandler = (id, secret) => {
     const copyText = `?id=${id}&secret=${secret}`;
     navigator.clipboard.writeText(copyText);
@@ -22,7 +23,7 @@ const copyHandler = (id, secret) => {
     });
 };
 
-const del = ({ url, element }) => {
+const deleteAction = ({ url, element }) => {
     startLoader();
 
     fetch(url, {
@@ -36,7 +37,7 @@ const del = ({ url, element }) => {
             closeLoader();
             showToast({
                 theme: "success",
-                title: "Success action",
+                title: "Action complate",
                 desc: `Success to delete API`,
             });
             element.remove();
@@ -45,51 +46,36 @@ const del = ({ url, element }) => {
             closeLoader();
             showToast({
                 theme: "danger",
-                title: "Failed action",
+                title: "Action failed",
                 desc: "Failed to delete API",
             });
         });
 };
 
-const deleteApi = ({ url, api, element }) => {
+const deleteToggle = (id, apiName) => {
+    const url = `/api/v1/api-management/delete/${id}`;
+    const element = document.getElementById("api-template-" + id);
     showAlertConfirm({
         theme: "danger",
-        title: "Sure for delete?",
-        desc: `Apakah anda yakin menghapus API ${api}`,
+        title: "Delete confirmation!",
+        desc: `Are you sure you want to delete the ${apiName}`,
         link: "#",
         btn: "Delete",
-        exec: () => del({ url, element }),
+        exec: () => deleteAction({ url, element }),
     });
 };
 
-const deleteHandler = () => {
-    // action for delete
-    document.querySelectorAll(".api--list-item").forEach((d) => {
-        const del_btn = d.children[3].children[0];
-        if (!d.getAttribute("data-listener")) {
-            del_btn.addEventListener("click", (e) => {
-                e.preventDefault();
-                const id = d.getAttribute("data-id");
-                const url = `/api/v1/api-management/delete/${id}`;
-
-                deleteApi({ url, api: id, element: d });
-            });
-            d.setAttribute("data-listener", "true");
-        }
-    });
-};
-
-const apiTemplate = (data, id) => {
+const apiTemplate = (data, no) => {
     return `
-        <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3 api--list-item" data-id="${data.id}" onclick=deleteHandler()>
-            <span class="table-data text-center text-neutral-2"> ${id} </span>
+        <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3 api--list-item" data-id="${data.id}" id="api-template-${data.id}">
+            <span class="table-data text-center text-neutral-2"> ${no} </span>
             <p class="table-data text-center text-neutral-2" data-id="${data.id}">
                 ${data.id}</p>
             <p class="table-data text-center text-neutral-2" data-key="${data.secret}">
                 ${data.secret}</p>
             <div class="table-data pointer d-flex justify-content-around">
                 <span class="hover-tool" data-hover="Delete">
-                    <img src="/image/icon_delete.svg" alt="Delete" class="image">
+                    <img src="/image/icon_delete.svg" alt="Delete" class="image" onclick="deleteToggle('${data.id}','${data.id}')">
                 </span>
 
                 <span class="hover-tool copy" id="copy-${data.id}" data-hover="Copy" onclick=copyHandler("${data.id}","${data.secret}")>
@@ -150,9 +136,17 @@ searchBtn.addEventListener("click", (e) => {
 
 generateBtn.addEventListener("click", async (e) => {
     e.preventDefault();
-    const data = await setter({
+    const resp = await setter({
         url: "/api/v1/api-management/generate",
         successMsg: "Success generate API",
         successBody: "Please click show more to see new api",
     });
+
+    if (resp.success) {
+        const apiLength = document.querySelectorAll(".api--list-item");
+        apiContainer.insertAdjacentHTML(
+            "beforeend",
+            apiTemplate(resp.data, apiLength.length + 1)
+        );
+    }
 });

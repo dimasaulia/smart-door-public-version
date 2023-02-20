@@ -23,7 +23,7 @@
 
     <div class="table-content bg-neutral-7 rounded-13 shadow api-container">
         {{#each apiListData}}
-            <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3 api--list-item" data-id="{{this.id}}" onclick=deleteHandler()>
+            <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3 api--list-item" data-id="{{this.id}}" id="api-template-{{this.id}}">
                 <span class="table-data text-center text-neutral-2"> {{inc @index}} </span>
                 <p class="table-data text-center text-neutral-2" data-id="{{this.id}}">
                     {{this.id}}</p>
@@ -31,7 +31,7 @@
                     {{this.secret}}</p>
                 <div class="table-data pointer d-flex justify-content-around">
                     <span class="hover-tool" data-hover="Delete">
-                        <img src="/image/icon_delete.svg" alt="Delete" class="image">
+                        <img src="/image/icon_delete.svg" alt="Delete" class="image" onclick="deleteToggle('{{this.id}}','{{this.id}}')">
                     </span>
 
                     <span class="hover-tool copy" data-hover="Copy" id="copy-{{this.id}}" onclick=copyHandler("{{this.id}}","{{this.secret}}")>
