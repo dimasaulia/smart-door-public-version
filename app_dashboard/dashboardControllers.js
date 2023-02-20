@@ -201,7 +201,12 @@ exports.roomDetail = async (req, res) => {
     const data = {
         room: "bg-neutral-4",
         styles: ["/style/roomDetail.css"],
-        scripts: ["/js/roomDetail.js"],
+        scripts: [
+            "/js/roomDetail.js",
+            "/js/roomDetailAccaptableCard.js",
+            "/js/roomDetailAccaptableRequestUser.js",
+            "/js/roomDetailHistory.js",
+        ],
         ruid,
         layout: await layoutHandler(getUser(req)),
     };

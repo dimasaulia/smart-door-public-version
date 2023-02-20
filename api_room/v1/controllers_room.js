@@ -6,7 +6,7 @@ const {
 const { getUser, hashChecker, hasher } = require("../../services/auth");
 const prisma = require("../../prisma/client");
 const { random: stringGenerator } = require("@supercharge/strings");
-const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
+const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 20;
 // const ITEM_LIMIT = 2;
 
 // INFO: Prisma middleware to encrypt default room pin
