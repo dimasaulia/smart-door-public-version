@@ -8,7 +8,7 @@ submit.addEventListener("click", async (e) => {
     const username = form.username.value;
     const password = form.password.value;
     const email = form.email.value;
-
+    startLoader();
     await fetch("/api/v1/user/register", {
         headers: {
             "Content-Type": "application/json",
@@ -24,15 +24,17 @@ submit.addEventListener("click", async (e) => {
             return res.json();
         })
         .then((data) => {
+            closeLoader();
             if (!data.success) throw data;
-            setToast({
-                status: "success",
-                title: "Berhasil Mendaftar",
-                msg: "Berhasil mendaftarkan dan mengauntentikasi user",
-            });
+            // setToast({
+            //     status: "success",
+            //     title: "Berhasil Mendaftar",
+            //     msg: "Berhasil mendaftarkan dan mengauntentikasi user",
+            // });
             return (window.location = "/dashboard/");
         })
         .catch((err) => {
+            closeLoader();
             if (err) {
                 const errors = err.data.errors;
                 for (const error in errors) {

@@ -1,5 +1,8 @@
 const router = require("express").Router();
 const controllers = require("./controller");
-const { loginRequired } = require("../middlewares/uiMiddlewares");
-router.get("/", loginRequired, controllers.profile);
+const {
+    loginRequired,
+    accountIsVerified,
+} = require("../middlewares/uiMiddlewares");
+router.get("/", loginRequired, accountIsVerified, controllers.profile);
 module.exports = router;

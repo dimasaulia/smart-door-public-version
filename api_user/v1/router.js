@@ -42,11 +42,9 @@ const {
     notCurrentUser,
     adminRoleIsExist,
     urlTokenIsValid,
-    urlTokenIsNotActive,
     userEmailNotVerify,
     logoutRequired,
     emailIsExist,
-    urlTokenIsMatch,
 } = require("../../middlewares/authMiddlewares");
 const {
     cardIsExist,
@@ -192,15 +190,14 @@ router.post(
 router.post(
     "/email-send-verification/",
     loginRequired,
-    userEmailNotVerify,
+    // userEmailNotVerify,
     user.emailVerification
 );
 router.get(
     "/email-verifying/",
-    loginRequired,
     query("token").notEmpty(),
     formChacker,
-    userEmailNotVerify,
+    // userEmailNotVerify,
     urlTokenIsValid,
     user.verifyingEmail
 );

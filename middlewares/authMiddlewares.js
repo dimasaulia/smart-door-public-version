@@ -6,6 +6,7 @@ const {
     getUser,
     verifyJwt,
     hashChecker,
+    setCookie,
 } = require("../services/auth");
 const crypto = require("crypto");
 const prisma = require("../prisma/client");
@@ -263,7 +264,39 @@ const emailIsNotExist = async (req, res, next) => {
     }
 };
 
-/** Fungsi untuk memastikan username user belum terdaftar */
+/** Memastikan halaman hanya bisa diakses oleh user yang belum terverifikasi */
+const userEmailNotVerify = async (req, res, next) => {
+    try {
+        const { emailIsVerified } = await prisma.user.findUnique({
+            where: { id: getUser(req) },
+        });
+        if (emailIsVerified) throw "Your email already verified";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            errors: error,
+        });
+    }
+};
+
+/** Memastikan halaman hanya bisa diakses oleh user yang sudah terverifikasi */
+const userEmailIsVerify = async (req, res, next) => {
+    try {
+        const { emailIsVerified } = await prisma.user.findUnique({
+            where: { id: getUser(req) },
+        });
+        if (!emailIsVerified) throw "Your email not verified";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            errors: error,
+        });
+    }
+};
+
+/** Fungsi untuk memastikan username (pada form) user belum terdaftar */
 const userIsNotExist = async (req, res, next) => {
     try {
         const { username } = req.body;
@@ -311,79 +344,18 @@ const notCurrentUser = async (req, res, next) => {
 
 /** Fungsi untuk mengecek apakah token masih aktif dan ada di database */
 const urlTokenIsValid = async (req, res, next) => {
+    const { token } = req.query;
+    const secret = crypto.createHash("sha256").update(token).digest("hex");
     try {
-        const { token } = req.query;
-        const secret = crypto.createHash("sha256").update(token).digest("hex");
         const user = await prisma.user.findUnique({ where: { token: secret } });
         if (user === null) throw "Token is not valid";
-        if (new Date() > user.tokenExpiredAt) throw "Token is not expired";
+        if (new Date() > user.tokenExpiredAt) throw "Token is expired";
         return next();
     } catch (error) {
-        return resError({
-            res,
-            errors: error,
+        await prisma.user.update({
+            where: { token: secret },
+            data: { token: null, tokenExpiredAt: null },
         });
-    }
-};
-
-/** Memastikan halaman hanya bisa diakses oleh user yang belum terverifikasi */
-const userEmailNotVerify = async (req, res, next) => {
-    try {
-        const { emailIsVerified } = await prisma.user.findUnique({
-            where: { id: getUser(req) },
-        });
-        if (emailIsVerified) throw "Your email already verified";
-        return next();
-    } catch (error) {
-        return resError({
-            res,
-            errors: error,
-        });
-    }
-};
-
-const userEmailIsVerify = async (req, res, next) => {
-    try {
-        const { emailIsVerified } = await prisma.user.findUnique({
-            where: { id: getUser(req) },
-        });
-        if (!emailIsVerified) throw "Your email not verified";
-        return next();
-    } catch (error) {
-        return resError({
-            res,
-            errors: error,
-        });
-    }
-};
-
-const urlTokenIsMatch = async (req, res, next) => {
-    const { token } = req.query;
-    try {
-        const data = verifyJwt(token.replaceAll("#", "="));
-        const cloudToken = await prisma.token.findUnique({
-            where: { userId: data.uuid },
-        });
-
-        // Check if user still have the token
-        if (!cloudToken)
-            throw new ErrorException({
-                type: "token",
-                detail: "You dont have any token",
-                location: "Auth Middleware",
-            });
-
-        // INFO: Match the token
-        const isTokenMatch = hashChecker(data?.token, cloudToken?.token);
-        if (!isTokenMatch) {
-            throw new ErrorException({
-                type: "token",
-                detail: "Your token is not match",
-                location: "Auth Middleware",
-            });
-        }
-        return next();
-    } catch (error) {
         return resError({
             res,
             errors: error,
@@ -406,5 +378,4 @@ module.exports = {
     userEmailIsVerify,
     userEmailNotVerify,
     emailIsExist,
-    urlTokenIsMatch,
 };

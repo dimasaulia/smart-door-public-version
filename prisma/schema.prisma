@@ -25,6 +25,7 @@ model Role {
 model User {
   id                String    @id @default(uuid())
   username          String    @unique
+  accountIsVerified Boolean   @default(false)
   email             String    @unique
   emailIsVerified   Boolean   @default(false)
   password          String

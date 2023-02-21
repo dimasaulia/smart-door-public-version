@@ -73,6 +73,7 @@ exports.login = async (req, res) => {
 exports.register = async (req, res) => {
     const { username, email, password } = req.body;
     try {
+        const token = crypto.randomBytes(32).toString("hex");
         const newUser = await prisma.user.create({
             data: {
                 username,
@@ -80,6 +81,8 @@ exports.register = async (req, res) => {
                 password: hasher(password),
                 role: { connect: { name: "USER" } },
                 passwordUpdatedAt: new Date(Date.now() - 1000),
+                token: crypto.createHash("sha256").update(token).digest("hex"),
+                tokenExpiredAt: new Date(new Date().getTime() + 5 * 60000),
                 profil: {
                     create: {
                         full_name: username,
@@ -91,12 +94,25 @@ exports.register = async (req, res) => {
                 username: true,
                 email: true,
                 roleId: true,
+                token: true,
             },
         });
 
+        const url = urlTokenGenerator(
+            req,
+            "api/v1/user/email-verifying/",
+            token
+        );
+
+        await sendEmail(newUser.email, "Email Verification", url);
+
         setAuthCookie({ res, uuid: newUser.id });
 
-        return resSuccess({ res, title: "Berhasil regsitrasi", data: newUser });
+        return resSuccess({
+            res,
+            title: "Berhasil regsitrasi",
+            data: { id: newUser.id, username },
+        });
     } catch (err) {
         return resError({ res, title: "Gagal merigistrasi user", errors: err });
     }
@@ -590,6 +606,9 @@ exports.verifyingEmail = async (req, res) => {
             },
             data: {
                 emailIsVerified: true,
+                accountIsVerified: true,
+                token: null,
+                tokenExpiredAt: null,
             },
         });
 

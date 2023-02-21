@@ -22,14 +22,15 @@ submit.addEventListener("click", async (e) => {
         })
         .then((data) => {
             if (!data.success) throw data;
-            setToast({
-                status: "success",
-                title: "Login Success",
-                msg: "Success authenticate user",
-            });
+            // setToast({
+            //     status: "success",
+            //     title: "Login Success",
+            //     msg: "Success authenticate user",
+            // });
             return (window.location = "/dashboard");
         })
         .catch((err) => {
+            console.log(err);
             if (err) {
                 const errors = err.data.errors;
                 for (const error in errors) {

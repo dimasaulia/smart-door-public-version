@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const uiMiddlewares = require("./middlewares/uiMiddlewares");
 const { setUser } = require("./middlewares/authMiddlewares");
 const API_V1 = (route) => `/api/v1/${route}`;
 const DASHBOARD = require("./app_dashboard/router");

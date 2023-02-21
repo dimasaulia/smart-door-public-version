@@ -47,10 +47,16 @@ const verifyJwt = (data) => {
 };
 
 /** Set Cookie To User Browser */
-const setCookie = ({ res, title, data }) => {
+const setCookie = ({
+    res,
+    title,
+    data,
+    secure = true,
+    exp = expTime() * 1000,
+}) => {
     res.cookie(title, data, {
-        httpOnly: true,
-        maxAge: expTime() * 1000,
+        httpOnly: secure,
+        maxAge: exp,
     });
 };
 

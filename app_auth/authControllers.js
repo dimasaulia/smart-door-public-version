@@ -33,3 +33,12 @@ module.exports.reset = (req, res) => {
     };
     res.render("reset", data);
 };
+
+module.exports.needEmailVerification = (req, res) => {
+    const data = {
+        styles: ["/style/auth.css"],
+        scripts: ["/js/needEmailVerification.js"],
+        layout: "auth.hbs",
+    };
+    res.render("needEmailVerification", data);
+};

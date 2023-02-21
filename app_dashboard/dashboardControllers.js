@@ -126,9 +126,11 @@ exports.userEdit = async (req, res) => {
                 },
                 username: true,
                 email: true,
+                emailIsVerified: true,
                 id: true,
             },
         });
+
         const data = {
             users: "bg-neutral-4",
             styles: ["/style/profil.css"],

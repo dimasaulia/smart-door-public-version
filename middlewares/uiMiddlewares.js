@@ -1,7 +1,7 @@
 require("dotenv").config;
 const jwt = require("jsonwebtoken");
 const { resError } = require("../services/responseHandler");
-const { getJwtToken, getUser } = require("../services/auth");
+const { getJwtToken, getUser, setCookie } = require("../services/auth");
 const prisma = require("../prisma/client");
 
 const loginRequired = (req, res, next) => {
@@ -86,4 +86,22 @@ const allowedRole = (...roles) => {
     };
 };
 
-module.exports = { loginRequired, allowedRole, logoutRequired };
+/** Memastikan halaman hanya bisa diakses oleh user yang sudah terverifikasi */
+const accountIsVerified = async (req, res, next) => {
+    try {
+        const { accountIsVerified } = await prisma.user.findUnique({
+            where: { id: getUser(req) },
+        });
+        if (!accountIsVerified) throw "Your account not verified";
+        return next();
+    } catch (error) {
+        return res.redirect("/auth/need-email-verification");
+    }
+};
+
+module.exports = {
+    loginRequired,
+    allowedRole,
+    logoutRequired,
+    accountIsVerified,
+};

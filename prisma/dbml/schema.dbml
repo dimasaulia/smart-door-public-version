@@ -13,6 +13,7 @@ Table Role {
 Table User {
   id String [pk]
   username String [unique, not null]
+  accountIsVerified Boolean [not null, default: false]
   email String [unique, not null]
   emailIsVerified Boolean [not null, default: false]
   password String [not null]
