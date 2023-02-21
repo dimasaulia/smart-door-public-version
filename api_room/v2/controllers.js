@@ -94,7 +94,7 @@ exports.createRoom = async (req, res) => {
 };
 
 /**
- * Fungsi untuk menampilkan informasi suatu ruangan berdasarkan RUID (Room Unique ID)
+ * Fungsi untuk menampilkan informasi suatu ruangan berdasarkan DUID (Device Unique ID)
  */
 exports.detail = async (req, res) => {
     const { duid } = req.params; // stands for room unique id

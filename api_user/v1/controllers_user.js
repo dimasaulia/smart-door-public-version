@@ -349,7 +349,7 @@ exports.adminModifyUserProfile = async (req, res) => {
 exports.pairUserToCard = async (req, res) => {
     const username = req.body.username;
     const cardNumber = req.body.cardNumber;
-    const user = await prisma.user.update({
+    await prisma.user.update({
         where: {
             username,
         },
@@ -567,7 +567,7 @@ exports.setUserRole = async (req, res) => {
     }
 };
 
-exports.emailVerification = async (req, res) => {
+exports.sendVerificationEmail = async (req, res) => {
     try {
         const token = crypto.randomBytes(32).toString("hex");
 
