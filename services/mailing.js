@@ -1,5 +1,4 @@
 const nodemailer = require("nodemailer");
-const { urlEncrypter } = require("./auth");
 
 /**
  * This function for sending email

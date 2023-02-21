@@ -24,8 +24,8 @@ submit.addEventListener("click", async (e) => {
             if (!data.success) throw data;
             setToast({
                 status: "success",
-                title: "Berhasil Login",
-                msg: "Berhasil mengauntentikasi user",
+                title: "Login Success",
+                msg: "Success authenticate user",
             });
             return (window.location = "/dashboard");
         })

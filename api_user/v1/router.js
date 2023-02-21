@@ -193,7 +193,6 @@ router.post(
     "/email-send-verification/",
     loginRequired,
     userEmailNotVerify,
-    urlTokenIsNotActive,
     user.emailVerification
 );
 router.get(
@@ -203,17 +202,15 @@ router.get(
     formChacker,
     userEmailNotVerify,
     urlTokenIsValid,
-    urlTokenIsMatch,
     user.verifyingEmail
 );
 router.post(
-    "/send-reset-password/",
+    "/forgot-password/",
     logoutRequired,
     body("email").notEmpty().isEmail(),
     formChacker,
     emailIsExist,
-    urlTokenIsNotActive,
-    user.sendResetPassword
+    user.forgotPassword
 );
 router.post(
     "/reset-password/",
@@ -226,7 +223,6 @@ router.post(
         ),
     formChacker,
     urlTokenIsValid,
-    urlTokenIsMatch,
     user.resetPassword
 );
 module.exports = router;

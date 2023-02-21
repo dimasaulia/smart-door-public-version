@@ -5,11 +5,12 @@ const {
     getJwtToken,
     getUser,
     verifyJwt,
-    urlDecrypter,
     hashChecker,
 } = require("../services/auth");
+const crypto = require("crypto");
 const prisma = require("../prisma/client");
 
+/** Fungsi untuk memastikan user sudah login dan memiliki jwt yang aktif */
 const loginRequired = (req, res, next) => {
     const jwtToken = getJwtToken(req);
 
@@ -65,6 +66,7 @@ const loginRequired = (req, res, next) => {
     });
 };
 
+/** Fungsi untuk memastikan user sudah logout/ tidak ada cookie dan jwt yang aktif */
 const logoutRequired = (req, res, next) => {
     const jwtToken = getJwtToken(req);
 
@@ -77,6 +79,7 @@ const logoutRequired = (req, res, next) => {
     next();
 };
 
+/** Fungsi untuk memastikan hanya role tertentu yang bisa masuk ke dalam sistem */
 const allowedRole = (...roles) => {
     return async (req, res, next) => {
         const user = await prisma.user.findUnique({
@@ -102,6 +105,7 @@ const allowedRole = (...roles) => {
     };
 };
 
+/** Fungsi untuk mengatur agar user bisa di akses melalui res.local.user */
 const setUser = async (req, res, next) => {
     try {
         const uuid = getUser(req);
@@ -162,6 +166,7 @@ const adminRoleIsExist = async (req, res, next) => {
     }
 };
 
+/** Fungsi untuk memastikan username user sudah terdaftar */
 const userIsExist = async (req, res, next) => {
     try {
         const { username } = req.body;
@@ -188,6 +193,7 @@ const userIsExist = async (req, res, next) => {
     }
 };
 
+/** Fungsi untuk memastikan email user sudah terdaftar */
 const emailIsExist = async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -222,40 +228,7 @@ const emailIsExist = async (req, res, next) => {
     }
 };
 
-const userIsNotExist = async (req, res, next) => {
-    try {
-        const { username } = req.body;
-        const user = await prisma.user.findUnique({
-            where: {
-                username,
-            },
-            select: {
-                id: true,
-                username: true,
-                password: true,
-                email: true,
-                role: {
-                    select: {
-                        name: true,
-                    },
-                },
-            },
-        });
-
-        // give response if cant find the user
-        if (user)
-            throw new ErrorException({
-                type: "username",
-                detail: "User already exist or register",
-                location: "Auth Midlleware",
-            });
-
-        return next();
-    } catch (errors) {
-        return resError({ res, title: "Something Wrong", errors });
-    }
-};
-
+/** Fungsi untuk memastikan email user belum pernah terdaftar */
 const emailIsNotExist = async (req, res, next) => {
     try {
         const { email } = req.body;
@@ -290,6 +263,41 @@ const emailIsNotExist = async (req, res, next) => {
     }
 };
 
+/** Fungsi untuk memastikan username user belum terdaftar */
+const userIsNotExist = async (req, res, next) => {
+    try {
+        const { username } = req.body;
+        const user = await prisma.user.findUnique({
+            where: {
+                username,
+            },
+            select: {
+                id: true,
+                username: true,
+                password: true,
+                email: true,
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        // give response if cant find the user
+        if (user)
+            throw new ErrorException({
+                type: "username",
+                detail: "User already exist or register",
+                location: "Auth Midlleware",
+            });
+
+        return next();
+    } catch (errors) {
+        return resError({ res, title: "Something Wrong", errors });
+    }
+};
+
 /** Fungsi yang memastikan user yang sedang login tidak bisa menghapus dirinya sendiri */
 const notCurrentUser = async (req, res, next) => {
     const deletedUser = req.params.id;
@@ -301,78 +309,19 @@ const notCurrentUser = async (req, res, next) => {
     });
 };
 
+/** Fungsi untuk mengecek apakah token masih aktif dan ada di database */
 const urlTokenIsValid = async (req, res, next) => {
     try {
         const { token } = req.query;
-        const data = verifyJwt(token);
-        if (!(data?.uuid && data?.token))
-            throw "Your token is Invalid or expired";
+        const secret = crypto.createHash("sha256").update(token).digest("hex");
+        const user = await prisma.user.findUnique({ where: { token: secret } });
+        if (user === null) throw "Token is not valid";
+        if (new Date() > user.tokenExpiredAt) throw "Token is not expired";
         return next();
     } catch (error) {
         return resError({
             res,
             errors: error,
-        });
-    }
-};
-
-/** Memastikan token user tidak kadaluarsa */
-const urlTokenNotExpired = async (req, res, next) => {
-    const { token } = req.query;
-    try {
-        const data = verifyJwt(token);
-        const cloudToken = await prisma.token.findUnique({
-            where: { userId: data.uuid },
-        });
-
-        if (new Date() > cloudToken.expiredAt) {
-            throw new ErrorException({
-                type: "token",
-                detail: "Your token is expireds",
-                location: "User Controller",
-            });
-        }
-        return next();
-    } catch (error) {
-        return resError({
-            res,
-            errors: error,
-        });
-    }
-};
-
-/** Fungsi yang akan mencegah user untuk melakukan request baru ketika token masih aktif */
-const urlTokenIsNotActive = async (req, res, next) => {
-    try {
-        let cloudToken;
-        if (getUser(req)) {
-            //digunaka ketika user mengirim email verifikasi
-            cloudToken = await prisma.token.findUnique({
-                where: { userId: getUser(req) },
-            });
-        } else {
-            //digunakan ketika user mengirim reset password
-            const { email } = req.body;
-            const { id } = await prisma.user.findUnique({ where: { email } });
-            cloudToken = await prisma.token.findUnique({
-                where: { userId: id },
-            });
-        }
-
-        if (!cloudToken) return next();
-
-        if (new Date() < cloudToken.expiredAt) {
-            throw new ErrorException({
-                type: "token",
-                detail: "Your token is still valid",
-                location: "Auth Middlewares",
-            });
-        }
-        return next();
-    } catch (error) {
-        return resError({
-            res,
-            errors: error.token.detail,
         });
     }
 };
@@ -454,8 +403,6 @@ module.exports = {
     emailIsNotExist,
     notCurrentUser,
     urlTokenIsValid,
-    urlTokenNotExpired,
-    urlTokenIsNotActive,
     userEmailIsVerify,
     userEmailNotVerify,
     emailIsExist,

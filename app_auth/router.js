@@ -17,7 +17,6 @@ router.get(
     query("token").notEmpty().withMessage("Can't find token from your url"),
     formChacker,
     urlTokenIsValid,
-    urlTokenIsMatch,
     auth.reset
 );
 module.exports = router;

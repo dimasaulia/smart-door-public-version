@@ -1,20 +1,15 @@
-require("dotenv").config();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const CryptoJS = require("crypto-js");
-const maxAge = 3 * 24 * 60 * 60; // 3 days
 const saltRounds = 10;
 
-/**  Createing max age of a token, changeable from variable or env var*/
+/**  Createing max age of a token, changeable from .env */
 const expTime = () => {
+    const maxAge = Number(process.env.MAX_AGE) || 3 * 24 * 60 * 60; // 3 days
     return maxAge;
 };
 
-/** Creating jwt token*/
-const createJwtToken = (
-    data,
-    exp = Number(process.env.MAX_AGE) || Number(expTime())
-) => {
+/** Creating jwt token, the default expired date is 3 days*/
+const createJwtToken = (data, exp = expTime()) => {
     return jwt.sign(data, process.env.SECRET, {
         expiresIn: exp,
     });
@@ -23,7 +18,7 @@ const createJwtToken = (
 /**  Getting jwt token from request */
 const getJwtToken = (req) => {
     try {
-        return decrypter(req.cookies.jwt);
+        return req.cookies.jwt;
     } catch (error) {
         return false;
     }
@@ -53,14 +48,10 @@ const verifyJwt = (data) => {
 
 /** Set Cookie To User Browser */
 const setCookie = ({ res, title, data }) => {
-    res.cookie(title, encrypter(data), {
+    res.cookie(title, data, {
         httpOnly: true,
         maxAge: expTime() * 1000,
     });
-};
-
-const getCookie = ({ res, title }) => {
-    return;
 };
 
 /** Set authentication cookie */
@@ -88,37 +79,6 @@ const hashChecker = (password, hashPassword) => {
     return isTruePassword;
 };
 
-/**
- * Function to encrypt input  string.
- * @param {string} text Input string to encyript.
- * */
-const encrypter = (text) => {
-    var ciphertext = CryptoJS.AES.encrypt(text, process.env.SECRET).toString();
-    return ciphertext;
-};
-
-const urlEncrypter = (text) => {
-    var ciphertext = CryptoJS.enc.Base64.stringify(
-        CryptoJS.enc.Utf8.parse(text)
-    ).replaceAll("=", "#");
-    return ciphertext;
-};
-
-/**
- * Function to decrypt input string.
- * @param {string} text Input string to decyript.
- * */
-const decrypter = (text) => {
-    var bytes = CryptoJS.AES.decrypt(text, process.env.SECRET);
-    var originalText = bytes.toString(CryptoJS.enc.Utf8);
-    return originalText;
-};
-
-const urlDecrypter = (text) => {
-    var originalText = CryptoJS.enc.Base64.parse(text).toString();
-    return originalText;
-};
-
 module.exports = {
     createJwtToken,
     expTime,
@@ -128,9 +88,5 @@ module.exports = {
     setAuthCookie,
     hasher,
     hashChecker,
-    encrypter,
-    decrypter,
     verifyJwt,
-    urlDecrypter,
-    urlEncrypter,
 };

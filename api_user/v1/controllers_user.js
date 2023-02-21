@@ -12,6 +12,7 @@ const { resError, resSuccess } = require("../../services/responseHandler");
 const { random: stringGenerator } = require("@supercharge/strings");
 const { sendEmail, urlTokenGenerator } = require("../../services/mailing");
 const { days } = require("../../services/timeformater");
+const crypto = require("crypto");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 const FS = require("fs");
 
@@ -46,6 +47,7 @@ exports.login = async (req, res) => {
 
         // compare user and password
         const auth = hashChecker(password, user.password);
+
         // give response if password not match
         if (!auth)
             throw new ErrorException({
@@ -54,14 +56,13 @@ exports.login = async (req, res) => {
             });
 
         setAuthCookie({ res, uuid: user.id });
+
         return resSuccess({
             res,
             title: "Berhasil login",
             data: {
                 username: user.username,
                 email: user.email,
-                id: user.id,
-                role: user.role.name,
             },
         });
     } catch (err) {
@@ -552,53 +553,23 @@ exports.setUserRole = async (req, res) => {
 
 exports.emailVerification = async (req, res) => {
     try {
-        const cloudToken = await prisma.token.findUnique({
-            where: { userId: getUser(req) },
-            include: { user: true },
-        });
+        const token = crypto.randomBytes(32).toString("hex");
 
-        const { email, id: uuid } = await prisma.user.findUnique({
+        const secret = await prisma.user.update({
             where: { id: getUser(req) },
+            data: {
+                token: crypto.createHash("sha256").update(token).digest("hex"),
+                tokenExpiredAt: new Date(new Date().getTime() + 5 * 60000),
+            },
         });
-        const token = stringGenerator(24);
-        const secret = createJwtToken({ uuid, token }, 60 * 5);
-
-        // If not exist then create
-        if (!cloudToken) {
-            const { id: uuid, email } = await prisma.user.findUnique({
-                where: { id: getUser(req) },
-            });
-
-            userEmail = email;
-
-            await prisma.token.create({
-                data: {
-                    userId: uuid,
-                    token: hasher(token),
-                    expiredAt: new Date(new Date().getTime() + 5 * 60000),
-                },
-            });
-        } else {
-            if (new Date() > cloudToken?.expiredAt) {
-                await prisma.token.update({
-                    where: {
-                        id: cloudToken.id,
-                    },
-                    data: {
-                        token: hasher(token),
-                        expiredAt: new Date(new Date().getTime() + 5 * 60000),
-                    },
-                });
-            }
-        }
 
         const url = urlTokenGenerator(
             req,
             "api/v1/user/email-verifying/",
-            secret
+            token
         );
 
-        await sendEmail(email, "Email Verification", url);
+        await sendEmail(secret.email, "Email Verification", url);
 
         return resSuccess({
             res,
@@ -611,19 +582,15 @@ exports.emailVerification = async (req, res) => {
 };
 
 exports.verifyingEmail = async (req, res) => {
-    let verificationSuccess;
     const { token } = req.query;
     try {
-        const data = verifyJwt(token);
-
-        // INFO: If all data valid or success
-        verificationSuccess = await prisma.user.update({
-            where: { id: data.uuid },
-            data: { emailIsVerified: true },
-        });
-
-        await prisma.token.delete({
-            where: { userId: data.uuid },
+        const secret = await prisma.user.update({
+            where: {
+                token: crypto.createHash("sha256").update(token).digest("hex"),
+            },
+            data: {
+                emailIsVerified: true,
+            },
         });
 
         // return resSuccess({
@@ -637,74 +604,59 @@ exports.verifyingEmail = async (req, res) => {
     }
 };
 
-exports.sendResetPassword = async (req, res) => {
+exports.forgotPassword = async (req, res) => {
     const { email } = req.body;
     try {
-        const { id: uuid } = await prisma.user.findUnique({ where: { email } });
-        const token = stringGenerator(24);
-        const secret = createJwtToken({ uuid, token }, 60 * 5);
-        const expiredAt = new Date(new Date().getTime() + 5 * 60000);
-        const cloudToken = await prisma.token.findUnique({
-            where: { userId: uuid },
+        const token = crypto.randomBytes(32).toString("hex");
+
+        const secret = await prisma.user.update({
+            where: { email },
+            data: {
+                token: crypto.createHash("sha256").update(token).digest("hex"),
+                tokenExpiredAt: new Date(new Date().getTime() + 5 * 60000),
+            },
         });
 
-        // If not exist then create
-        if (!cloudToken) {
-            await prisma.token.create({
-                data: {
-                    userId: uuid,
-                    token: hasher(token),
-                    expiredAt,
-                },
-            });
-        } else {
-            await prisma.token.update({
-                where: {
-                    id: cloudToken.id,
-                },
-                data: {
-                    token: hasher(token),
-                    expiredAt,
-                },
-            });
-        }
-
-        const url = urlTokenGenerator(req, "auth/reset", secret);
+        const url = urlTokenGenerator(req, "auth/reset", token);
         await sendEmail(
             email,
             "Reset password",
             `Reset your password via the following link ${url}, your token active until ${days(
-                expiredAt
+                secret.tokenExpiredAt
             )}`
         );
 
         return resSuccess({
             res,
             title: "Success send reset link to your mail",
-            data: url,
+            data: [],
         });
     } catch (error) {
+        console.log(error);
         return resError({ res, errors: error });
     }
 };
 
 exports.resetPassword = async (req, res) => {
-    const { password } = req.body;
-    const { token } = req.query;
     try {
-        const { uuid, token: urlToken } = verifyJwt(token);
+        const { password } = req.body;
+        const { token } = req.query;
         const newPass = await prisma.user.update({
-            where: { id: uuid },
+            where: {
+                token: crypto.createHash("sha256").update(token).digest("hex"),
+            },
 
             data: {
                 password: hasher(password),
                 passwordUpdatedAt: new Date(Date.now() - 1000),
+                token: null,
+                tokenExpiredAt: null,
             },
         });
 
-        await prisma.token.delete({
-            where: { userId: uuid },
-        });
+        // await prisma.token.delete({
+        //     where: { userId: uuid },
+        // });
 
         return resSuccess({
             res,
@@ -712,6 +664,7 @@ exports.resetPassword = async (req, res) => {
             data: newPass,
         });
     } catch (error) {
+        console.log(error);
         return resError({ res, errors: error });
     }
 };
