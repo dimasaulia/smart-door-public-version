@@ -213,6 +213,15 @@ exports.list = async (req, res) => {
                                 contains: search,
                                 mode: "insensitive",
                             },
+                            Building: {
+                                is: {
+                                    operator: {
+                                        some: {
+                                            username,
+                                        },
+                                    },
+                                },
+                            },
                         },
                         orderBy: {
                             name: "asc",
@@ -230,6 +239,15 @@ exports.list = async (req, res) => {
                             name: {
                                 contains: search,
                                 mode: "insensitive",
+                            },
+                            Building: {
+                                is: {
+                                    operator: {
+                                        some: {
+                                            username,
+                                        },
+                                    },
+                                },
                             },
                         },
                         orderBy: {
@@ -272,6 +290,17 @@ exports.list = async (req, res) => {
                 }
                 if (cursor) {
                     roomList = await prisma.room.findMany({
+                        where: {
+                            Building: {
+                                is: {
+                                    operator: {
+                                        some: {
+                                            username,
+                                        },
+                                    },
+                                },
+                            },
+                        },
                         orderBy: {
                             name: "asc",
                         },
@@ -294,7 +323,6 @@ exports.list = async (req, res) => {
             data: roomList,
         });
     } catch (error) {
-        console.log(error);
         return resError({ res, errors: error });
     }
 };

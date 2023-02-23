@@ -5,7 +5,8 @@ const { resError, ErrorException } = require("../services/responseHandler");
 /** Fungsi untuk memastikan semua username yang dikirim melalui body terdaftar di database */
 const allUsernamesExist = async (req, res, next) => {
     try {
-        const { usernames } = req.body;
+        const { usernames: unFilteredUsenames } = req.body;
+        const usernames = [...new Set(unFilteredUsenames)];
 
         const users = await prisma.user.findMany({
             where: {
@@ -38,7 +39,8 @@ const allUsernamesExist = async (req, res, next) => {
 /** Fungsi untuk memastikan semua username yang dikirim melalui body terdaftar sebagai operator di database */
 const allUsernamesIsOperator = async (req, res, next) => {
     try {
-        const { usernames } = req.body;
+        const { usernames: unFilteredUsenames } = req.body;
+        const usernames = [...new Set(unFilteredUsenames)];
 
         const users = await prisma.user.findMany({
             where: {
@@ -76,8 +78,8 @@ const allUsernamesIsOperator = async (req, res, next) => {
 /** Fungsi untuk memastikan semua ruangan yang dikirim melalui body terdaftar di database */
 const allRoomExist = async (req, res, next) => {
     try {
-        const { ruids } = req.body;
-
+        const { ruids: unFilteredRuids } = req.body;
+        const ruids = [...new Set(unFilteredRuids)];
         const rooms = await prisma.room.findMany({
             where: {
                 ruid: { in: ruids },
@@ -147,7 +149,7 @@ const roomHasLinkedBuilding = async (req, res, next) => {
             where: { ruid },
             select: { Building: true },
         });
-        if (room.Building === null) throw "Please link this room to Building";
+        if (room.Building === null) throw "Please link this room to a Building";
         return next();
     } catch (error) {
         resError({
@@ -161,20 +163,40 @@ const roomHasLinkedBuilding = async (req, res, next) => {
 /** Fungsi untuk memastikan seluruh ruangan dalam form body tidak ditautkan ke sebuah gedung */
 const allRoomNotLinkedToBuilding = async (req, res, next) => {
     try {
-        const { ruids } = req.body;
+        const { ruids: unFilteredRuids, buildingId } = req.body;
+        const ruids = [...new Set(unFilteredRuids)];
+
         const rooms = await prisma.room.findMany({
             where: {
                 ruid: { in: ruids },
             },
             select: { name: true, Building: true },
         });
-        const roomAlreadyHasBuilding = rooms.flatMap((room) =>
-            room.Building !== null ? room : []
-        );
-        if (roomAlreadyHasBuilding.length > 0)
-            throw `${roomAlreadyHasBuilding
-                .map((room) => room.name)
-                .join(", ")} already linked to a building`;
+
+        const path = req.originalUrl.split("/").slice(-1).toString();
+
+        if (path === "create") {
+            const roomAlreadyHasBuilding = rooms.flatMap((room) =>
+                room.Building !== null ? room : []
+            );
+            if (roomAlreadyHasBuilding.length > 0)
+                throw `${roomAlreadyHasBuilding
+                    .map((room) => room.name)
+                    .join(", ")} already linked to a building`;
+        }
+
+        if (path === "update") {
+            const roomAlreadyHasBuilding = rooms.flatMap((room) =>
+                room.Building !== null && room.Building.id !== buildingId
+                    ? room
+                    : []
+            );
+            if (roomAlreadyHasBuilding.length > 0)
+                throw `${roomAlreadyHasBuilding
+                    .map((room) => room.name)
+                    .join(", ")} already linked to another building`;
+        }
+
         return next();
     } catch (error) {
         resError({
@@ -184,6 +206,31 @@ const allRoomNotLinkedToBuilding = async (req, res, next) => {
         });
     }
 };
+
+const buildingIsExist = async (req, res, next) => {
+    try {
+        const buildingId =
+            req.body.buildingId ||
+            req.params.buildingId ||
+            req.query.buildingId;
+
+        const building = await prisma.building.findUnique({
+            where: { id: buildingId },
+            select: { name: true },
+        });
+
+        if (building === null) throw "Cant find building ID";
+
+        return next();
+    } catch (error) {
+        resError({
+            res,
+            errors: error,
+            title: "Cant find building ID",
+        });
+    }
+};
+
 module.exports = {
     allUsernamesExist,
     allUsernamesIsOperator,
@@ -191,4 +238,5 @@ module.exports = {
     onlyAccessibleByLinkedOperators,
     roomHasLinkedBuilding,
     allRoomNotLinkedToBuilding,
+    buildingIsExist,
 };

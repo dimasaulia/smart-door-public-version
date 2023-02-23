@@ -7,6 +7,7 @@ const {
     allUsernamesIsOperator,
     allRoomExist,
     allRoomNotLinkedToBuilding,
+    buildingIsExist,
 } = require("../../middlewares/buildingMiddlewares");
 const {
     loginRequired,
@@ -30,6 +31,27 @@ router.post(
     allRoomExist,
     allRoomNotLinkedToBuilding,
     building.create
+);
+
+router.post(
+    "/update/",
+    loginRequired,
+    allowedRole("ADMIN"),
+    body("buildingId").notEmpty().withMessage("Please provide building ID"),
+    body("name").notEmpty().withMessage("Please provide building name"),
+    body("usernames")
+        .isArray()
+        .withMessage("Please provide a set of users to be the operator")
+        .notEmpty()
+        .withMessage("Please provide one or more user to be operator"),
+    body("ruids").isArray().withMessage("Please provide an array of Room ID"),
+    formChacker,
+    buildingIsExist,
+    allUsernamesExist,
+    allUsernamesIsOperator,
+    allRoomExist,
+    allRoomNotLinkedToBuilding,
+    building.update
 );
 
 module.exports = router;
