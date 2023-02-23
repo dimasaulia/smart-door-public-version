@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const building = require("./controller");
-const { body, param } = require("express-validator");
+const { body } = require("express-validator");
 const { formChacker } = require("../../middlewares/formMiddleware");
 const {
     allUsernamesExist,
@@ -14,10 +14,9 @@ const {
     allowedRole,
 } = require("../../middlewares/authMiddlewares");
 
+router.use(loginRequired, allowedRole("ADMIN"));
 router.post(
     "/create/",
-    loginRequired,
-    allowedRole("ADMIN"),
     body("name").notEmpty().withMessage("Please provide building name"),
     body("usernames")
         .isArray()
@@ -35,8 +34,6 @@ router.post(
 
 router.post(
     "/update/",
-    loginRequired,
-    allowedRole("ADMIN"),
     body("buildingId").notEmpty().withMessage("Please provide building ID"),
     body("name").notEmpty().withMessage("Please provide building name"),
     body("usernames")
@@ -53,5 +50,15 @@ router.post(
     allRoomNotLinkedToBuilding,
     building.update
 );
+
+router.delete(
+    "/delete/",
+    body("buildingId").notEmpty().withMessage("Please provide building ID"),
+    formChacker,
+    buildingIsExist,
+    building.delete
+);
+
+router.get("/list/", building.list);
 
 module.exports = router;

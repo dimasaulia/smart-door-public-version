@@ -1,5 +1,7 @@
 const prisma = require("../../prisma/client");
 const { resSuccess, resError } = require("../../services/responseHandler");
+// const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
+const ITEM_LIMIT = 5;
 
 exports.create = async (req, res) => {
     try {
@@ -17,7 +19,6 @@ exports.create = async (req, res) => {
         });
         return resSuccess({ res, code: 201, data: building });
     } catch (error) {
-        console.log(error);
         return resError({ res, title: "Cant create Building", errors: error });
     }
 };
@@ -47,5 +48,126 @@ exports.update = async (req, res) => {
         });
     } catch (error) {
         return resError({ res, title: "Cant update Building", errors: error });
+    }
+};
+
+exports.delete = async (req, res) => {
+    try {
+        const { buildingId } = req.body;
+        const deletedBuilding = await prisma.building.delete({
+            where: { id: buildingId },
+        });
+        return resSuccess({
+            res,
+            title: "Success delet building",
+            data: deletedBuilding,
+        });
+    } catch (error) {
+        return resError({ res, title: "Cant delete Building", errors: error });
+    }
+};
+
+exports.list = async (req, res) => {
+    try {
+        const { search, cursor } = req.query;
+        let buildingList;
+        if (search) {
+            if (!cursor) {
+                buildingList = await prisma.building.findMany({
+                    where: {
+                        name: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    select: {
+                        id: true,
+                        name: true,
+                        createdAt: true,
+                        rooms: { select: { name: true } },
+                        operator: { select: { username: true } },
+                    },
+                });
+            }
+
+            if (cursor) {
+                buildingList = await prisma.building.findMany({
+                    where: {
+                        name: {
+                            contains: search,
+                            mode: "insensitive",
+                        },
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        createdAt: true,
+                        rooms: { select: { name: true } },
+                        operator: { select: { username: true } },
+                    },
+                });
+            }
+        }
+
+        if (!search) {
+            if (!cursor) {
+                buildingList = await prisma.building.findMany({
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    select: {
+                        id: true,
+                        name: true,
+                        createdAt: true,
+                        rooms: { select: { name: true } },
+                        operator: { select: { username: true } },
+                    },
+                });
+            }
+            if (cursor) {
+                buildingList = await prisma.building.findMany({
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        createdAt: true,
+                        rooms: { select: { name: true } },
+                        operator: { select: { username: true } },
+                    },
+                });
+            }
+        }
+
+        return resSuccess({
+            res,
+            title: "Success get building list",
+            data: buildingList,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get building list",
+            errors: error,
+        });
     }
 };
