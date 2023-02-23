@@ -7,7 +7,7 @@ const passwordBtn = document.querySelector("#save-password");
 const form = document.querySelector("#profile-form");
 const usernameContainer = document.querySelector("#user-container");
 const imageContainer = document.querySelector(".profil-img-container");
-
+const oldUsername = form.full_name.value;
 uploadBtnTrigger.addEventListener("click", (e) => {
     uploadForm.click();
 });
@@ -75,15 +75,15 @@ saveBtn.addEventListener("click", async (e) => {
         successBody: "Successfully update users profile",
     });
 
-    if (resp.success) {
+    if (resp.success && oldUsername !== resp.data.username) {
         usernameContainerDetail.textContent = resp.data.username;
         const url = String(window.location.href);
         const splitUrl = url.split("/");
         const usernameToChange = splitUrl[splitUrl.length - 1];
-        if (usernameToChange != resp.data.username) {
+        setTimeout(() => {
             const newUrl = url.replace(usernameToChange, resp.data.username);
             window.location.href = newUrl;
-        }
+        }, 2500);
     }
 });
 

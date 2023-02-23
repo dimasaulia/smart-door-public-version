@@ -10,14 +10,12 @@ const {
     cardIsExist,
     cardIsPair,
     isUserCard,
-    isNewPinMatch,
     isTwoStepAuth,
 } = require("../../middlewares/cardMiddlewares");
 const {
     roomIsExist,
     roomRequestNotExist,
     roomAccessNotExist,
-    isRoomTurePin,
     cardIsHaveAccess,
     roomIsActive,
     deviceIsExist,
@@ -29,6 +27,10 @@ const {
     requestIsExist,
 } = require("../../middlewares/requestAccessMiddlewares");
 const { apiValidation } = require("../../middlewares/apiKeyMiddlewares");
+const {
+    onlyAccessibleByLinkedOperators,
+    roomHasLinkedBuilding,
+} = require("../../middlewares/buildingMiddlewares");
 
 // ROOM ROUTER
 router.get(
@@ -42,6 +44,8 @@ router.get(
     loginRequired,
     allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     roomIsExist,
+    roomHasLinkedBuilding,
+    onlyAccessibleByLinkedOperators,
     room.accaptableUser
 );
 router.get(
@@ -49,6 +53,8 @@ router.get(
     loginRequired,
     allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     roomIsExist,
+    roomHasLinkedBuilding,
+    onlyAccessibleByLinkedOperators,
     room.requestRoomByUser
 );
 router.get("/u/list", loginRequired, allowedRole("USER"), room.activeRoomList);
@@ -64,6 +70,8 @@ router.get(
     loginRequired,
     allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     roomIsExist,
+    roomHasLinkedBuilding,
+    onlyAccessibleByLinkedOperators,
     room.detail
 );
 router.post(
@@ -111,6 +119,7 @@ router.post(
     roomIsActive,
     requestIsExist,
     roomAccessNotExist,
+    onlyAccessibleByLinkedOperators,
     room.pairRoomToCard
 );
 router.post(
@@ -123,6 +132,7 @@ router.post(
     cardIsExist,
     roomIsExist,
     roomAccessIsExist,
+    onlyAccessibleByLinkedOperators,
     room.unPairRoomToCard
 );
 router.post("/get-or-create", room.getOrCreateRoom); //HW API
@@ -131,6 +141,8 @@ router.get(
     loginRequired,
     allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),
     roomIsExist,
+    roomHasLinkedBuilding,
+    onlyAccessibleByLinkedOperators,
     room.logs
 );
 router.post(

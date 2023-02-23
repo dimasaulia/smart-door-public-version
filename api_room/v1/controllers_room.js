@@ -119,76 +119,172 @@ exports.detail = async (req, res) => {
  */
 exports.list = async (req, res) => {
     const { search, cursor } = req.query;
+    const id = getUser(req);
     let roomList;
+
     try {
-        if (search) {
-            if (!cursor) {
-                roomList = await prisma.room.findMany({
-                    where: {
-                        name: {
-                            contains: search,
-                            mode: "insensitive",
+        const {
+            username,
+            role: { name: roleName },
+        } = await prisma.user.findUnique({
+            where: { id },
+            select: { username: true, role: { select: { name: true } } },
+        });
+
+        if (roleName === "ADMIN") {
+            if (search) {
+                if (!cursor) {
+                    roomList = await prisma.room.findMany({
+                        where: {
+                            name: {
+                                contains: search,
+                                mode: "insensitive",
+                            },
                         },
-                    },
-                    orderBy: {
-                        name: "asc",
-                    },
-                    take: ITEM_LIMIT,
-                    include: {
-                        device: true,
-                    },
-                });
+                        orderBy: {
+                            name: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                        include: {
+                            device: true,
+                        },
+                    });
+                }
+
+                if (cursor) {
+                    roomList = await prisma.room.findMany({
+                        where: {
+                            name: {
+                                contains: search,
+                                mode: "insensitive",
+                            },
+                        },
+                        orderBy: {
+                            name: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                        skip: 1,
+                        cursor: {
+                            id: cursor,
+                        },
+                        include: {
+                            device: true,
+                        },
+                    });
+                }
             }
 
-            if (cursor) {
-                roomList = await prisma.room.findMany({
-                    where: {
-                        name: {
-                            contains: search,
-                            mode: "insensitive",
+            if (!search) {
+                if (!cursor) {
+                    roomList = await prisma.room.findMany({
+                        orderBy: {
+                            name: "asc",
                         },
-                    },
-                    orderBy: {
-                        name: "asc",
-                    },
-                    take: ITEM_LIMIT,
-                    skip: 1,
-                    cursor: {
-                        id: cursor,
-                    },
-                    include: {
-                        device: true,
-                    },
-                });
+                        take: ITEM_LIMIT,
+                        include: {
+                            device: true,
+                        },
+                    });
+                }
+                if (cursor) {
+                    roomList = await prisma.room.findMany({
+                        orderBy: {
+                            name: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                        skip: 1,
+                        cursor: {
+                            id: cursor,
+                        },
+                        include: {
+                            device: true,
+                        },
+                    });
+                }
             }
         }
 
-        if (!search) {
-            if (!cursor) {
-                roomList = await prisma.room.findMany({
-                    orderBy: {
-                        name: "asc",
-                    },
-                    take: ITEM_LIMIT,
-                    include: {
-                        device: true,
-                    },
-                });
+        if (roleName === "OPERATOR") {
+            if (search) {
+                if (!cursor) {
+                    roomList = await prisma.room.findMany({
+                        where: {
+                            name: {
+                                contains: search,
+                                mode: "insensitive",
+                            },
+                        },
+                        orderBy: {
+                            name: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                        include: {
+                            device: true,
+                        },
+                    });
+                }
+
+                if (cursor) {
+                    roomList = await prisma.room.findMany({
+                        where: {
+                            name: {
+                                contains: search,
+                                mode: "insensitive",
+                            },
+                        },
+                        orderBy: {
+                            name: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                        skip: 1,
+                        cursor: {
+                            id: cursor,
+                        },
+                        include: {
+                            device: true,
+                        },
+                    });
+                }
             }
-            if (cursor) {
-                roomList = await prisma.room.findMany({
-                    orderBy: {
-                        name: "asc",
-                    },
-                    take: ITEM_LIMIT,
-                    skip: 1,
-                    cursor: {
-                        id: cursor,
-                    },
-                    include: {
-                        device: true,
-                    },
-                });
+
+            if (!search) {
+                if (!cursor) {
+                    roomList = await prisma.room.findMany({
+                        where: {
+                            Building: {
+                                is: {
+                                    operator: {
+                                        some: {
+                                            username,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                        orderBy: {
+                            name: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                        include: {
+                            device: true,
+                        },
+                    });
+                }
+                if (cursor) {
+                    roomList = await prisma.room.findMany({
+                        orderBy: {
+                            name: "asc",
+                        },
+                        take: ITEM_LIMIT,
+                        skip: 1,
+                        cursor: {
+                            id: cursor,
+                        },
+                        include: {
+                            device: true,
+                        },
+                    });
+                }
             }
         }
 
@@ -198,6 +294,7 @@ exports.list = async (req, res) => {
             data: roomList,
         });
     } catch (error) {
+        console.log(error);
         return resError({ res, errors: error });
     }
 };

@@ -26,6 +26,8 @@ Table User {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   passwordUpdatedAt DateTime
+  Building Building [not null]
+  buildingId String
 }
 
 Table Profil {
@@ -66,6 +68,17 @@ Table Room {
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   device Device
+  Building Building
+  buildingId String
+}
+
+Table Building {
+  id String [pk]
+  name String [not null]
+  operator User [not null]
+  rooms Room [not null]
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
 }
 
 Table Device {
@@ -107,6 +120,11 @@ Table Rooms_Records {
   updatedAt DateTime [not null]
 }
 
+Table BuildingToUser {
+  buildingId String [ref: > Building.id]
+  operatorId String [ref: > User.id]
+}
+
 Table CardToRoom {
   roomId String [ref: > Room.id]
   cardId String [ref: > Card.id]
@@ -130,6 +148,8 @@ Ref: User.roleId > Role.id
 Ref: Profil.userId - User.id [delete: Cascade]
 
 Ref: Card.userId > User.id
+
+Ref: Room.buildingId > Building.id
 
 Ref: Device.roomId - Room.id [delete: Set Null]
 

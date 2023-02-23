@@ -86,7 +86,13 @@ router.post(
 );
 router.post(
     "/login",
-    body("username").notEmpty(),
+    body("username")
+        .notEmpty()
+        .isLength({ min: 3 })
+        .withMessage("Username minimal 3 character")
+        .not()
+        .contains(" ")
+        .withMessage("Username can't contain space"),
     body("password").isLength({ min: "8" }),
     formChacker,
     defaultRoleIsExist,
@@ -120,7 +126,13 @@ router.post(
 router.post(
     "/update/profile",
     loginRequired,
-    body("username").notEmpty().withMessage("Name required"),
+    body("username")
+        .notEmpty()
+        .isLength({ min: 3 })
+        .withMessage("Username minimal 3 character")
+        .not()
+        .contains(" ")
+        .withMessage("Username can't contain space"),
     body("email").notEmpty().isEmail().withMessage("Email required"),
     body("full_name").notEmpty().withMessage("Full name required"),
     formChacker,
@@ -131,7 +143,13 @@ router.post(
     loginRequired,
     allowedRole("ADMIN"),
     body("uuid").notEmpty(),
-    body("username").notEmpty().withMessage("Name required"),
+    body("username")
+        .notEmpty()
+        .isLength({ min: 3 })
+        .withMessage("Username minimal 3 character")
+        .not()
+        .contains(" ")
+        .withMessage("Username can't contain space"),
     body("email").notEmpty().isEmail().withMessage("Email required"),
     body("full_name").notEmpty().withMessage("Full name required"),
     formChacker,

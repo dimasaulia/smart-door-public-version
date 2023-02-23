@@ -120,9 +120,11 @@ const setUser = async (req, res, next) => {
             },
         });
         res.locals.user = user.username;
+        res.locals.id = user.id;
         res.locals.profil_path =
             user.profil.photo || "/image/illustration-user.png";
         req.user = user.username;
+        req.id = user.id;
         req.profil_path = user.profil.photo || "/image/illustration-user.png";
         next();
     } catch (error) {
