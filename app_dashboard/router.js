@@ -98,6 +98,14 @@ router.get(
     dashboard.buildingCreate
 );
 
+router.get(
+    "/building/detail/:buildingId",
+    loginRequired,
+    allowedRole("ADMIN"),
+    accountIsVerified,
+    dashboard.buildingDetail
+);
+
 // API
 router.get(
     "/api",

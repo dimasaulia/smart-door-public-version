@@ -43,15 +43,16 @@ const buildingListTemplate = (building) => {
             ${days(building.createdAt)}
         </p>
         <div class="table-data pointer d-flex justify-content-center">
-            <span class="hover-tool me-1 pointer" data-hover="Delete" onclick="deleteToggle('${
-                building.id
-            }','${building.name}')">
+            <span class="hover-tool me-1 pointer" data-hover="Delete"
+             onclick="deleteToggle('${building.id}','${building.name}')">
                 <img src="/image/icon_delete.svg" alt="Delete" class="image">
             </span>
 
-            <span class="hover-tool pointer" data-hover="Edit">
+            <a 
+                href="/dashboard/building/detail/${building.id}"
+                class="hover-tool pointer" data-hover="Edit">
                 <img src="/image/icon_edit.svg" alt="Edit" class="image">
-            </span>
+            </a>
         </div>
     </div>
     `;

@@ -759,7 +759,6 @@ exports.adminModifyUserAvatar = async (req, res) => {
             data: update,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             errors: error,

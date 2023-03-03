@@ -172,6 +172,27 @@ exports.list = async (req, res) => {
     }
 };
 
+exports.detail = async (req, res) => {
+    try {
+        const { buildingId: id } = req.params;
+        const data = await prisma.building.findUnique({
+            where: { id },
+            select: {
+                name: true,
+                operator: { select: { username: true } },
+                rooms: { select: { ruid: true, name: true } },
+            },
+        });
+        return resSuccess({ res, title: "Success get building detail", data });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get building detail information",
+            errors: error,
+        });
+    }
+};
+
 exports.generalinformation = async (req, res) => {
     try {
         const numberOfBuildings = await prisma.building.count();

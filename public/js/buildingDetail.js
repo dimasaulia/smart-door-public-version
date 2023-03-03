@@ -1,3 +1,4 @@
+const buildingId = window.location.href.split("/").splice(-1)[0];
 const operatorAddButton = document.getElementById("operatorAddButton");
 const roomAddButton = document.getElementById("roomAddButton");
 const operatorList = document.getElementById("operatorList");
@@ -59,6 +60,25 @@ const updateList = (datas, type) => {
     }
 };
 
+const buildingDetail = (data) => {
+    buildingName.value = data.name;
+    operatorsCount.textContent = data.operator.length;
+    linkedRoomCount.textContent = data.rooms.length;
+    data.operator.forEach((operator) => {
+        operators.add(operator.username);
+    });
+    data.rooms.forEach((room) => {
+        rooms.set(room.ruid, room.name);
+    });
+    updateList(operators, "operator");
+    updateList(rooms, "room");
+};
+
+const resp = generalDataLoader({
+    url: `/api/v1/building/detail/${buildingId}`,
+    func: buildingDetail,
+});
+
 $("#operator").autocomplete({
     source: "/api/v1/user/search?role=OPERATOR",
     select: function (event, ui) {
@@ -98,8 +118,9 @@ saveButton.addEventListener("click", async (e) => {
         arrayOfRoom.push(key);
     });
     const resp = await setter({
-        url: "/api/v1/building/create/",
+        url: "/api/v1/building/update",
         body: {
+            buildingId,
             name: buildingName.value,
             usernames: [...operators],
             ruids: arrayOfRoom,

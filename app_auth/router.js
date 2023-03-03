@@ -5,6 +5,7 @@ const {
     urlTokenIsValid,
     urlTokenIsMatch,
     loginRequired,
+    userEmailNotVerify,
 } = require("../middlewares/authMiddlewares");
 const { formChacker } = require("../middlewares/formMiddleware");
 const { body, query } = require("express-validator");
@@ -14,6 +15,7 @@ router.get("/register", logoutRequired, auth.register);
 router.get(
     "/need-email-verification",
     loginRequired,
+    userEmailNotVerify,
     auth.needEmailVerification
 );
 router.get("/forget", logoutRequired, auth.forget);
