@@ -13,6 +13,7 @@ async function setter({
     successBody = "Success execute task",
     failedMsg = "Something Wrong",
     failedBody = "we are sorry can't execute your task",
+    method = "POST",
 }) {
     startLoader();
     let response;
@@ -21,7 +22,7 @@ async function setter({
             headers: {
                 "Content-Type": "application/json",
             },
-            method: "POST",
+            method,
             body: JSON.stringify(body),
         });
     }

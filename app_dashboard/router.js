@@ -82,6 +82,22 @@ router.get(
     dashboard.roomEdit
 );
 
+router.get(
+    "/building/list",
+    loginRequired,
+    allowedRole("ADMIN"),
+    accountIsVerified,
+    dashboard.buildingList
+);
+
+router.get(
+    "/building/create",
+    loginRequired,
+    allowedRole("ADMIN"),
+    accountIsVerified,
+    dashboard.buildingCreate
+);
+
 // API
 router.get(
     "/api",

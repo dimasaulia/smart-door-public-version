@@ -60,5 +60,6 @@ router.delete(
 );
 
 router.get("/list/", building.list);
+router.get("/generalinformation/", building.generalinformation);
 
 module.exports = router;

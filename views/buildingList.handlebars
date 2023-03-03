@@ -1,0 +1,71 @@
+<!-- Heading -->
+<div
+    class="pageinfo px-3 px-lg-5 py-3 py-lg-4 d-flex flex-wrap-reverse justify-content-between bg-blue-1 rounded-15 shadow-c-1">
+    <div class="pageinfo__text d-flex flex-column justify-content-between">
+        <div class="mt-3 mt-sm-0">
+            <h1 class="fw-bold text-blue-4">Building Management</h1>
+            <p class="pageinfo__description text-blue-3 fw-light">
+                This menu is used to create building data, delete or modify existing data.
+            </p>
+        </div>
+        <a href="/dashboard/building/create" class="pageinfo__link bg-blue-4 text-blue-1 text-center p-2 rounded-10 fw-bold fs-6">
+            Create New Building
+        </a>
+    </div>
+    <img src="/image/illustration-desk.png" class="pageinfo__image " alt="Ilustrasi Desktop">
+</div>
+
+<!-- Building Info -->
+<div class="d-flex flex-column flex-sm-row gx-5 mt-5 buildinginfo">
+    <div
+        class="buildinginfo__items d-flex flex-column justify-content-center bg-neutral-7 shadow-c-1 p-3 rounded-10 me-0 me-sm-3">
+        <h3 class="text-blue-4 fw-bold mb-2">What is this page for?</h3>
+        <p class="text-blue-4 fw-light buildinginfo_description">
+            A room needs to be linked to a building.
+            This was done to simplify the room management
+            process. Each building will have its own operator.
+            All of these needs are done on this page.
+        </p>
+    </div>
+    <div
+        class="buildinginfo__items d-flex flex-column justify-content-between ms-0 mt-4 mt-sm-0 ms-sm-3">
+        <div
+            class="buildinginfo__card d-flex align-items-center bg-neutral-7 shadow-c-1 p-3 rounded-10 mb-4 mb-sm-0">
+            <img src="/image/icon_building_rounded.svg" alt="" class="buildinginfo__icon">
+            <div class="ms-4">
+                <p class="fw-light">Number of buildings</p>
+                <p class="fw-bold fs-2 text-neutral-1" id="numberOfBuildings">3</p>
+            </div>
+        </div>
+        <div
+            class="buildinginfo__card d-flex align-items-center bg-neutral-7 shadow-c-1 p-3 rounded-10 mb-4 mb-sm-0">
+            <img src="/image/icon_user_rounded.svg" alt="" class="buildinginfo__icon">
+            <div class="ms-4">
+                <p class="fw-light">Number of operators</p>
+                <p class="fw-bold fs-2 text-neutral-1" id="numberOfOperators">3</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Table -->
+
+<form class="serach__form d-flex justify-content-between mt-5">
+    <input type="text" class="rounded-10 me-3 border-dark p-3 text-neutral-2" id="buildingForm">
+    <button type="button" class="bg-blue-4 text-blue-1 fw-bold text-center" id="search">Search</button>
+</form>
+
+<div class="api-list mt-3">
+    <div class="table-header d-flex justify-content-between bg-neutral-7 py-2 rounded-13 mb-3 px-3">
+        <p class="table-data fw-bold text-center text-neutral-2">Building Name</p>
+        <p class="table-data fw-bold text-center text-neutral-2">Linked Room</p>
+        <p class="table-data fw-bold text-center text-neutral-2">Created At</p>
+        <p class="table-data fw-bold text-center text-neutral-2">Action</p>
+    </div>
+
+    <div class="table-content bg-neutral-7 rounded-13 shadow" id="buildingList">
+        {{!-- DATA HERE --}}
+    </div>
+</div>
+
+<p class="text-center mt-4 pointer py-2 rounded-13 bg-neutral-6 mb-5" id="showMore">Show More</p>

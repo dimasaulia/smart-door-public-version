@@ -171,3 +171,35 @@ exports.list = async (req, res) => {
         });
     }
 };
+
+exports.generalinformation = async (req, res) => {
+    try {
+        const numberOfBuildings = await prisma.building.count();
+        const numberOfOperators = await prisma.user.count({
+            where: { role: { name: "OPERATOR" } },
+        });
+        const buildingList = await prisma.building.findMany({
+            orderBy: {
+                name: "asc",
+            },
+            take: ITEM_LIMIT,
+            select: {
+                id: true,
+                name: true,
+                createdAt: true,
+                rooms: { select: { name: true } },
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success get building information",
+            data: { numberOfBuildings, numberOfOperators, buildingList },
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get building information",
+            errors: error,
+        });
+    }
+};

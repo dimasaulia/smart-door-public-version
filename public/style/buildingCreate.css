@@ -1,0 +1,27 @@
+.buildinginfo {
+    min-height: 100px !important;
+}
+
+.buildinginfo__items {
+    height: auto !important;
+}
+
+.buildinginfo__card {
+    height: 70px !important;
+}
+
+.buildinginfo__card:nth-child(2) {
+    min-height: auto !important;
+}
+
+.form__input {
+    flex: 3 !important;
+}
+
+input[type=text] {
+    width: 100%;
+}
+
+.form__action {
+    flex: 2 !important;
+}

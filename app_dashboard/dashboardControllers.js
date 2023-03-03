@@ -318,3 +318,25 @@ exports.scanCard = async (req, res) => {
     };
     res.render("scanCard", data);
 };
+
+exports.buildingList = async (req, res) => {
+    const data = {
+        building: "bg-neutral-4",
+        styles: ["/style/api.css", "/style/buildingList.css"],
+        scripts: ["/js/buildingList.js"],
+    };
+    res.render("buildingList", data);
+};
+
+exports.buildingCreate = async (req, res) => {
+    const data = {
+        building: "bg-neutral-4",
+        styles: [
+            "/style/api.css",
+            "/style/buildingList.css",
+            "/style/buildingCreate.css",
+        ],
+        // scripts: ["/js/cardScan.js"],
+    };
+    res.render("buildingCreate", data);
+};
