@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const building = require("./controller");
-const { body } = require("express-validator");
+const { body, param } = require("express-validator");
 const { formChacker } = require("../../middlewares/formMiddleware");
 const {
     allUsernamesExist,
@@ -62,6 +62,12 @@ router.delete(
 router.get("/list/", building.list);
 router.get("/generalinformation/", building.generalinformation);
 router.get("/autocomplate/", building.autocomplate);
-router.get("/detail/:buildingId", building.detail);
+router.get(
+    "/detail/:buildingId",
+    param("buildingId").notEmpty(),
+    formChacker,
+    buildingIsExist,
+    building.detail
+);
 
 module.exports = router;

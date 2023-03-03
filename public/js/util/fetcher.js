@@ -32,7 +32,7 @@ async function setter({
             headers: {
                 "Content-Type": "application/json",
             },
-            method: "POST",
+            method,
         });
     }
     closeLoader();

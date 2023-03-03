@@ -521,6 +521,53 @@ exports.pairRoomToCard = async (req, res) => {
 };
 
 /**
+ * Fungsi untuk menautkan seluruh request kartu terhadap ruangan
+ */
+exports.grantAllAccess = async (req, res) => {
+    try {
+        const { ruid } = req.body;
+        const requestForRoom = await prisma.room_Request.findMany({
+            where: {
+                room: { ruid },
+            },
+            select: {
+                card: { select: { card_number: true } },
+            },
+        });
+
+        await prisma.room_Request.deleteMany({
+            where: {
+                room: { ruid },
+            },
+        });
+
+        const updatedRoom = await prisma.room.update({
+            where: {
+                ruid,
+            },
+            data: {
+                card: {
+                    connect: [...requestForRoom.map((data) => data.card)],
+                },
+            },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success grant access to all request",
+            data: updatedRoom,
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            title: "Failed to give access",
+            errors: error,
+        });
+    }
+};
+
+/**
  * Fungsi untuk melepas akses ruangan dari kartu, fungsi ini akan memberi akses kepada kartu untuk mengakses ruangan tertentu
  */
 exports.unPairRoomToCard = async (req, res) => {
@@ -661,6 +708,29 @@ exports.roomRequest = async (req, res) => {
         return resError({
             res,
             title: "Failed request room",
+            errors: error,
+        });
+    }
+};
+
+/**
+ * Fungsi untuk menghapus request user ke dalam suatu ruangan
+ */
+exports.declineRoomRequest = async (req, res) => {
+    try {
+        const { requestId } = req.query;
+        const deletedRequest = await prisma.room_Request.delete({
+            where: { id: requestId },
+        });
+        return resSuccess({
+            res,
+            title: "Success delete request room",
+            data: deletedRequest,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Failed to delete request",
             errors: error,
         });
     }

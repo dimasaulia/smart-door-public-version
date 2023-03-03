@@ -1,4 +1,5 @@
 const showMoreRequestBtn = document.querySelector("#request-show-more");
+const giveAllAccessButton = document.getElementById("giveAllAccess");
 
 const giveUserAccessAction = async (id, href) => {
     const pair = await setter({
@@ -19,6 +20,28 @@ const giveUserAccessAction = async (id, href) => {
     }
 };
 
+const declineRoomRequest = async (id) => {
+    const resp = await setter({
+        url: `/api/v1/room/delete-room-request/?requestId=${id}`,
+        method: "DELETE",
+    });
+
+    if (resp.success) {
+        document.getElementById(`request-template-${id}`).remove();
+    }
+};
+
+const declineToggle = async (id, username) => {
+    showAlertConfirm({
+        theme: "warning",
+        title: "Sure for decline?",
+        desc: `Are you sure for decline ${username} room request`,
+        link: "#",
+        btn: "Delete",
+        exec: () => declineRoomRequest(id),
+    });
+};
+
 const requestUserTemplate = ({
     card: { card_number, card_name, user },
     id,
@@ -27,16 +50,26 @@ const requestUserTemplate = ({
     <div class="col-12 mt-3 request-user" data-request="${id}" id="request-template-${id}">
         <div
             class="d-flex flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5">
-            <p class="text-neutral-2">${card_name}@${
-        user?.username || "Not paired"
-    }</p>
-            <p class="text-neutral-1 fw-bold request-link" onclick="giveUserAccessAction('${id}','/api/v1/room/pair?ruid=${ruid}&cardNumber=${card_number}&requestId=${id}')">Give Access</p>
+            <p class="text-neutral-2">
+                ${card_name}@${user?.username || "Not paired"}
+            </p>
+            <div class="d-flex">
+                <p class="text-neutral-1 pointer fw-bold request-link" onclick="giveUserAccessAction('${id}','/api/v1/room/pair?ruid=${ruid}&cardNumber=${card_number}&requestId=${id}')">Give Access</p>
+                <p class="ms-2 pointer" 
+                    onclick="declineToggle('${id}',
+                    '${user?.username || "Not paired"}')">
+                    Decline
+                </p>
+            </div>
         </div>
     </div>
     `;
 };
 
 const requestUserLoader = (data) => {
+    if (data.length < 1) {
+        giveAllAccessButton.textContent = "";
+    }
     data.forEach((card) => {
         accessContainer.insertAdjacentHTML(
             "beforeend",
@@ -57,4 +90,21 @@ showMoreRequestBtn.addEventListener("click", (e) => {
         url: `/api/v1/room/requestUser/${ruid}?cursor=${cursor}`,
         func: requestUserLoader,
     });
+});
+
+giveAllAccessButton.addEventListener("click", async (e) => {
+    const resp = await setter({
+        url: "/api/v1/room/grantAllAccess",
+        method: "POST",
+        body: {
+            ruid,
+        },
+        successBody: "Refreshing the page",
+    });
+
+    if (resp.success) {
+        setTimeout(() => {
+            window.location = `/dashboard/room/detail/${ruid}`;
+        }, 3500);
+    }
 });

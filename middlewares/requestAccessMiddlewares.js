@@ -29,4 +29,27 @@ const requestIsExist = async (req, res, next) => {
     }
 };
 
-module.exports = { requestIsExist };
+const requestIdIsExist = async (req, res, next) => {
+    const id =
+        req.body.requestId || req.params.requestId || req.query.requestId;
+
+    try {
+        const roomRequest = await prisma.room_Request.findUnique({
+            where: { id },
+            include: {
+                room: true,
+                card: true,
+            },
+        });
+
+        if (!roomRequest) throw "Cant find room request";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: error,
+        });
+    }
+};
+
+module.exports = { requestIsExist, requestIdIsExist };
