@@ -428,7 +428,7 @@ exports.activeRoomList = async (req, res) => {
  */
 exports.update = async (req, res) => {
     const { ruid } = req.params; // stands for room unique id
-    const { roomName: name, isActive, duid } = req.body;
+    const { roomName: name, isActive, duid, buildingId } = req.body;
     try {
         const updatedRoom = await prisma.room.update({
             where: {
@@ -442,6 +442,7 @@ exports.update = async (req, res) => {
                         device_id: duid,
                     },
                 },
+                buildingId,
             },
         });
 

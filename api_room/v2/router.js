@@ -28,6 +28,7 @@ const {
 const {
     requestIsExist,
 } = require("../../middlewares/requestAccessMiddlewares");
+const { buildingIsExist } = require("../../middlewares/buildingMiddlewares");
 
 router.post(
     "/device/pair/",
@@ -35,9 +36,11 @@ router.post(
     allowedRole("ADMIN", "ADMIN TEKNIS"),
     body("name").notEmpty().withMessage("Room Name required"),
     body("duid").notEmpty().withMessage("Device Form required"),
+    body("buildingId").notEmpty().withMessage("Building Form Is Required"),
+    formChacker,
     deviceIsExist,
     deviceNotPair,
-    formChacker,
+    buildingIsExist,
     room.createRoom
 );
 router.get(

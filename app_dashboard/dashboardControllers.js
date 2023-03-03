@@ -158,8 +158,17 @@ exports.createroom = async (req, res) => {
     });
     const data = {
         room: "bg-neutral-4",
-        styles: ["/style/api.css", "/style/createroom.css"],
-        scripts: ["/js/createroom.js"],
+        styles: [
+            "/style/pairUser.css",
+            "/style/api.css",
+            "/style/createroom.css",
+            "https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css",
+        ],
+        scripts: [
+            "https://code.jquery.com/jquery-3.6.0.js",
+            "https://code.jquery.com/ui/1.13.1/jquery-ui.js",
+            "/js/createroom.js",
+        ],
         hardwareList,
         helpers: {
             inc(value, options) {
@@ -178,7 +187,7 @@ exports.createroom = async (req, res) => {
         layout: await layoutHandler(getUser(req)),
     };
 
-    res.render("createroom", data);
+    res.render("roomCreate", data);
 };
 
 exports.roomList = async (req, res) => {
@@ -220,7 +229,10 @@ exports.roomEdit = async (req, res) => {
     const { ruid } = req.params;
     const roomDetail = await prisma.room.findUnique({
         where: { ruid },
-        include: { device: true },
+        include: {
+            device: true,
+            Building: { select: { name: true, id: true } },
+        },
     });
     const hardwareList = await prisma.device.findMany({
         orderBy: { createdAt: "asc" },
@@ -232,11 +244,17 @@ exports.roomEdit = async (req, res) => {
     const data = {
         room: "bg-neutral-4",
         styles: [
+            "/style/pairUser.css",
+            "https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css",
             "/style/api.css",
             "/style/createroom.css",
             "/style/roomEdit.css",
         ],
-        scripts: ["/js/roomupdate.js"],
+        scripts: [
+            "https://code.jquery.com/jquery-3.6.0.js",
+            "https://code.jquery.com/ui/1.13.1/jquery-ui.js",
+            "/js/roomupdate.js",
+        ],
         hardwareList,
         ruid,
         roomDetail,

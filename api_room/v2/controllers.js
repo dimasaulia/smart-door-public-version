@@ -51,7 +51,7 @@ exports.createDevice = async (req, res) => {
  * Fungsi yang digunakan untuk menautkan perangkat dengan ruangan yang akan di buat
  */
 exports.createRoom = async (req, res) => {
-    const { name, duid } = req.body;
+    const { name, duid, buildingId } = req.body;
     try {
         let ruid = stringGenerator(5);
         let generateRUID = true;
@@ -80,6 +80,7 @@ exports.createRoom = async (req, res) => {
                         device_id: duid,
                     },
                 },
+                buildingId,
             },
         });
 

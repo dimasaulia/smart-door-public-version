@@ -80,6 +80,7 @@ updateBtn.addEventListener("click", async (e) => {
             roomName: roomNameForm.value,
             isActive: roomStatusForm.checked,
             duid: duidForm.value,
+            buildingId: document.querySelector("#buildingId").value,
         },
         successMsg: "Success update room",
         successBody: "Redirecting you to room list",
@@ -90,4 +91,13 @@ updateBtn.addEventListener("click", async (e) => {
             window.location = "/dashboard/room/list";
         }, 3500);
     }
+});
+
+$("#buildingName").autocomplete({
+    source: "/api/v1/building/autocomplate",
+    select: function (event, ui) {
+        event.preventDefault();
+        document.querySelector("#buildingName").value = ui.item.label;
+        document.querySelector("#buildingId").value = ui.item.value;
+    },
 });

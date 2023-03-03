@@ -2,15 +2,26 @@
 
 <form class="card-form mt-4">
     <div class="form-group d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between mt-3">
-        <label for="card-name" class="form-label fw-bold text-neutral-2 fs-5">Room Name</label>
+        <label for="card-name" class="form-label fw-bold text-neutral-2 fs-5 me-3">Room Name</label>
         <input type="text" class="form-control rounded-13" name="cardName" id="room-name"
             placeholder="Room name" value="{{roomDetail.name}}">
     </div>
 
     <div class="form-group d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between mt-3">
-        <label for="card-name" class="form-label fw-bold text-neutral-2 fs-5">DUID</label>
+        <label for="card-name" class="form-label fw-bold text-neutral-2 fs-5 me-3">DUID</label>
         <input type="text" class="form-control rounded-13" name="cardName" id="duid"
             placeholder="Choose DUID from table below" value="{{roomDetail.device.device_id}}">
+    </div>
+
+    <div class="form-group d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between mt-3">
+        <label for="buildingName" class="form-label fw-bold text-neutral-2 fs-5 me-3">Building Name</label>
+        <input type="text" class="form-control rounded-13" name="cardName" id="buildingName"
+            value="{{roomDetail.Building.name}}">
+    </div>
+
+    <div class="form-group d-flex flex-column flex-sm-row align-items-sm-center justify-content-sm-between mt-3">
+        <label for="buildingId" class="form-label fw-bold text-neutral-2 fs-5 me-3">BUILDING ID</label>
+        <input type="text" class="form-control rounded-13" disabled name="cardName" id="buildingId" value="{{roomDetail.Building.id}}" >
     </div>
 
     <div class="form-group d-flex align-items-center justify-content-between mt-3">

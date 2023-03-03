@@ -77,6 +77,7 @@ createBtn.addEventListener("click", async (e) => {
         body: {
             name: roomNameForm.value,
             duid: duidForm.value,
+            buildingId: document.querySelector("#buildingId").value,
         },
         successMsg: "Success create room",
         successBody: "Redirecting you to room list",
@@ -87,4 +88,13 @@ createBtn.addEventListener("click", async (e) => {
             window.location = "/dashboard/room/list";
         }, 3500);
     }
+});
+
+$("#buildingName").autocomplete({
+    source: "/api/v1/building/autocomplate",
+    select: function (event, ui) {
+        event.preventDefault();
+        document.querySelector("#buildingName").value = ui.item.label;
+        document.querySelector("#buildingId").value = ui.item.value;
+    },
 });
