@@ -61,5 +61,6 @@ router.delete(
 
 router.get("/list/", building.list);
 router.get("/generalinformation/", building.generalinformation);
+router.get("/autocomplate/", building.autocomplate);
 
 module.exports = router;

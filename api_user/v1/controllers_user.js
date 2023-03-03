@@ -375,14 +375,17 @@ exports.pairUserToCard = async (req, res) => {
 
 exports.search = async (req, res) => {
     const searchArg = req.query.term;
+    const role = req.query?.role || "USER";
     const results = [];
+
     const searchResult = await prisma.user.findMany({
         where: {
             username: {
                 contains: searchArg,
+                mode: "insensitive",
             },
             role: {
-                name: "USER",
+                name: role,
             },
         },
         select: {
@@ -651,7 +654,6 @@ exports.forgotPassword = async (req, res) => {
             data: [],
         });
     } catch (error) {
-        console.log(error);
         return resError({ res, errors: error });
     }
 };
@@ -683,7 +685,6 @@ exports.resetPassword = async (req, res) => {
             data: newPass,
         });
     } catch (error) {
-        console.log(error);
         return resError({ res, errors: error });
     }
 };

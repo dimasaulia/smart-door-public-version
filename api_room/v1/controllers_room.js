@@ -1031,3 +1031,37 @@ exports.validatePin = async (req, res) => {
         });
     }
 };
+
+/** Fungsi untuk menampilkan daftar ruangan untuk keperluan autocomplate */
+exports.autocomplate = async (req, res) => {
+    try {
+        const search = req.query.term;
+        const results = [];
+        const searchResult = await prisma.room.findMany({
+            where: {
+                name: {
+                    contains: search,
+                    mode: "insensitive",
+                },
+            },
+            select: {
+                name: true,
+                ruid: true,
+            },
+            take: ITEM_LIMIT,
+        });
+
+        searchResult.forEach((data) => {
+            const { name, ruid } = data;
+            results.push({ value: ruid, label: name });
+        });
+
+        return res.status(200).json(results);
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get room information",
+            errors: error,
+        });
+    }
+};

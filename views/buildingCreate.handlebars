@@ -17,7 +17,7 @@
 
 <form class="serach__form mt-5">
     <label for="building" class="fw-bold mb-1">Building Name</label>
-    <input type="text" id="building" class="rounded-10 me-3 border-dark p-2 text-neutral-2">
+    <input type="text" id="buildingName" class="rounded-10 me-3 border-dark p-2 text-neutral-2">
 </form>
 
 <!-- Building Form -->
@@ -30,7 +30,7 @@
                 <img src="/image/icon_building_rounded.svg" alt="" class="buildinginfo__icon">
                 <p class="fw-light fs-4 fw-bold text-neutral-2 ms-3">Linked Room</p>
             </div>
-            <p class="fw-bold fs-2 text-neutral-1">3</p>
+            <p class="fw-bold fs-2 text-neutral-1" id="linkedRoomCount">-</p>
         </div>
 
         <div class="buildinginfo__form mt-3 bg-neutral-7 rounded-10 p-3 mb-4 mb-sm-3">
@@ -39,7 +39,7 @@
                 <div class="d-flex justify-content-between align-items-stretch">
 
                     <input type="text" class="p-2 form__input me-3 rounded-10 text-neutral-2"
-                        id="operator">
+                        id="roomname">
 
                     <button type="button"
                         class="form__action bg-blue-2 text-neutral-7 fw-bold text-center">
@@ -51,9 +51,9 @@
                 <div class="d-flex justify-content-between align-items-stretch">
 
                     <input type="text" class="p-2 form__input me-3 rounded-10 text-neutral-2"
-                        id="operator" disabled>
+                        id="roomId" disabled>
 
-                    <button type="button"
+                    <button type="button" id="roomAddButton"
                         class="form__action bg-blue-4 text-neutral-7 fw-bold text-center">
                         Add
                     </button>
@@ -68,35 +68,8 @@
             <p class="table-data fw-bold text-center text-neutral-2">Action</p>
         </div>
 
-        <div class="table-content bg-neutral-7 rounded-13 shadow-c-1">
-            <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3">
-                <p class="table-data text-center text-neutral-2">Gedung GSG</p>
-                <span class="table-data hover-tool me-1 pointer d-flex justify-content-center"
-                    data-hover="Delete">
-                    <img src="/image/icon_delete.svg" alt="Delete" class="image">
-                </span>
-            </div>
-            <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3">
-                <p class="table-data text-center text-neutral-2">Gedung GSG</p>
-                <span class="table-data hover-tool me-1 pointer d-flex justify-content-center"
-                    data-hover="Delete">
-                    <img src="/image/icon_delete.svg" alt="Delete" class="image">
-                </span>
-            </div>
-            <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3">
-                <p class="table-data text-center text-neutral-2">Gedung GSG</p>
-                <span class="table-data hover-tool me-1 pointer d-flex justify-content-center"
-                    data-hover="Delete">
-                    <img src="/image/icon_delete.svg" alt="Delete" class="image">
-                </span>
-            </div>
-            <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3">
-                <p class="table-data text-center text-neutral-2">Gedung GSG</p>
-                <span class="table-data hover-tool me-1 pointer d-flex justify-content-center"
-                    data-hover="Delete">
-                    <img src="/image/icon_delete.svg" alt="Delete" class="image">
-                </span>
-            </div>
+        <div class="table-content bg-neutral-7 rounded-13 shadow-c-1" id="roomList">
+            {{!-- Operator List --}}
         </div>
     </div>
 
@@ -109,7 +82,7 @@
                 <img src="/image/icon_user_rounded.svg" alt="" class="buildinginfo__icon">
                 <p class="fw-light fs-4 fw-bold text-neutral-2 ms-3">List of operators</p>
             </div>
-            <p class="fw-bold fs-2 text-neutral-1">1</p>
+            <p class="fw-bold fs-2 text-neutral-1" id="operatorsCount">-</p>
         </div>
 
         <div class="buildinginfo__form mt-3 bg-neutral-7 rounded-10 p-3 mb-4 mb-sm-3">
@@ -130,9 +103,9 @@
                 <div class="d-flex justify-content-between align-items-stretch">
 
                     <input type="text" class="p-2 form__input me-3 rounded-10 text-neutral-2"
-                        id="operator" disabled>
+                        id="operatorId" disabled>
 
-                    <button type="button"
+                    <button type="button" id="operatorAddButton"
                         class="form__action bg-blue-4 text-neutral-7 fw-bold text-center">
                         Add
                     </button>
@@ -147,35 +120,10 @@
             <p class="table-data fw-bold text-center text-neutral-2">Action</p>
         </div>
 
-        <div class="table-content bg-neutral-7 rounded-13 shadow-c-1">
-            <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3">
-                <p class="table-data text-center text-neutral-2">Gedung GSG</p>
-                <span class="table-data hover-tool me-1 pointer d-flex justify-content-center"
-                    data-hover="Delete">
-                    <img src="/image/icon_delete.svg" alt="Delete" class="image">
-                </span>
-            </div>
-            <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3">
-                <p class="table-data text-center text-neutral-2">Gedung GSG</p>
-                <span class="table-data hover-tool me-1 pointer d-flex justify-content-center"
-                    data-hover="Delete">
-                    <img src="/image/icon_delete.svg" alt="Delete" class="image">
-                </span>
-            </div>
-            <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3">
-                <p class="table-data text-center text-neutral-2">Gedung GSG</p>
-                <span class="table-data hover-tool me-1 pointer d-flex justify-content-center"
-                    data-hover="Delete">
-                    <img src="/image/icon_delete.svg" alt="Delete" class="image">
-                </span>
-            </div>
-            <div class="table-row d-flex py-2 py-md-2 justify-content-between px-3">
-                <p class="table-data text-center text-neutral-2">Gedung GSG</p>
-                <span class="table-data hover-tool me-1 pointer d-flex justify-content-center"
-                    data-hover="Delete">
-                    <img src="/image/icon_delete.svg" alt="Delete" class="image">
-                </span>
-            </div>
+        <div class="table-content bg-neutral-7 rounded-13 shadow-c-1" id="operatorList">
+            {{!-- OPERATOR DATA --}}
         </div>
     </div>
+
 </div>
+<p class="text-center mt-4 pointer py-2 rounded-13 bg-blue-4 text-neutral-7 fw-bold mb-5" id="save">SAVE DATA</p>

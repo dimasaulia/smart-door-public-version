@@ -203,3 +203,36 @@ exports.generalinformation = async (req, res) => {
         });
     }
 };
+
+exports.autocomplate = async (req, res) => {
+    try {
+        const search = req.query.term;
+        const results = [];
+        const searchResult = await prisma.building.findMany({
+            where: {
+                name: {
+                    contains: search,
+                    mode: "insensitive",
+                },
+            },
+            select: {
+                name: true,
+                id: true,
+            },
+            take: ITEM_LIMIT,
+        });
+
+        searchResult.forEach((data) => {
+            const { name, id } = data;
+            results.push({ value: id, label: name });
+        });
+
+        return res.status(200).json(results);
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get building information",
+            errors: error,
+        });
+    }
+};

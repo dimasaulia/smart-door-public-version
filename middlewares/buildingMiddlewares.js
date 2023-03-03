@@ -173,9 +173,9 @@ const allRoomNotLinkedToBuilding = async (req, res, next) => {
             select: { name: true, Building: true },
         });
 
-        const path = req.originalUrl.split("/").slice(-1).toString();
+        const path = req.originalUrl;
 
-        if (path === "create") {
+        if (path.search("create")) {
             const roomAlreadyHasBuilding = rooms.flatMap((room) =>
                 room.Building !== null ? room : []
             );
@@ -185,7 +185,7 @@ const allRoomNotLinkedToBuilding = async (req, res, next) => {
                     .join(", ")} already linked to a building`;
         }
 
-        if (path === "update") {
+        if (path.search("update")) {
             const roomAlreadyHasBuilding = rooms.flatMap((room) =>
                 room.Building !== null && room.Building.id !== buildingId
                     ? room

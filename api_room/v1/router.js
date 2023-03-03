@@ -40,6 +40,12 @@ router.get(
     room.list
 );
 router.get(
+    "/autocomplate",
+    loginRequired,
+    allowedRole("ADMIN"),
+    room.autocomplate
+);
+router.get(
     "/accaptable-user/:ruid",
     loginRequired,
     allowedRole("ADMIN", "ADMIN TEKNIS", "OPERATOR"),

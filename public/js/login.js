@@ -30,7 +30,6 @@ submit.addEventListener("click", async (e) => {
             return (window.location = "/dashboard");
         })
         .catch((err) => {
-            console.log(err);
             if (err) {
                 const errors = err.data.errors;
                 for (const error in errors) {

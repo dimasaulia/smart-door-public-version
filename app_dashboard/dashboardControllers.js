@@ -332,11 +332,17 @@ exports.buildingCreate = async (req, res) => {
     const data = {
         building: "bg-neutral-4",
         styles: [
+            "/style/pairUser.css",
             "/style/api.css",
             "/style/buildingList.css",
             "/style/buildingCreate.css",
+            "https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css",
         ],
-        // scripts: ["/js/cardScan.js"],
+        scripts: [
+            "https://code.jquery.com/jquery-3.6.0.js",
+            "https://code.jquery.com/ui/1.13.1/jquery-ui.js",
+            "/js/buildingCreate.js",
+        ],
     };
     res.render("buildingCreate", data);
 };
