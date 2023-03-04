@@ -46,6 +46,24 @@
     border-radius: 13px;
 }
 
+input[type=text] {
+    all: unset;
+    border-radius: 10px !important;
+    color: rgb(var(--color-neutral-2)) !important;
+    flex: 3;
+
+}
+
+input[type=text]:focus {
+    border: 1px rgb(var(--color-blue-4)) solid;
+}
+
+button {
+    all: unset;
+    color: rgb(var(--color-blue-4)) !important;
+    flex: 1;
+}
+
 @media only screen and (max-width: 576px) {
     .room-icon {
         width: 7em;

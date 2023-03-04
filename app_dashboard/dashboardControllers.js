@@ -211,8 +211,14 @@ exports.roomDetail = async (req, res) => {
     const { ruid } = req.params;
     const data = {
         room: "bg-neutral-4",
-        styles: ["/style/roomDetail.css"],
+        styles: [
+            "/style/pairUser.css",
+            "https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css",
+            "/style/roomDetail.css",
+        ],
         scripts: [
+            "https://code.jquery.com/jquery-3.6.0.js",
+            "https://code.jquery.com/ui/1.13.1/jquery-ui.js",
             "/js/roomDetail.js",
             "/js/roomDetailAccaptableCard.js",
             "/js/roomDetailAccaptableRequestUser.js",

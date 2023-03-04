@@ -15,6 +15,10 @@ const { body, param } = require("express-validator");
 const { formChacker } = require("../../middlewares/formMiddleware");
 const card = require("./controllers_card");
 const { apiValidation } = require("../../middlewares/apiKeyMiddlewares");
+const {
+    roomIsExist,
+    roomAccessNotExist,
+} = require("../../middlewares/roomMiddlewares");
 
 // CARD ROUTER
 router.get("/u/available", loginRequired, allowedRole("USER"), card.userCards);
@@ -129,5 +133,23 @@ router.post(
     cardIsExist,
     cardIsPair,
     card.unpairUserToCard
+);
+router.get(
+    "/autocomplate",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    card.autocomplate
+);
+router.post(
+    "/add-access-card-to-room",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    body("ruid").notEmpty().withMessage("RUID is required"),
+    body("cardNumber").notEmpty().withMessage("Card Number is required"),
+    formChacker,
+    cardIsExist,
+    roomIsExist,
+    roomAccessNotExist,
+    card.addAccessCardToRoom
 );
 module.exports = router;

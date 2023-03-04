@@ -555,3 +555,79 @@ exports.unpairUserToCard = async (req, res) => {
         return resError({ res, errors: error, title: "Failed unpair card" });
     }
 };
+
+/** Fungsi untuk mencari kartu user berdasarkan username */
+exports.autocomplate = async (req, res) => {
+    try {
+        const search = req.query.term;
+        const arrayOfCard = [];
+        const data = await prisma.card.findMany({
+            where: {
+                user: {
+                    username: {
+                        contains: search,
+                        mode: "insensitive",
+                    },
+                },
+            },
+            select: {
+                user: {
+                    select: {
+                        username: true,
+                    },
+                },
+                card_number: true,
+                card_name: true,
+            },
+        });
+        data.forEach((d) => {
+            arrayOfCard.push({
+                value: `${d.card_number}`,
+                label: `${d.card_name}@${d.user.username}`,
+            });
+        });
+        return res.status(200).json(arrayOfCard);
+    } catch (error) {
+        return resError({ res, errors: error, title: "Failed get card list" });
+    }
+};
+
+/** Fungsi Untuk Menambahkan Kartu Akses oleh Admin */
+exports.addAccessCardToRoom = async (req, res) => {
+    try {
+        const { ruid, cardNumber } = req.body;
+        const data = await prisma.card.update({
+            where: {
+                card_number: cardNumber,
+            },
+            data: {
+                room: {
+                    connect: {
+                        ruid,
+                    },
+                },
+            },
+            select: {
+                card_name: true,
+                card_number: true,
+                id: true,
+                user: {
+                    select: {
+                        username: true,
+                    },
+                },
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success pair room to card",
+            data,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            errors: error,
+            title: "Failed pair card to room",
+        });
+    }
+};

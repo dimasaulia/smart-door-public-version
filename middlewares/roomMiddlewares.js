@@ -147,7 +147,11 @@ const roomRequestNotExist = async (req, res, next) => {
 
 const roomAccessNotExist = async (req, res, next) => {
     try {
-        const { ruid, cardNumber: card_number } = req.query;
+        const ruid = req.body.ruid || req.query.ruid || req.params.ruid;
+        const card_number =
+            req.body.cardNumber ||
+            req.query.cardNumber ||
+            req.params.cardNumber;
         const request = await prisma.room.findMany({
             where: {
                 ruid,

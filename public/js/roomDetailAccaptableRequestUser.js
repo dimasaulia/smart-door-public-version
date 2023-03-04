@@ -9,6 +9,10 @@ const giveUserAccessAction = async (id, href) => {
 
     if (pair.success) {
         document.getElementById(`request-template-${id}`).remove();
+        numberOfUserContainer.textContent =
+            Number(numberOfUserContainer.textContent) + 1;
+        numberOfRequestUserContainer.textContent =
+            Number(numberOfRequestUserContainer.textContent) - 1;
         itemContainer.insertAdjacentHTML(
             "afterbegin",
             `<div
@@ -27,6 +31,8 @@ const declineRoomRequest = async (id) => {
     });
 
     if (resp.success) {
+        numberOfRequestUserContainer.textContent =
+            Number(numberOfRequestUserContainer.textContent) - 1;
         document.getElementById(`request-template-${id}`).remove();
     }
 };

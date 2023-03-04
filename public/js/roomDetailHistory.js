@@ -23,6 +23,10 @@ const logsLoader = (data) => {
 
 logsBtn.addEventListener("click", () => {
     itemContainer.textContent = "";
+    try {
+        document.querySelector(".ui-menu").remove();
+        document.querySelector(".ui-helper-hidden-accessible").remove();
+    } catch (error) {}
     generalDataLoader({
         url: `/api/v1/room/logs/${ruid}`,
         func: logsLoader,

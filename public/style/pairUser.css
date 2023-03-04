@@ -52,7 +52,12 @@
 
 }
 
-#ui-id-1 {
+#ui-id-1,
+.ui-menu,
+.ui-widget,
+.ui-widget-content,
+.ui-autocomplete,
+.ui-front {
     background: rgb(var(--color-neutral-6)) !important;
     border-radius: 10px !important;
     max-height: 300px !important;
