@@ -7,7 +7,7 @@ const { getUser, hashChecker, hasher } = require("../../services/auth");
 const prisma = require("../../prisma/client");
 const { random: stringGenerator } = require("@supercharge/strings");
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 20;
-// const ITEM_LIMIT = 2;
+// const ITEM_LIMIT = 1;
 
 // INFO: Prisma middleware to encrypt default room pin
 prisma.$use(async (params, next) => {
@@ -1131,6 +1131,97 @@ exports.autocomplate = async (req, res) => {
         return resError({
             res,
             title: "Cant get room information",
+            errors: error,
+        });
+    }
+};
+
+/** Fungsi Untuk Menampilkan Daftar Ruangan Yang Bisa Diakses user */
+exports.usernameAccessableRoom = async (req, res) => {
+    try {
+        const { cursor } = req.query;
+        const { username } = req.params;
+        let roomList;
+
+        if (!cursor) {
+            roomList = await prisma.room.findMany({
+                where: {
+                    card: {
+                        some: {
+                            user: {
+                                username,
+                            },
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    ruid: true,
+                    card: {
+                        where: {
+                            user: {
+                                username,
+                            },
+                        },
+                        select: {
+                            card_number: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    name: "asc",
+                },
+                take: ITEM_LIMIT,
+            });
+        }
+
+        if (cursor) {
+            roomList = await prisma.room.findMany({
+                where: {
+                    card: {
+                        some: {
+                            user: {
+                                username,
+                            },
+                        },
+                    },
+                },
+                select: {
+                    id: true,
+                    name: true,
+                    ruid: true,
+                    card: {
+                        where: {
+                            user: {
+                                username,
+                            },
+                        },
+                        select: {
+                            card_number: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    name: "asc",
+                },
+                take: ITEM_LIMIT,
+                skip: 1,
+                cursor: {
+                    id: cursor,
+                },
+            });
+        }
+
+        return resSuccess({
+            res,
+            title: "Success get user accessable room",
+            data: roomList,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get user accessable room information",
             errors: error,
         });
     }

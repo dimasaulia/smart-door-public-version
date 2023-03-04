@@ -172,7 +172,8 @@ const adminRoleIsExist = async (req, res, next) => {
 /** Fungsi untuk memastikan username user sudah terdaftar */
 const userIsExist = async (req, res, next) => {
     try {
-        const { username } = req.body;
+        const username =
+            req.body.username || req.params.username || req.query.username;
         const user = await prisma.user.findUnique({
             where: {
                 username,

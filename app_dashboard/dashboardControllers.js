@@ -133,8 +133,12 @@ exports.userEdit = async (req, res) => {
 
         const data = {
             users: "bg-neutral-4",
-            styles: ["/style/profil.css"],
-            scripts: ["/js/userEdit.js"],
+            styles: ["/style/profil.css", "/style/userEdit.css"],
+            scripts: [
+                "/js/userEdit.js",
+                "/js/userEditHistory.js",
+                "/js/userEditAccessable.js",
+            ],
             user_active: "bg-neutral-4",
             avatar: userData.profil.photo || "/image/illustration-user.png",
             userData,

@@ -174,7 +174,7 @@ const roomAccessNotExist = async (req, res, next) => {
 const roomAccessIsExist = async (req, res, next) => {
     try {
         // const { ruid, cardNumber: card_number } = req.query;
-        const ruid = req.query.ruid || req.query.ruid || req.params.ruid;
+        const ruid = req.body.ruid || req.query.ruid || req.params.ruid;
         const card_number =
             req.query.cardNumber ||
             req.body.cardNumber ||

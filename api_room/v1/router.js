@@ -5,6 +5,7 @@ const { formChacker } = require("../../middlewares/formMiddleware");
 const {
     loginRequired,
     allowedRole,
+    userIsExist,
 } = require("../../middlewares/authMiddlewares");
 const {
     cardIsExist,
@@ -71,6 +72,13 @@ router.get(
     cardIsExist,
     allowedRole("USER"),
     room.userAccessableRoom
+);
+router.get(
+    "/accesable/:username",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    userIsExist,
+    room.usernameAccessableRoom
 );
 router.get(
     "/detail/:ruid",

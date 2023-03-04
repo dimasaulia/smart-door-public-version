@@ -39,6 +39,13 @@ router.get(
     card.userCardLogs
 );
 router.get(
+    "/history/:username",
+    loginRequired,
+    allowedRole("ADMIN"),
+    userIsExist,
+    card.userCardHistory
+);
+router.get(
     "/available",
     loginRequired,
     allowedRole("ADMIN", "OPERATOR"),
