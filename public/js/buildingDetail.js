@@ -80,7 +80,7 @@ const resp = generalDataLoader({
 });
 
 $("#operator").autocomplete({
-    source: "/api/v1/user/search?role=OPERATOR",
+    source: "/api/v1/user/autocomplete?role=OPERATOR",
     select: function (event, ui) {
         event.preventDefault();
         document.querySelector("#operator").value = ui.item.label;

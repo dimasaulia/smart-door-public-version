@@ -84,12 +84,36 @@ Table Building {
 Table Device {
   id String [pk]
   device_id String [unique, not null]
-  room Room
   pin String [not null, default: '$2b$10$93H.6AQWHWxlq4IQuT1cgu2oCi7OtgyTjYuWlgcq9beN2xPLSgFUW']
   lastOnline DateTime
+  firmwareVersion String
+  deviceType DEVICE_TYPE [default: 'SINGLE_NETWORK']
   createdAt DateTime [default: `now()`, not null]
   updatedAt DateTime [not null]
   roomId String [unique]
+  room Room
+  Gateway_Spot Gateway_Spot
+  gateway_SpotId String
+}
+
+Table Gateway_Device {
+  id String [pk]
+  gateway_short_id String [unique, not null]
+  pin String [not null]
+  lastOnline DateTime
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  Gateway_Spot Gateway_Spot
+}
+
+Table Gateway_Spot {
+  id String [pk]
+  name String
+  createdAt DateTime [default: `now()`, not null]
+  updatedAt DateTime [not null]
+  nodeDevice Device [not null]
+  gatewayDevice Gateway_Device [not null]
+  gateway_DeviceId String [unique, not null]
 }
 
 Table Api_Key {
@@ -143,6 +167,11 @@ Enum CARD_TYPE {
   card_studentid
 }
 
+Enum DEVICE_TYPE {
+  SINGLE_NETWORK
+  MULTI_NETWORK
+}
+
 Ref: User.roleId > Role.id
 
 Ref: Profil.userId - User.id [delete: Cascade]
@@ -152,6 +181,10 @@ Ref: Card.userId > User.id
 Ref: Room.buildingId > Building.id
 
 Ref: Device.roomId - Room.id [delete: Set Null]
+
+Ref: Device.gateway_SpotId > Gateway_Spot.id
+
+Ref: Gateway_Spot.gateway_DeviceId - Gateway_Device.id
 
 Ref: Room_Request.cardId > Card.id [delete: Cascade]
 

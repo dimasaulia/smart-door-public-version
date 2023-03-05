@@ -97,7 +97,7 @@ exports.createRoom = async (req, res) => {
 /**
  * Fungsi untuk menampilkan informasi suatu ruangan berdasarkan DUID (Device Unique ID)
  */
-exports.detail = async (req, res) => {
+exports.deviceDetail = async (req, res) => {
     const { duid } = req.params; // stands for room unique id
     try {
         await prisma.device.update({

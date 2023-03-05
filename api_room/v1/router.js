@@ -73,6 +73,21 @@ router.get(
     allowedRole("USER"),
     room.userAccessableRoom
 );
+router.post(
+    "/u/request",
+    query("cardNumber").notEmpty(),
+    query("ruid").notEmpty(),
+    formChacker,
+    loginRequired,
+    allowedRole("USER"),
+    cardIsExist,
+    isUserCard,
+    roomIsPair,
+    roomIsActive,
+    roomRequestNotExist,
+    roomAccessNotExist,
+    room.roomRequest
+);
 router.get(
     "/accesable/:username",
     loginRequired,
@@ -88,21 +103,6 @@ router.get(
     roomHasLinkedBuilding,
     onlyAccessibleByLinkedOperators,
     room.detail
-);
-router.post(
-    "/u/request",
-    query("cardNumber").notEmpty(),
-    query("ruid").notEmpty(),
-    formChacker,
-    loginRequired,
-    allowedRole("USER"),
-    cardIsExist,
-    isUserCard,
-    roomIsPair,
-    roomIsActive,
-    roomRequestNotExist,
-    roomAccessNotExist,
-    room.roomRequest
 );
 router.delete(
     "/delete-room-request/",

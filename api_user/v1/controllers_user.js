@@ -100,7 +100,7 @@ exports.register = async (req, res) => {
 
         const url = urlTokenGenerator(
             req,
-            "api/v1/user/email-verifying/",
+            "api/v1/user/email-verification-process",
             token
         );
 
@@ -373,7 +373,7 @@ exports.pairUserToCard = async (req, res) => {
     return resSuccess({ res, title: "Success pair card" });
 };
 
-exports.search = async (req, res) => {
+exports.autocomplete = async (req, res) => {
     const searchArg = req.query.term;
     const role = req.query?.role || "USER";
     const results = [];
@@ -584,7 +584,7 @@ exports.sendVerificationEmail = async (req, res) => {
 
         const url = urlTokenGenerator(
             req,
-            "api/v1/user/email-verifying/",
+            "api/v1/user/email-verification-process/",
             token
         );
 

@@ -58,10 +58,10 @@ const {
 router.get("/logout", user.logout);
 router.get("/detail/:id", loginRequired, allowedRole("ADMIN"), user.detail);
 router.get(
-    "/search",
+    "/autocomplete",
     loginRequired,
     allowedRole("ADMIN", "OPERATOR"),
-    user.search
+    user.autocomplete
 );
 router.get("/list", loginRequired, allowedRole("ADMIN", "OPERATOR"), user.list);
 router.post(
@@ -205,12 +205,12 @@ router.post(
     user.setUserRole
 );
 router.post(
-    "/email-send-verification/",
+    "/send-verification-link/",
     loginRequired,
     user.sendVerificationEmail
 );
 router.get(
-    "/email-verifying/",
+    "/email-verification-process/",
     query("token").notEmpty(),
     formChacker,
     urlTokenIsValid,

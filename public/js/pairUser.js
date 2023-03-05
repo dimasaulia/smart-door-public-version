@@ -5,7 +5,7 @@ const pairButtonn = document.querySelector("#pairButton");
 const cardCreationTime = document.querySelector("#cardCreationTime");
 
 $("#username").autocomplete({
-    source: "/api/v1/user/search",
+    source: "/api/v1/user/autocomplete",
     select: function (event, ui) {
         event.preventDefault();
         document.querySelector("#username").value = ui.item.label;

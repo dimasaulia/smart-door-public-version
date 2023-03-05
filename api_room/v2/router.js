@@ -90,7 +90,7 @@ router.post(
     room.pairRoomToCard
 );
 router.post("/h/init", apiValidation, room.createDevice); //HW API
-router.get("/h/detail/:duid", apiValidation, deviceIsExist, room.detail); //HW API
+router.get("/h/detail/:duid", apiValidation, deviceIsExist, room.deviceDetail); //HW API
 router.post("/h/online/:duid", apiValidation, deviceIsExist, room.onlineUpdate); //HW API
 router.post(
     "/h/check-in/:duid",

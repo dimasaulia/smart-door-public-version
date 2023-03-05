@@ -94,14 +94,38 @@ model Building {
 }
 
 model Device {
-  id         String    @id @default(cuid())
-  device_id  String    @unique
-  room       Room?     @relation(fields: [roomId], references: [id], onDelete: SetNull)
-  pin        String    @default("$2b$10$93H.6AQWHWxlq4IQuT1cgu2oCi7OtgyTjYuWlgcq9beN2xPLSgFUW")
-  lastOnline DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  roomId     String?   @unique
+  id              String        @id @default(cuid())
+  device_id       String        @unique
+  pin             String        @default("$2b$10$93H.6AQWHWxlq4IQuT1cgu2oCi7OtgyTjYuWlgcq9beN2xPLSgFUW")
+  lastOnline      DateTime?
+  firmwareVersion String?
+  deviceType      DEVICE_TYPE?  @default(SINGLE_NETWORK)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  roomId          String?       @unique
+  room            Room?         @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  Gateway_Spot    Gateway_Spot? @relation(fields: [gateway_SpotId], references: [id])
+  gateway_SpotId  String?
+}
+
+model Gateway_Device {
+  id               String        @id @default(cuid())
+  gateway_short_id String        @unique
+  pin              String
+  lastOnline       DateTime?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+  Gateway_Spot     Gateway_Spot?
+}
+
+model Gateway_Spot {
+  id               String         @id @default(cuid())
+  name             String?
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  nodeDevice       Device[]
+  gatewayDevice    Gateway_Device @relation(fields: [gateway_DeviceId], references: [id])
+  gateway_DeviceId String         @unique
 }
 
 model Api_Key {
@@ -143,4 +167,9 @@ enum CARD_TYPE {
   card_driver
   card_emoney
   card_studentid
+}
+
+enum DEVICE_TYPE {
+  SINGLE_NETWORK
+  MULTI_NETWORK
 }
