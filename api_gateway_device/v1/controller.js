@@ -364,7 +364,6 @@ exports.gatewayInitializeNode = async (req, res) => {
             data: newDevice,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Cant create gateway node",

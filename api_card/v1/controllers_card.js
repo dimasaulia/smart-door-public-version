@@ -529,7 +529,6 @@ exports.userCardHistory = async (req, res) => {
             data: cardLogs,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Cant get user's cards logs",
