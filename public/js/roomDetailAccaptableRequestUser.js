@@ -13,7 +13,7 @@ const giveUserAccessAction = async (id, href) => {
             Number(numberOfUserContainer.textContent) + 1;
         numberOfRequestUserContainer.textContent =
             Number(numberOfRequestUserContainer.textContent) - 1;
-        itemContainer.insertAdjacentHTML(
+        document.querySelector(".data-container").insertAdjacentHTML(
             "afterbegin",
             `<div
                 class="accaptable-user d-flex mt-2 flex-column flex-sm-row justify-content-between align-items-md-center p-2 bg-neutral-7 rounded-5" id="card-id-${pair.data.card[0].card_number}" data-user-uuid=${pair.data.card[0].user.id}>
@@ -60,7 +60,7 @@ const requestUserTemplate = ({
                 ${card_name}@${user?.username || "Not paired"}
             </p>
             <div class="d-flex">
-                <p class="text-neutral-1 pointer fw-bold request-link" onclick="giveUserAccessAction('${id}','/api/v1/room/pair?ruid=${ruid}&cardNumber=${card_number}&requestId=${id}')">Give Access</p>
+                <p class="text-neutral-1 pointer fw-bold request-link" onclick="giveUserAccessAction('${id}','/api/v2/room/pair?ruid=${ruid}&cardNumber=${card_number}&requestId=${id}')">Give Access</p>
                 <p class="ms-2 pointer" 
                     onclick="declineToggle('${id}',
                     '${user?.username || "Not paired"}')">

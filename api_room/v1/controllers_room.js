@@ -5,6 +5,10 @@ const {
 } = require("../../services/responseHandler");
 const { getUser, hashChecker, hasher } = require("../../services/auth");
 const prisma = require("../../prisma/client");
+const {
+    sendEmail,
+    emailDeclineOfAccessRequestsTemplate,
+} = require("../../services/mailing");
 const { random: stringGenerator } = require("@supercharge/strings");
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 20;
 // const ITEM_LIMIT = 1;
@@ -332,6 +336,7 @@ exports.list = async (req, res) => {
  */
 exports.activeRoomList = async (req, res) => {
     const { search, cursor } = req.query;
+    const building = req.query?.building;
     let roomList;
     try {
         if (search) {
@@ -343,13 +348,22 @@ exports.activeRoomList = async (req, res) => {
                             mode: "insensitive",
                         },
                         isActive: true,
+                        buildingId: building,
                     },
                     orderBy: {
                         name: "asc",
                     },
                     take: ITEM_LIMIT,
-                    include: {
-                        device: true,
+                    select: {
+                        id: true,
+                        name: true,
+                        ruid: true,
+                        device: {
+                            select: {
+                                id: true,
+                                device_id: true,
+                            },
+                        },
                     },
                 });
             }
@@ -362,6 +376,7 @@ exports.activeRoomList = async (req, res) => {
                             mode: "insensitive",
                         },
                         isActive: true,
+                        buildingId: building,
                     },
                     orderBy: {
                         name: "asc",
@@ -371,8 +386,16 @@ exports.activeRoomList = async (req, res) => {
                     cursor: {
                         id: cursor,
                     },
-                    include: {
-                        device: true,
+                    select: {
+                        id: true,
+                        name: true,
+                        ruid: true,
+                        device: {
+                            select: {
+                                id: true,
+                                device_id: true,
+                            },
+                        },
                     },
                 });
             }
@@ -383,13 +406,22 @@ exports.activeRoomList = async (req, res) => {
                 roomList = await prisma.room.findMany({
                     where: {
                         isActive: true,
+                        buildingId: building,
                     },
                     orderBy: {
                         name: "asc",
                     },
                     take: ITEM_LIMIT,
-                    include: {
-                        device: true,
+                    select: {
+                        id: true,
+                        name: true,
+                        ruid: true,
+                        device: {
+                            select: {
+                                id: true,
+                                device_id: true,
+                            },
+                        },
                     },
                 });
             }
@@ -397,6 +429,7 @@ exports.activeRoomList = async (req, res) => {
                 roomList = await prisma.room.findMany({
                     where: {
                         isActive: true,
+                        buildingId: building,
                     },
                     orderBy: {
                         name: "asc",
@@ -406,8 +439,16 @@ exports.activeRoomList = async (req, res) => {
                     cursor: {
                         id: cursor,
                     },
-                    include: {
-                        device: true,
+                    select: {
+                        id: true,
+                        name: true,
+                        ruid: true,
+                        device: {
+                            select: {
+                                id: true,
+                                device_id: true,
+                            },
+                        },
                     },
                 });
             }
@@ -584,14 +625,37 @@ exports.unPairRoomToCard = async (req, res) => {
                     },
                 },
             },
+            select: {
+                name: true,
+            },
         });
-
+        const userData = await prisma.card.findUnique({
+            where: {
+                card_number: cardNumber,
+            },
+            select: {
+                user: {
+                    select: {
+                        username: true,
+                        email: true,
+                    },
+                },
+            },
+        });
+        const subject = "Room Access Permission Update";
+        const template = emailDeclineOfAccessRequestsTemplate({
+            username: userData.user.username,
+            subject,
+            text_description: `We regret to inform you that we are removing your access to ${updatedRoom.name}.`,
+        });
+        await sendEmail(userData.user.email, subject, template);
         return resSuccess({
             res,
             title: "Success remove card access",
             data: updatedRoom,
         });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: "Failed remove card access",
@@ -721,7 +785,33 @@ exports.declineRoomRequest = async (req, res) => {
         const { requestId } = req.query;
         const deletedRequest = await prisma.room_Request.delete({
             where: { id: requestId },
+            select: {
+                card: {
+                    select: {
+                        card_number: true,
+                        user: {
+                            select: {
+                                username: true,
+                                email: true,
+                            },
+                        },
+                    },
+                },
+                room: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
         });
+
+        const subject = "Decline of Access Requests";
+        const template = emailDeclineOfAccessRequestsTemplate({
+            username: deletedRequest.card.user.username,
+            subject,
+            text_description: `We regret to inform you that your request for access to ${deletedRequest.room.name} has been denied.`,
+        });
+        await sendEmail(deletedRequest.card.user.email, subject, template);
         return resSuccess({
             res,
             title: "Success delete request room",

@@ -3,33 +3,18 @@ const cardNumberContainer = document.querySelector(".card-number");
 const cardNumber = cardNumberContainer.getAttribute("data-id");
 const cardIcon = document.querySelector(".card-icon");
 const roomContainer = document.querySelector(".request-room");
+const buildingContainer = document.querySelector(".building-container");
 const accessableRoomContainer = document.querySelector(
     ".accessable-table-container"
 );
 const loadMoreRoomList = document.querySelector("#load-more");
+const loadMoreBuildingList = document.querySelector("#loadMoreBuilding");
 const loadMoreAccessableRoom = document.querySelector(
     "#load-more-accessable-room"
 );
-// const roomRequestTemplate = ({ room: { ruid, name, id }, no, cardNumber }) => {
-//     return `
-//     <div class="room-item col-12" data-room-cursor=${id}>
-//         <div class="row">
-//             <div class="col-3">
-//                 <p class="text-start">${no}</p>
-//             </div>
-//             <div class="col-3">
-//                 <p class="text-start">${ruid}</p>
-//             </div>
-//             <div class="col-3">
-//                 <p class="text-start">${name}</p>
-//             </div>
-//             <div class="col-3">
-//                 <a href="/api/v1/room/u/request?ruid=${ruid}&cardNumber=${cardNumber}" class="text-start request">Request access</a>
-//             </div>
-//         </div>
-//     </div>
-//     `;
-// };
+const searchValue = document.querySelector("#searchForm");
+const searchBtn = document.querySelector("#searchBtn");
+let buildingId = "all";
 
 const roomRequestTemplate = ({ room: { ruid, name, id }, no, cardNumber }) => {
     return `
@@ -104,10 +89,128 @@ generalDataLoader({
 });
 
 loadMoreRoomList.addEventListener("click", () => {
+    console.log(buildingId);
     const cursor = lastCursorFinder(".hardware--list-item", "id");
+    if (searchValue.value.length === 0 && buildingId === "all") {
+        console.log("JIKA TIDAK MENCARI DAN BANGUNAN ADALAH SEMUA");
+        generalDataLoader({
+            url: `/api/v1/room/u/list?cursor=${cursor}`,
+            func: firstRoomListLoader,
+        });
+    }
+
+    if (searchValue.value.length > 0 && buildingId === "all") {
+        console.log("JIKA MENCARI DAN BANGUNAN ADALAH SEMUA");
+        generalDataLoader({
+            url: `/api/v1/room/u/list?cursor=${cursor}&search=${searchValue.value}`,
+            func: firstRoomListLoader,
+        });
+    }
+
+    if (
+        searchValue.value.length === 0 &&
+        buildingId !== "all" &&
+        buildingId.length > 0
+    ) {
+        console.log("JIKA TIDAK MENCARI DAN BANGUNAN ADALAH TERTENTU");
+        generalDataLoader({
+            url: `/api/v1/room/u/list?cursor=${cursor}&building=${buildingId}`,
+            func: firstRoomListLoader,
+        });
+    }
+
+    if (
+        searchValue.value.length > 0 &&
+        buildingId !== "all" &&
+        buildingId.length > 0
+    ) {
+        console.log(
+            `/api/v1/room/u/list?search=${searchValue.value}&building=${buildingId}&cursor=${cursor}`
+        );
+        generalDataLoader({
+            url: `/api/v1/room/u/list?search=${searchValue.value}&building=${buildingId}&cursor=${cursor}`,
+            func: firstRoomListLoader,
+        });
+    }
+});
+
+searchBtn.addEventListener("click", () => {
+    roomContainer.textContent = "";
+    if (
+        searchValue.value.length > 0 &&
+        buildingId !== "all" &&
+        buildingId.length > 0
+    ) {
+        generalDataLoader({
+            url: `/api/v1/room/u/list?search=${searchValue.value}&building=${buildingId}`,
+            func: firstRoomListLoader,
+        });
+    }
+
+    if (searchValue.value.length > 0 && buildingId === "all") {
+        generalDataLoader({
+            url: `/api/v1/room/u/list?search=${searchValue.value}`,
+            func: firstRoomListLoader,
+        });
+    }
+});
+
+// INFO: Building List
+const buildingSelectorHandler = (id) => {
+    searchValue.value = "";
+    document.querySelectorAll(".building-list-item").forEach((e) => {
+        e.classList.remove("bg-blue-4");
+        e.classList.add("bg-blue-3");
+    });
+    document.getElementById("building-" + id).classList.remove("bg-blue-3");
+    document.getElementById("building-" + id).classList.add("bg-blue-4");
+    roomContainer.textContent = "";
+    if (id !== "all") {
+        buildingId = id;
+        generalDataLoader({
+            url: `/api/v1/room/u/list/?building=${buildingId}`,
+            func: firstRoomListLoader,
+        });
+    } else {
+        buildingId = "all";
+        generalDataLoader({
+            url: `/api/v1/room/u/list/`,
+            func: firstRoomListLoader,
+        });
+    }
+};
+
+const buildingDataTemplate = (data) => {
+    return `
+        <p 
+            class="building-list-item px-4 py-1 rounded-10 fw-bold text-neutral-7 bg-blue-3 me-2" 
+            id="building-${data.id}" 
+            data-id="${data.id}" 
+            onclick="buildingSelectorHandler('${data.id}')">
+            ${data.name}
+        </p>
+    `;
+};
+
+const buildingListLoader = (data) => {
+    data.forEach((building) => {
+        buildingContainer.insertAdjacentHTML(
+            "beforeend",
+            buildingDataTemplate(building)
+        );
+    });
+};
+
+generalDataLoader({
+    url: `/api/v1/building/u/list`,
+    func: buildingListLoader,
+});
+
+loadMoreBuildingList.addEventListener("click", () => {
+    const cursor = lastCursorFinder(".building-list-item", "id");
     generalDataLoader({
-        url: `/api/v1/room/u/list?cursor=${cursor}`,
-        func: firstRoomListLoader,
+        url: `/api/v1/building/u/list?cursor=${cursor}`,
+        func: buildingListLoader,
     });
 });
 

@@ -23,12 +23,23 @@
     background: rgb(var(--color-neutral-4));
 }
 
-/* .request-room {
-    box-sizing: content-box;
-    height: 20em;
-    overflow-x: hidden;
-    overflow-y: scroll;
-} */
+.building-filter {
+    cursor: grab;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    touch-action: pan-x;
+    user-select: none;
+}
+
+.building-filter::-webkit-scrollbar {
+    height: 0px !important;
+    width: 3px;
+}
+
+.building-list-item {
+    white-space: nowrap;
+}
+
 
 @media only screen and (max-width: 576px) {
 

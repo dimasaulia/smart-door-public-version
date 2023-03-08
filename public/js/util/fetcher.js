@@ -41,7 +41,7 @@ async function setter({
     if (!data.success) {
         showToast({
             theme: "danger",
-            title: failedMsg,
+            title: data.message || failedMsg,
             desc:
                 data.message ||
                 data.data.err ||

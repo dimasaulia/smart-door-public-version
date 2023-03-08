@@ -8,7 +8,12 @@ const {
 const { ErrorException } = require("../../services/responseHandler");
 const { resError, resSuccess } = require("../../services/responseHandler");
 const { random: stringGenerator } = require("@supercharge/strings");
-const { sendEmail, urlTokenGenerator } = require("../../services/mailing");
+const {
+    sendEmail,
+    urlTokenGenerator,
+    emailVerificationTemplate,
+    emailResetPasswordTemplate,
+} = require("../../services/mailing");
 const { days } = require("../../services/timeformater");
 const crypto = require("crypto");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
@@ -246,13 +251,11 @@ exports.profileUpdate = async (req, res) => {
                 where: { email },
             });
             // if email already exist throw error
-            if (checkUser)
-                throw new ErrorException({
-                    type: "email",
-                    detail: "Email already exist or register",
-                });
+            if (checkUser) throw "Email already exist or register";
         }
-
+        const emailChange = currentData.email
+            ? currentData.emailIsVerified
+            : false;
         const newData = await prisma.user.update({
             where: {
                 id,
@@ -260,10 +263,7 @@ exports.profileUpdate = async (req, res) => {
             data: {
                 username,
                 email,
-                emailIsVerified:
-                    email === currentData.email
-                        ? currentData.emailIsVerified
-                        : false,
+                emailIsVerified: email === emailChange,
                 profil: {
                     update: {
                         full_name,
@@ -272,9 +272,44 @@ exports.profileUpdate = async (req, res) => {
                 updatedAt: new Date(Date.now() - 1000),
             },
         });
+
+        if (emailChange) {
+            const token = crypto.randomBytes(32).toString("hex");
+            const exp_time = 5;
+            const secret = await prisma.user.update({
+                where: { id },
+                data: {
+                    token: crypto
+                        .createHash("sha256")
+                        .update(token)
+                        .digest("hex"),
+                    tokenExpiredAt: new Date(
+                        new Date().getTime() + exp_time * 60000
+                    ),
+                },
+            });
+
+            const url = urlTokenGenerator(
+                req,
+                "api/v1/user/email-verification-process/",
+                token
+            );
+
+            const subject = "Email Verification";
+            const template = emailVerificationTemplate({
+                username: secret.username,
+                exp_time: exp_time + " minutes",
+                url,
+                subject,
+            });
+            await sendEmail(secret.email, subject, template);
+        }
+
         return resSuccess({
             res,
-            title: "Success update your profile",
+            title: emailChange
+                ? "Profile update, please verify your new email"
+                : "Success update your profile",
             data: newData,
         });
     } catch (err) {
@@ -571,12 +606,14 @@ exports.setUserRole = async (req, res) => {
 exports.sendVerificationEmail = async (req, res) => {
     try {
         const token = crypto.randomBytes(32).toString("hex");
-
+        const exp_time = 5;
         const secret = await prisma.user.update({
             where: { id: getUser(req) },
             data: {
                 token: crypto.createHash("sha256").update(token).digest("hex"),
-                tokenExpiredAt: new Date(new Date().getTime() + 5 * 60000),
+                tokenExpiredAt: new Date(
+                    new Date().getTime() + exp_time * 60000
+                ),
             },
         });
 
@@ -586,7 +623,14 @@ exports.sendVerificationEmail = async (req, res) => {
             token
         );
 
-        await sendEmail(secret.email, "Email Verification", url);
+        const subject = "Email Verification";
+        const template = emailVerificationTemplate({
+            username: secret.username,
+            exp_time: exp_time + " minutes",
+            url,
+            subject,
+        });
+        await sendEmail(secret.email, subject, template);
 
         return resSuccess({
             res,
@@ -638,13 +682,14 @@ exports.forgotPassword = async (req, res) => {
         });
 
         const url = urlTokenGenerator(req, "auth/reset", token);
-        await sendEmail(
-            email,
-            "Reset password",
-            `Reset your password via the following link ${url}, your token active until ${days(
-                secret.tokenExpiredAt
-            )}`
-        );
+        const subject = "Reset Password";
+        const template = emailResetPasswordTemplate({
+            username: secret.username,
+            exp_time: days(secret.tokenExpiredAt),
+            url,
+            subject,
+        });
+        await sendEmail(secret.email, subject, template);
 
         return resSuccess({
             res,

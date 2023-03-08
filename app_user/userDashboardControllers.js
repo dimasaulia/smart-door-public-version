@@ -39,10 +39,11 @@ module.exports.cardRoom = (req, res) => {
         card: "bg-neutral-4",
         styles: [
             "/style/userCardLogs.css",
+            "/style/buildingList.css",
             "/style/api.css",
             "/style/userCardRoom.css",
         ],
-        scripts: ["/js/user/cardRoom.js"],
+        scripts: ["/js/user/cardRoomScrolhandler.js", "/js/user/cardRoom.js"],
         id,
     };
     res.render("user/userCardRoom", data);

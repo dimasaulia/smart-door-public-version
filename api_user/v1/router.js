@@ -44,6 +44,7 @@ const {
     urlTokenIsValid,
     logoutRequired,
     emailIsExist,
+    userEmailNotVerify,
 } = require("../../middlewares/authMiddlewares");
 const {
     cardIsExist,
@@ -207,6 +208,7 @@ router.post(
 router.post(
     "/send-verification-link/",
     loginRequired,
+    userEmailNotVerify,
     user.sendVerificationEmail
 );
 router.get(

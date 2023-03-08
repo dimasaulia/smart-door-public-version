@@ -1,6 +1,10 @@
 const prisma = require("../../prisma/client");
 const { getUser, hasher } = require("../../services/auth");
 const { resSuccess, resError } = require("../../services/responseHandler");
+const {
+    emailAcceptanceOfAccessRequestsTemplate,
+    sendEmail,
+} = require("../../services/mailing");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 // const ITEM_LIMIT = 5;
 
@@ -715,10 +719,26 @@ exports.addAccessCardToRoom = async (req, res) => {
                 user: {
                     select: {
                         username: true,
+                        email: true,
+                    },
+                },
+                room: {
+                    where: {
+                        ruid,
+                    },
+                    select: {
+                        name: true,
                     },
                 },
             },
         });
+        const subject = "Room Access Permission Update";
+        const template = emailAcceptanceOfAccessRequestsTemplate({
+            username: data.user.username,
+            subject,
+            text_description: `We are pleased to inform you that we are giving you access to ${data.room[0].name}`,
+        });
+        await sendEmail(data.user.email, subject, template);
         return resSuccess({
             res,
             title: "Success pair room to card",

@@ -22,7 +22,17 @@
 
 
 <h2 class="fw-bolder mt-5 text-neutral-2 mb-3">Available Room</h2>
-
+<form class="serach__form d-flex justify-content-between mb-3">
+    <input type="text" class="rounded-10 me-3 border-dark p-3 text-neutral-2" id="searchForm">
+    <button type="button" class="bg-blue-4 text-blue-1 fw-bold text-center" id="searchBtn">Search</button>
+</form>
+<!-- Building Filter -->
+<div class="building-filter d-flex bg-neutral-6 rounded-13 p-2 mb-3">
+    <p class="building-list-item px-4 py-1 rounded-10 fw-bold text-neutral-7 bg-blue-4 me-2" data-id="all" id="building-all" onclick="buildingSelectorHandler('all')">All</p>
+    <div class="d-flex building-container">
+    </div>
+    <p class="px-4 py-1 rounded-10 fw-bold text-neutral-7 bg-neutral-3 me-2 pointer" id="loadMoreBuilding">More</p>
+</div>
 <div class="table-header d-flex justify-content-between bg-neutral-7 py-2 rounded-13 mb-3 px-3">
     <p class="table-data fw-bold text-center text-neutral-2">No</p>
     <p class="table-data fw-bold text-center text-neutral-2">Room ID</p>

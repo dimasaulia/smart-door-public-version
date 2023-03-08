@@ -6,6 +6,10 @@ const {
 } = require("../../services/responseHandler");
 const { random: stringGenerator } = require("@supercharge/strings");
 const { hashChecker, hasher } = require("../../services/auth");
+const {
+    emailAcceptanceOfAccessRequestsTemplate,
+    sendEmail,
+} = require("../../services/mailing");
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
 /**
@@ -485,13 +489,20 @@ exports.pairRoomToCard = async (req, res) => {
                     },
                 },
             },
-            include: {
+            select: {
+                name: true,
                 card: {
                     where: {
                         card_number: cardNumber,
                     },
-                    include: {
-                        user: true,
+                    select: {
+                        card_name: true,
+                        user: {
+                            select: {
+                                username: true,
+                                email: true,
+                            },
+                        },
                     },
                 },
             },
@@ -500,6 +511,13 @@ exports.pairRoomToCard = async (req, res) => {
         await prisma.room_Request.deleteMany({
             where: { card: { card_number: cardNumber }, room: { ruid } },
         });
+        const subject = "Acceptance of Access Requests";
+        const template = emailAcceptanceOfAccessRequestsTemplate({
+            username: updatedRoom.card[0].user.username,
+            subject,
+            text_description: `We are pleased to inform you that your request for access to ${updatedRoom.name} has been approved.`,
+        });
+        await sendEmail(updatedRoom.card[0].user.email, subject, template);
 
         return resSuccess({
             res,
@@ -507,6 +525,7 @@ exports.pairRoomToCard = async (req, res) => {
             data: updatedRoom,
         });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: "Gagal memberi akses ruangan",

@@ -14,6 +14,7 @@ const {
     allowedRole,
 } = require("../../middlewares/authMiddlewares");
 
+router.get("/u/list/", loginRequired, allowedRole("USER"), building.list);
 router.use(loginRequired, allowedRole("ADMIN"));
 router.post(
     "/create/",

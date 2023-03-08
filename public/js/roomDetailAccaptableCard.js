@@ -108,6 +108,7 @@ $("body").on("click", "#searchCard", function () {
                     if (resp.success) {
                         numberOfUserContainer.textContent =
                             Number(numberOfUserContainer.textContent) + 1;
+                        document.querySelector("#searchCard").value = "";
                         document
                             .querySelector(".data-container")
                             .insertAdjacentHTML(

@@ -279,6 +279,7 @@ const userEmailNotVerify = async (req, res, next) => {
         return resError({
             res,
             errors: error,
+            title: "Email already verified",
         });
     }
 };
@@ -348,17 +349,20 @@ const notCurrentUser = async (req, res, next) => {
 /** Fungsi untuk mengecek apakah token masih aktif dan ada di database */
 const urlTokenIsValid = async (req, res, next) => {
     const { token } = req.query;
+    let user;
     const secret = crypto.createHash("sha256").update(token).digest("hex");
     try {
-        const user = await prisma.user.findUnique({ where: { token: secret } });
+        user = await prisma.user.findUnique({ where: { token: secret } });
         if (user === null) throw "Token is not valid";
         if (new Date() > user.tokenExpiredAt) throw "Token is expired";
         return next();
     } catch (error) {
-        await prisma.user.update({
-            where: { token: secret },
-            data: { token: null, tokenExpiredAt: null },
-        });
+        if (error === "Token is expired") {
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { token: null, tokenExpiredAt: null },
+            });
+        }
         return resError({
             res,
             errors: error,
