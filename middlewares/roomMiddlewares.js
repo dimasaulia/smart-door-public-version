@@ -236,7 +236,6 @@ const roomAccessNotExist = async (req, res, next) => {
                 },
             },
         });
-        console.log({ request, ruid });
         if (request.length > 0) throw "Your card already have access";
         return next();
     } catch (error) {

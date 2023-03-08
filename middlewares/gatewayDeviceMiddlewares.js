@@ -83,7 +83,6 @@ const gatewayDeviceIsLinked = async (req, res, next) => {
             throw "Gateway device not linked to gateway spot, please link in first";
         return next();
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Failed to linked device",

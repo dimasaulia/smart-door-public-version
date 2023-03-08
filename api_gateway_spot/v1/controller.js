@@ -253,7 +253,6 @@ exports.update = async (req, res) => {
             data: { name, gatewayShortId },
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Failed to update gateway spot",

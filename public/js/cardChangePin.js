@@ -8,7 +8,6 @@ const btn = document.querySelector("#save");
 
 // INFO: Basic Info Loader
 const basicInfoLoader = (data) => {
-    console.log(data);
     cardNameContainer.value = data.card_name;
     cardIDContainer.textContent = `Card ID: ${data.id} || Card Number: ${data.card_number}`;
     cardIcon.setAttribute("src", `/image/icon_${data.type}.svg`);

@@ -123,7 +123,6 @@ async function generalDataLoader({ url, func, errHandler = false }) {
                     data.message,
             });
         }
-        console.log(data);
     }
 
     if (data.success) {
