@@ -47,6 +47,7 @@ Table Card {
   pin String [not null]
   card_status CARD_STATUS [not null, default: 'UNREGISTER']
   type CARD_TYPE [not null, default: 'card_id']
+  banned Boolean [not null, default: false]
   isTwoStepAuth Boolean [not null, default: true]
   user User
   userId String

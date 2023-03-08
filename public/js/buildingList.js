@@ -80,7 +80,7 @@ const buildingListLoader = (data) => {
 };
 
 generalDataLoader({
-    url: "/api/v1/building/generalinformation",
+    url: "/api/v1/building/general-information",
     func: buildingInformation,
 });
 

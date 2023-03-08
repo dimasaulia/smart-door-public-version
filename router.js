@@ -29,7 +29,7 @@ router.use(API_V1("user"), USER_V1);
 router.use(API_V1("api-management"), API_KEY_V1);
 router.use(API_V1("building"), BUILDING_V1);
 router.use(API_V1("gateway"), GATEWAY_SPOT_V1);
-router.use(API_V1("gateway/h"), GATEWAY_DEVICE_V1);
+router.use(API_V1("gateway/device"), GATEWAY_DEVICE_V1);
 router.use("/dashboard", DASHBOARD);
 router.use("/auth", AUTH);
 router.use("/profile", PROFILE);

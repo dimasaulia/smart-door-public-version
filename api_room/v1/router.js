@@ -89,10 +89,9 @@ router.post(
     room.roomRequest
 );
 router.get(
-    "/accesable/:username",
+    "/accesable/",
     loginRequired,
     allowedRole("ADMIN", "OPERATOR"),
-    userIsExist,
     room.usernameAccessableRoom
 );
 router.get(

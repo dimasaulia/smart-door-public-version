@@ -186,6 +186,33 @@ const isTwoStepAuth = async (req, res, next) => {
     return next();
 };
 
+/** Fungsi untuk memastikan kartu tidak sedang diblokir atau di banned, akan memblokir proses berikutnya jika kartu di blokir*/
+const cardIsNotBanned = async (req, res, next) => {
+    try {
+        const cardNumber =
+            req.body.cardNumber ||
+            req.params.cardNumber ||
+            req.query.cardNumber;
+
+        const card = await prisma.card.findUnique({
+            where: {
+                card_number: cardNumber.replaceAll(" ", ""),
+            },
+            select: {
+                banned: true,
+            },
+        });
+        if (card.banned) throw "Card is being banned";
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: `Cant acess room`,
+            errors: error,
+        });
+    }
+};
+
 module.exports = {
     cardIsExist,
     cardIsPair,
@@ -194,4 +221,5 @@ module.exports = {
     isTurePin,
     isNewPinMatch,
     isTwoStepAuth,
+    cardIsNotBanned,
 };

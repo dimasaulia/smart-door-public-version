@@ -159,4 +159,39 @@ router.post(
     roomAccessNotExist,
     card.addAccessCardToRoom
 );
+router.post(
+    "/admin-modify-card/:cardNumber",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    param("cardNumber").notEmpty(),
+    body("cardName").notEmpty(),
+    body("cardType").notEmpty(),
+    body("isTwoStepAuth").notEmpty(),
+    body("cardBannedStatus").notEmpty(),
+    formChacker,
+    cardIsExist,
+    card.adminModifyCard
+);
+router.post(
+    "/admin-change-pin/:cardNumber",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    param("cardNumber").notEmpty(),
+    body("newPin").notEmpty().isNumeric().isLength({ min: "6", max: "6" }),
+    body("confirmNewPin")
+        .notEmpty()
+        .isNumeric()
+        .isLength({ min: "6", max: "6" }),
+    formChacker,
+    cardIsExist,
+    isNewPinMatch,
+    card.adminModifyCardPin
+);
+router.get(
+    "/logs/:cardNumber",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    cardIsExist,
+    card.userCardLogs
+);
 module.exports = router;

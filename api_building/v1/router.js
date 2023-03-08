@@ -60,7 +60,7 @@ router.delete(
 );
 
 router.get("/list/", building.list);
-router.get("/generalinformation/", building.generalinformation);
+router.get("/general-information/", building.generalinformation);
 router.get("/autocomplate/", building.autocomplate);
 router.get(
     "/detail/:buildingId",

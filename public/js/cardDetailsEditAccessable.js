@@ -30,8 +30,8 @@ const accessableItemTemplate = (data) => {
             <p class="table-data text-center text-neutral-2" data-ruid="${data.ruid}">
                 ${data.name}
             </p>
-            <p class="table-data text-center text-neutral-2 pointer" onclick="deleteAccessHandler('${data.card[0].card_number}','${data.ruid}')">
-                <img src="/image/icon_delete.svg" alt="Delete" class="image">
+            <p class="table-data text-center text-neutral-2 d-flex justify-content-center pointer" onclick="deleteAccessHandler('${data.card[0].card_number}','${data.ruid}')">
+                <img src="/image/icon_delete.svg" alt="Delete" class="image ms-0">
             </p>
         </div>
     `;
@@ -47,7 +47,7 @@ const accessableLoader = (data) => {
 };
 
 generalDataLoader({
-    url: `/api/v1/room/accesable/?username=${usernameContainerDetail.textContent}`,
+    url: `/api/v1/room/accesable/?cardNumber=${cardNumber}`,
     func: accessableLoader,
 });
 
@@ -55,7 +55,7 @@ showMoreAccessableBtn.addEventListener("click", (e) => {
     e.preventDefault();
     const cursor = lastCursorFinder(".accessable--list-item", "id");
     generalDataLoader({
-        url: `/api/v1/room/accesable/?username=${usernameContainerDetail.textContent}&cursor=${cursor}`,
+        url: `/api/v1/room/accesable/?cardNumber=${cardNumber}&cursor=${cursor}`,
         func: accessableLoader,
     });
 });

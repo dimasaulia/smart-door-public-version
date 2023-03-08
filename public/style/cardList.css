@@ -64,6 +64,10 @@ input {
     background: rgb(var(--color-neutral-7)) !important;
 }
 
+.image {
+    width: 1.6rem;
+}
+
 
 @media only screen and (max-width: 720px) {
     input {
@@ -99,5 +103,9 @@ input {
 
     .table-data:nth-child(2) {
         width: 30% !important;
+    }
+
+    .image {
+        width: 1.2rem;
     }
 }

@@ -66,18 +66,94 @@ const deviceIsPair = async (req, res, next) => {
 const deviceIsExist = async (req, res, next) => {
     const duid = req.params.duid || req.body.duid || req.query.duid;
     try {
-        const device = await prisma.device.findUnique({
-            where: {
-                device_id: duid,
-            },
-        });
+        if (typeof duid === "string") {
+            const device = await prisma.device.findUnique({
+                where: {
+                    device_id: duid,
+                },
+            });
 
-        if (!device) throw "Can't find the device";
-        if (device) return next();
+            if (!device) throw "Can't find the device";
+        }
+
+        if (typeof duid === "object") {
+            const unfilterDuid =
+                req.params.duid || req.body.duid || req.query.duid;
+            const duid = [...new Set(unfilterDuid)];
+            const devices = await prisma.device.findMany({
+                where: {
+                    device_id: { in: duid },
+                },
+            });
+            if (devices.length !== duid.length) throw "Can't find the device";
+        }
+
+        return next();
     } catch (error) {
         return resError({
             res,
-            title: error,
+            title: "Device is not exist",
+            errors: error,
+        });
+    }
+};
+
+/** Fungsi untuk memastikan semua tipe node/perangkat yang tertaut dengan gateway spot bertipe multi network */
+const deviceTypeIsMultiNetwork = async (req, res, next) => {
+    try {
+        const unfilterDuid = req.params.duid || req.body.duid || req.query.duid;
+        if (typeof unfilterDuid === "object") {
+            const duid = [...new Set(unfilterDuid)];
+            const devices = await prisma.device.findMany({
+                where: {
+                    device_id: { in: duid },
+                    deviceType: "MULTI_NETWORK",
+                },
+            });
+            if (devices.length !== duid.length)
+                throw "Device type not multi network";
+        }
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: "Device type not multi network",
+            errors: error,
+        });
+    }
+};
+
+/** Fungsi untuk memastikan seluruh node yang akan ditautkan kepada gateway spot tidak terikat ke gateway spot lainnya atau belum tertaut sama sekali */
+const deviceNotLinkedToGatewayOtherSpot = async (req, res, next) => {
+    try {
+        const unfilterDuid = req.params.duid || req.body.duid || req.query.duid;
+
+        const id = req.params.id || req.body.id || req.query.id;
+        if (typeof unfilterDuid === "object") {
+            const duid = [...new Set(unfilterDuid)];
+            const devices = await prisma.device.findMany({
+                where: {
+                    device_id: { in: duid },
+                    deviceType: "MULTI_NETWORK",
+                },
+                select: {
+                    gateway_SpotId: true,
+                },
+            });
+            devices.forEach((device) => {
+                if (
+                    device.gateway_SpotId !== null &&
+                    device.gateway_SpotId !== id
+                ) {
+                    throw "Device node already linked to another gateway spot";
+                }
+            });
+        }
+        return next();
+    } catch (error) {
+        return resError({
+            res,
+            title: "Linked failed",
             errors: error,
         });
     }
@@ -160,6 +236,7 @@ const roomAccessNotExist = async (req, res, next) => {
                 },
             },
         });
+        console.log({ request, ruid });
         if (request.length > 0) throw "Your card already have access";
         return next();
     } catch (error) {
@@ -284,20 +361,13 @@ const cardIsHaveAccess = async (req, res, next) => {
         const findedCard = room.card.find(
             (card) => card.card_number === cardNumber.replaceAll(" ", "")
         );
-
-        if (!findedCard)
-            throw new ErrorException({
-                type: "card",
-                detail: "You can't access this room",
-                location: "Room Middleware",
-            });
-
+        if (!findedCard) throw "You can't access this room";
         return next();
     } catch (error) {
         return resError({
             res,
-            title: `${error.card.type} error at ${error.card.location}`,
-            errors: error.card.detail,
+            title: `Access denied`,
+            errors: error,
         });
     }
 };
@@ -335,4 +405,6 @@ module.exports = {
     deviceIsPair,
     roomAccessIsExist,
     isDeviceTurePin,
+    deviceTypeIsMultiNetwork,
+    deviceNotLinkedToGatewayOtherSpot,
 };

@@ -116,9 +116,14 @@ async function generalDataLoader({ url, func, errHandler = false }) {
             showToast({
                 theme: "danger",
                 title: "Something wrong",
-                desc: data.data.err || data.data.error || data.data.errors,
+                desc:
+                    data.data.err ||
+                    data.data.error ||
+                    data.data.errors ||
+                    data.message,
             });
         }
+        console.log(data);
     }
 
     if (data.success) {

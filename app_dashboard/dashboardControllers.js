@@ -96,6 +96,40 @@ exports.cardList = async (req, res) => {
     res.render("cardList", data);
 };
 
+exports.cardDetail = async (req, res) => {
+    try {
+        const { cardNumber } = req.params;
+        const data = {
+            card: "bg-neutral-4",
+            styles: [
+                "/style/api.css",
+                "/style/buildingList.css",
+                "/style/cardDetail.css",
+            ],
+            scripts: [
+                "/js/cardDetails.js",
+                "/js/cardDetailsHistory.js",
+                "/js/cardDetailsEditAccessable.js",
+            ],
+            id: cardNumber,
+        };
+
+        res.render("cardDetails", data);
+    } catch (error) {}
+};
+
+/** Fungsi Untuk Memodifikasi pin kartu milik user */
+exports.adminModifyCardPin = (req, res) => {
+    const { id } = req.params;
+    const data = {
+        card: "bg-neutral-4",
+        styles: ["/style/changePin.css"],
+        scripts: ["/js/cardChangePin.js"],
+        id,
+    };
+    res.render("cardChangePin", data);
+};
+
 exports.userList = async (req, res) => {
     const userData = await prisma.user.findUnique({
         where: { id: getUser(req) },

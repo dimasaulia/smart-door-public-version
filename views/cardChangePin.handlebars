@@ -12,19 +12,13 @@
     </div>
 
     <div class="form-group mt-3 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between">
-        <label for="current-pin" class="fw-bold text-neutral-2 me-4">Current Pin</label>
-        <input type="password"  pattern="[0-9]*" inputmode="numeric" class="form-control rounded-13 shadow-c-1" name="currentPin" maxlength="6"
-            id="current-pin">
-    </div>
-
-    <div class="form-group mt-3 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between">
         <label for="card-number" class="fw-bold text-neutral-2 me-4">New Pin</label>
-        <input type="password"  pattern="[0-9]*" inputmode="numeric"  class="form-control rounded-13 shadow-c-1" name="newPin" id="new-pin" maxlength="6">
+        <input type="password"  pattern="[0-9]*" inputmode="numeric" autocomplete="on"  class="form-control rounded-13 shadow-c-1" name="newPin" id="new-pin" maxlength="6">
     </div>
 
     <div class="form-group mt-3 d-flex flex-column flex-sm-row align-items-start align-items-sm-center justify-content-between">
         <label for="card-number" class="fw-bold text-neutral-2 me-4">Confirm Pin</label>
-        <input type="password" pattern="[0-9]*" inputmode="numeric" class="form-control rounded-13 shadow-c-1" name="confirmPin" maxlength="6"
+        <input type="password" pattern="[0-9]*" inputmode="numeric" autocomplete="on" class="form-control rounded-13 shadow-c-1" name="confirmPin" maxlength="6"
             id="confirm-pin">
     </div>
     <p class="text-danger-1 fw-bold mt-3" id="is-new-pin-match"></p>

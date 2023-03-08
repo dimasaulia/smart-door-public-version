@@ -225,8 +225,25 @@ exports.detail = async (req, res) => {
         const { cardNumber: card_number } = req.params;
         const cardDetail = await prisma.card.findUnique({
             where: { card_number },
+            select: {
+                id: true,
+                card_number: true,
+                card_name: true,
+                type: true,
+                isTwoStepAuth: true,
+                banned: true,
+                user: {
+                    select: {
+                        username: true,
+                    },
+                },
+            },
         });
-        return resSuccess({ res, data: cardDetail });
+        return resSuccess({
+            res,
+            data: cardDetail,
+            title: "Success get card detail",
+        });
     } catch (err) {
         return resError({
             res,
@@ -713,6 +730,67 @@ exports.addAccessCardToRoom = async (req, res) => {
             res,
             errors: error,
             title: "Failed pair card to room",
+        });
+    }
+};
+
+/** Fungsi untuk memperbaharui kartu yang dilakukan admin*/
+exports.adminModifyCard = async (req, res) => {
+    const { cardNumber: card_number } = req.params;
+    const {
+        cardName: card_name,
+        cardType: type,
+        isTwoStepAuth,
+        cardBannedStatus,
+    } = req.body;
+    try {
+        const card = await prisma.card.update({
+            where: {
+                card_number,
+            },
+            data: {
+                card_name,
+                type,
+                isTwoStepAuth: isTwoStepAuth == "true" ? true : false,
+                banned: cardBannedStatus == "true" ? true : false,
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success update card info",
+            data: card,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get user's cards logs",
+            errors: error,
+        });
+    }
+};
+
+//** Memperbaharui pin kartu */
+exports.adminModifyCardPin = async (req, res) => {
+    const { cardNumber: card_number } = req.params;
+    const { newPin } = req.body;
+    try {
+        const card = await prisma.card.update({
+            where: { card_number },
+            data: {
+                pin: hasher(newPin),
+            },
+        });
+
+        return resSuccess({
+            res,
+            title: "Success change pin",
+            data: card,
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get user's cards logs",
+            errors: error,
         });
     }
 };

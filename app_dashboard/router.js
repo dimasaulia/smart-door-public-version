@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const dashboard = require("./dashboardControllers");
+const userFeatures = require("../app_user/userDashboardControllers");
 const {
     loginRequired,
     allowedRole,
@@ -22,11 +23,26 @@ router.get(
     dashboard.cardList
 );
 router.get(
+    "/card/detail/:cardNumber",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    accountIsVerified,
+    dashboard.cardDetail
+);
+router.get(
     "/card/pair",
     loginRequired,
     allowedRole("ADMIN", "OPERATOR"),
     accountIsVerified,
     dashboard.userPairingToDashboard
+);
+
+router.get(
+    "/card/admin-modify-pin/:id",
+    loginRequired,
+    allowedRole("ADMIN", "OPERATOR"),
+    accountIsVerified,
+    dashboard.adminModifyCardPin
 );
 router.get(
     "/card/scan",

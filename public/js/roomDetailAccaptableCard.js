@@ -100,7 +100,7 @@ $("body").on("click", "#searchCard", function () {
                     const resp = await setter({
                         url: "/api/v1/card/add-access-card-to-room",
                         body: {
-                            ruid: "ic63P",
+                            ruid,
                             cardNumber: newCardNumber,
                         },
                     });

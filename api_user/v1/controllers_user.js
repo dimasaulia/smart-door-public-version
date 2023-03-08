@@ -3,8 +3,6 @@ const {
     setAuthCookie,
     getUser,
     hasher,
-    createJwtToken,
-    verifyJwt,
     hashChecker,
 } = require("../../services/auth");
 const { ErrorException } = require("../../services/responseHandler");

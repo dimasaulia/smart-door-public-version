@@ -1140,79 +1140,144 @@ exports.autocomplate = async (req, res) => {
 exports.usernameAccessableRoom = async (req, res) => {
     try {
         const { cursor } = req.query;
-        const { username } = req.params;
+        const username = req.query?.username;
+        const card_number = req.query?.cardNumber;
         let roomList;
+        if (username) {
+            if (!cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        card: {
+                            some: {
+                                user: {
+                                    username,
+                                },
+                            },
+                        },
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        ruid: true,
+                        card: {
+                            where: {
+                                user: {
+                                    username,
+                                },
+                            },
+                            select: {
+                                card_number: true,
+                            },
+                        },
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
 
-        if (!cursor) {
-            roomList = await prisma.room.findMany({
-                where: {
-                    card: {
-                        some: {
-                            user: {
-                                username,
+            if (cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        card: {
+                            some: {
+                                user: {
+                                    username,
+                                },
                             },
                         },
                     },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    ruid: true,
-                    card: {
-                        where: {
-                            user: {
-                                username,
+                    select: {
+                        id: true,
+                        name: true,
+                        ruid: true,
+                        card: {
+                            where: {
+                                user: {
+                                    username,
+                                },
+                            },
+                            select: {
+                                card_number: true,
                             },
                         },
-                        select: {
-                            card_number: true,
-                        },
                     },
-                },
-                orderBy: {
-                    name: "asc",
-                },
-                take: ITEM_LIMIT,
-            });
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
         }
 
-        if (cursor) {
-            roomList = await prisma.room.findMany({
-                where: {
-                    card: {
-                        some: {
-                            user: {
-                                username,
+        if (card_number) {
+            if (!cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        card: {
+                            some: {
+                                card_number,
                             },
                         },
                     },
-                },
-                select: {
-                    id: true,
-                    name: true,
-                    ruid: true,
-                    card: {
-                        where: {
-                            user: {
-                                username,
+                    select: {
+                        id: true,
+                        name: true,
+                        ruid: true,
+                        card: {
+                            where: {
+                                card_number,
+                            },
+                            select: {
+                                card_number: true,
                             },
                         },
-                        select: {
-                            card_number: true,
-                        },
                     },
-                },
-                orderBy: {
-                    name: "asc",
-                },
-                take: ITEM_LIMIT,
-                skip: 1,
-                cursor: {
-                    id: cursor,
-                },
-            });
-        }
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                });
+            }
 
+            if (cursor) {
+                roomList = await prisma.room.findMany({
+                    where: {
+                        card: {
+                            some: {
+                                card_number,
+                            },
+                        },
+                    },
+                    select: {
+                        id: true,
+                        name: true,
+                        ruid: true,
+                        card: {
+                            where: {
+                                card_number,
+                            },
+                            select: {
+                                card_number: true,
+                            },
+                        },
+                    },
+                    orderBy: {
+                        name: "asc",
+                    },
+                    take: ITEM_LIMIT,
+                    skip: 1,
+                    cursor: {
+                        id: cursor,
+                    },
+                });
+            }
+        }
         return resSuccess({
             res,
             title: "Success get user accessable room",

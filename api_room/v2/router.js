@@ -7,6 +7,7 @@ const {
     cardIsPair,
     isTwoStepAuth,
     isNewPinMatch,
+    cardIsNotBanned,
 } = require("../../middlewares/cardMiddlewares");
 const {
     roomIsExist,
@@ -102,6 +103,7 @@ router.post(
     deviceIsPair,
     cardIsExist,
     cardIsPair,
+    cardIsNotBanned,
     cardIsHaveAccess,
     isTwoStepAuth,
     room.roomCheckIn

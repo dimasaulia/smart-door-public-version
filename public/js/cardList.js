@@ -74,11 +74,11 @@ const cardTemplate = (data) => {
         }</span>
         <p class="table-data text-center text-neutral-2">
             ${days(data.createdAt)} WIB</p>
-        <a class=" table-data text-center text-neutral-2 text-danger-1 pointer" onclick="deleteHandler('${
+        <p class=" table-data text-center text-neutral-2 text-danger-1 pointer" onclick="deleteHandler('${
             data.card_number
         }')">
             Delete
-        </a>
+        </p>
         <a class="table-data pointer text-center d-flex justify-content-around pointer" href="/dashboard/card/pair/?cardId=${
             data.card_number
         }">
@@ -105,16 +105,22 @@ const unpairCardTemplate = (data) => {
         }<br>${data.user.username}</span>
         <p class="table-data text-center text-neutral-2">
             ${days(data.createdAt)} WIB</p>
-        <a class=" table-data text-center text-neutral-2 text-danger-1 pointer" onclick="deleteHandler('${
-            data.card_number
-        }')">
-            Delete
-        </a>
-        <a class="table-data pointer text-center d-flex justify-content-around pointer" onclick="unpairHandler('${
+        <div class="table-data d-flex justify-content-center">
+            <p class="hover-tool" data-hover="Delete Card" 
+            onclick="deleteHandler('${data.card_number}')">
+                <img src="/image/icon_delete.svg" alt="Delete" class="image pointer me-2">
+            </p>
+            <a class="text-center text-neutral-2 text-danger-1 pointer hover-tool"
+                data-hover="Detail Card"
+                href="/dashboard/card/detail/${data.card_number}">
+                <img src="/image/icon_info.svg" alt="Info" class="image pointer"> 
+            </a>
+        </div>
+        <p class="table-data pointer text-blue-3 text-center d-flex justify-content-around pointer" onclick="unpairHandler('${
             data.card_number
         }')">
             Unpair
-        </a>
+        </p>
     </div>
     `;
 };
