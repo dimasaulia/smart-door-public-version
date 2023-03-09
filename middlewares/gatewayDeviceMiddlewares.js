@@ -24,7 +24,7 @@ const gatewayShortIdIsExist = async (req, res, next) => {
     }
 };
 
-/** Fungsi untuk mengecek apakah perangkat gateway sudah ditautkan ke gateway spot, jika BELUM maka akan mengembalikan nilai true */
+/** Fungsi untuk mengecek apakah perangkat gateway sudah ditautkan ke gateway spot, jika SUDAH maka proses berikutnya akan GAGAL*/
 const gatewayDeviceIsNotLinked = async (req, res, next) => {
     try {
         const gatewayShortId =
@@ -57,13 +57,13 @@ const gatewayDeviceIsNotLinked = async (req, res, next) => {
     } catch (error) {
         return resError({
             res,
-            title: "Failed to linked device",
+            title: "Gateway devices have linked gateway spot",
             errors: error,
         });
     }
 };
 
-/** Fungsi untuk mengecek apakah perangkat gateway sudah ditautkan ke gateway spot, jika SUDAH maka akan mengembalikan nilai true */
+/** Fungsi untuk mengecek apakah perangkat gateway sudah ditautkan ke gateway spot, jika BELUM maka proses berikutnya akan gagal */
 const gatewayDeviceIsLinked = async (req, res, next) => {
     try {
         const gatewayShortId =

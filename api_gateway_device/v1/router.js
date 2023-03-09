@@ -7,6 +7,7 @@ const { formChacker } = require("../../middlewares/formMiddleware");
 const {
     gatewayShortIdIsExist,
     gatewayDeviceIsLinked,
+    gatewayDeviceIsNotLinked,
 } = require("../../middlewares/gatewayDeviceMiddlewares");
 const gatewayDevice = require("./controller");
 const router = require("express").Router();
@@ -59,5 +60,13 @@ router.post(
     gatewayDeviceIsLinked,
     gatewayDevice.gatewayInitializeNode
 ); //HW
+router.delete(
+    "/delete/",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    gatewayShortIdIsExist,
+    gatewayDeviceIsNotLinked,
+    gatewayDevice.deleteGateway
+);
 
 module.exports = router;

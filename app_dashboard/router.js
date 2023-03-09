@@ -132,13 +132,20 @@ router.get(
 );
 
 // HARDWARE
-
 router.get(
     "/hardware",
     loginRequired,
     allowedRole("ADMIN", "ADMIN TEKNIS"),
     accountIsVerified,
     dashboard.hardware
+);
+
+// GATEWAY DEVICE LIST
+router.get(
+    "/gateway/device/list",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    dashboard.gatewayDeviceList
 );
 
 module.exports = router;

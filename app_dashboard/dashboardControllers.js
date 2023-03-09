@@ -427,3 +427,12 @@ exports.buildingDetail = async (req, res) => {
     };
     res.render("buildingDetail", data);
 };
+
+exports.gatewayDeviceList = async (req, res) => {
+    const data = {
+        gatewayDevice: "bg-neutral-4",
+        styles: ["/style/api.css", "/style/buildingList.css"],
+        scripts: ["/js/gatewayDeviceList.js"],
+    };
+    res.render("gatewayDeviceList.handlebars", data);
+};

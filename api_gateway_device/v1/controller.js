@@ -371,3 +371,30 @@ exports.gatewayInitializeNode = async (req, res) => {
         });
     }
 };
+
+exports.deleteGateway = async (req, res) => {
+    try {
+        const { gatewayShortId } = req.body;
+        const deleteGateway = await prisma.gateway_Device.delete({
+            where: {
+                gateway_short_id: gatewayShortId,
+            },
+            select: {
+                gateway_short_id: true,
+                id: true,
+            },
+        });
+        return resSuccess({
+            req,
+            res,
+            data: deleteGateway,
+            title: "Success delete gateway device",
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant delete gateway device",
+            errors: error,
+        });
+    }
+};
