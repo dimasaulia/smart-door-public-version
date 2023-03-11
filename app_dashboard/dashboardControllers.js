@@ -436,3 +436,12 @@ exports.gatewayDeviceList = async (req, res) => {
     };
     res.render("gatewayDeviceList.handlebars", data);
 };
+
+exports.gatewaySpotList = async (req, res) => {
+    const data = {
+        gatewaySpot: "bg-neutral-4",
+        styles: ["/style/api.css", "/style/buildingList.css"],
+        scripts: ["/js/gatewaySpotList.js"],
+    };
+    res.render("gatewaySpotList.handlebars", data);
+};

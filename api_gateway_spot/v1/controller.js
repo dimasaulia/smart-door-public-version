@@ -100,6 +100,11 @@ exports.list = async (req, res) => {
                         id: true,
                         name: true,
                         createdAt: true,
+                        gatewayDevice: {
+                            select: {
+                                gateway_short_id: true,
+                            },
+                        },
                         nodeDevice: {
                             select: {
                                 device_id: true,
@@ -129,6 +134,11 @@ exports.list = async (req, res) => {
                         id: true,
                         name: true,
                         createdAt: true,
+                        gatewayDevice: {
+                            select: {
+                                gateway_short_id: true,
+                            },
+                        },
                         nodeDevice: {
                             select: {
                                 device_id: true,
@@ -150,6 +160,11 @@ exports.list = async (req, res) => {
                         id: true,
                         name: true,
                         createdAt: true,
+                        gatewayDevice: {
+                            select: {
+                                gateway_short_id: true,
+                            },
+                        },
                         nodeDevice: {
                             select: {
                                 device_id: true,
@@ -172,6 +187,11 @@ exports.list = async (req, res) => {
                         id: true,
                         name: true,
                         createdAt: true,
+                        gatewayDevice: {
+                            select: {
+                                gateway_short_id: true,
+                            },
+                        },
                         nodeDevice: {
                             select: {
                                 device_id: true,
@@ -198,7 +218,7 @@ exports.list = async (req, res) => {
 
 exports.delete = async (req, res) => {
     try {
-        const { id } = req.params;
+        const { id } = req.body;
         const data = await prisma.gateway_Spot.delete({ where: { id } });
         return resSuccess({ res, title: "Success delete gateway spot", data });
     } catch (error) {
@@ -256,6 +276,51 @@ exports.update = async (req, res) => {
         return resError({
             res,
             title: "Failed to update gateway spot",
+            errors: error,
+        });
+    }
+};
+
+exports.generalInformation = async (req, res) => {
+    try {
+        const countOfGatewaySpot = await prisma.gateway_Spot.count();
+        const countOfNodwWithMultiNetworkType = await prisma.device.count({
+            where: { deviceType: "MULTI_NETWORK" },
+        });
+        const gatewayList = await prisma.gateway_Spot.findMany({
+            orderBy: {
+                name: "asc",
+            },
+            take: ITEM_LIMIT,
+            select: {
+                id: true,
+                name: true,
+                createdAt: true,
+                gatewayDevice: {
+                    select: {
+                        gateway_short_id: true,
+                    },
+                },
+                nodeDevice: {
+                    select: {
+                        device_id: true,
+                    },
+                },
+            },
+        });
+        return resSuccess({
+            res,
+            title: "Success get gateway spot general information",
+            data: {
+                gatewayList,
+                countOfGatewaySpot,
+                countOfNodwWithMultiNetworkType,
+            },
+        });
+    } catch (error) {
+        return resError({
+            res,
+            title: "Failed to get gateway spot information",
             errors: error,
         });
     }

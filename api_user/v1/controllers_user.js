@@ -238,11 +238,7 @@ exports.profileUpdate = async (req, res) => {
                 where: { username },
             });
             // if username already exist throw error
-            if (checkUser)
-                throw new ErrorException({
-                    type: "username",
-                    detail: "User already exist or register",
-                });
+            if (checkUser) throw "User already exist or register";
         }
 
         // if user try change email
@@ -253,9 +249,7 @@ exports.profileUpdate = async (req, res) => {
             // if email already exist throw error
             if (checkUser) throw "Email already exist or register";
         }
-        const emailChange = currentData.email
-            ? currentData.emailIsVerified
-            : false;
+        const emailChange = email !== emailChange;
         const newData = await prisma.user.update({
             where: {
                 id,
@@ -681,7 +675,7 @@ exports.forgotPassword = async (req, res) => {
             },
         });
 
-        const url = urlTokenGenerator(req, "auth/reset", token);
+        const url = urlTokenGenerator(req, "auth/reset-password", token);
         const subject = "Reset Password";
         const template = emailResetPasswordTemplate({
             username: secret.username,
@@ -717,10 +711,6 @@ exports.resetPassword = async (req, res) => {
                 tokenExpiredAt: null,
             },
         });
-
-        // await prisma.token.delete({
-        //     where: { userId: uuid },
-        // });
 
         return resSuccess({
             res,

@@ -148,4 +148,11 @@ router.get(
     dashboard.gatewayDeviceList
 );
 
+router.get(
+    "/gateway/spot/list",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    dashboard.gatewaySpotList
+);
+
 module.exports = router;

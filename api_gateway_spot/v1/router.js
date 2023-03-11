@@ -12,6 +12,7 @@ const { body } = require("express-validator");
 const { formChacker } = require("../../middlewares/formMiddleware");
 const {
     gatewaySpotIdIsExist,
+    gatewaySpotNotHaveLinkingNode,
 } = require("../../middlewares/gatewaySpotMiddlewares");
 const {
     deviceIsExist,
@@ -46,10 +47,13 @@ router.get(
     gatewaySpot.list
 );
 router.delete(
-    "/delete/:id",
+    "/delete/",
     loginRequired,
     allowedRole("ADMIN", "ADMIN TEKNIS"),
+    body("id").notEmpty().withMessage("ID is required"),
+    formChacker,
     gatewaySpotIdIsExist,
+    gatewaySpotNotHaveLinkingNode,
     gatewaySpot.delete
 );
 router.post(
@@ -69,6 +73,13 @@ router.post(
     deviceTypeIsMultiNetwork,
     deviceNotLinkedToGatewayOtherSpot,
     gatewaySpot.update
+);
+
+router.get(
+    "/general-information/",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    gatewaySpot.generalInformation
 );
 
 module.exports = router;
