@@ -160,5 +160,11 @@ router.get(
     allowedRole("ADMIN", "ADMIN TEKNIS"),
     dashboard.gatewaySpotLinkToDevice
 );
+router.get(
+    "/gateway/spot/detail/:id",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    dashboard.gatewaySpotDetail
+);
 
 module.exports = router;

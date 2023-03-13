@@ -54,6 +54,12 @@ const gatewayDeviceListTemplate = (gateway) => {
                 '${gateway.name}')">
                 <img src="/image/icon_delete.svg" alt="Delete" class="image">
             </span>
+            <a 
+                href="/dashboard/gateway/spot/detail/${gateway.id}" 
+                class="hover-tool me-1 pointer" data-hover="Edit"
+            >
+               <img src="/image/icon_edit.svg" alt="Edit" class="image">
+           </a>
         </div>
     </div>
     `;

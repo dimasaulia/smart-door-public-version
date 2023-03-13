@@ -464,3 +464,24 @@ exports.gatewaySpotLinkToDevice = async (req, res) => {
     };
     res.render("gatewaySpotLinking", data);
 };
+
+exports.gatewaySpotDetail = async (req, res) => {
+    const { id } = req.params;
+    const data = {
+        gatewaySpot: "bg-neutral-4",
+        styles: [
+            "/style/pairUser.css",
+            "/style/api.css",
+            "/style/buildingList.css",
+            "/style/buildingCreate.css",
+            "https://code.jquery.com/ui/1.13.1/themes/base/jquery-ui.css",
+        ],
+        scripts: [
+            "https://code.jquery.com/jquery-3.6.0.js",
+            "https://code.jquery.com/ui/1.13.1/jquery-ui.js",
+            "/js/gatewaySpotDetail.js",
+        ],
+        id,
+    };
+    res.render("gatewaySpotEdit", data);
+};

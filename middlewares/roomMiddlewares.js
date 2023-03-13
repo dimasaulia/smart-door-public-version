@@ -153,7 +153,7 @@ const deviceNotLinkedToGatewayOtherSpot = async (req, res, next) => {
     } catch (error) {
         return resError({
             res,
-            title: "Linked failed",
+            title: "Device node already linked to another gateway spot",
             errors: error,
         });
     }

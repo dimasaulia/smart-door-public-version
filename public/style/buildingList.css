@@ -43,8 +43,8 @@ input[type=text] {
 }
 
 input[type=text]:focus {
-    background: rgb(var(--color-neutral-5));
-    border: 1px rgb(var(--color-blue-4)) solid !important;
+    /* background: rgb(var(--color-neutral-5)); */
+    border: 2px rgb(var(--color-blue-4)) solid !important;
 }
 
 input[type=text]:disabled {
