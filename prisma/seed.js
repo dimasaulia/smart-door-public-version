@@ -1,4 +1,4 @@
-const prisma = require("../prisma/client");
+const prisma = require("./client");
 const { user, role, rooms } = require("./superAdmin");
 const { random: stringGenerator } = require("@supercharge/strings");
 

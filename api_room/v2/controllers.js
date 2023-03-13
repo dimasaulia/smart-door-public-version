@@ -533,3 +533,39 @@ exports.pairRoomToCard = async (req, res) => {
         });
     }
 };
+
+/** Fungsi untuk menampilkan daftar perangkat untuk keperluan autocomplate */
+exports.autocomplate = async (req, res) => {
+    try {
+        const search = req.query.term;
+        const type = req.query.type;
+        const results = [];
+        const searchResult = await prisma.device.findMany({
+            where: {
+                device_id: {
+                    contains: search,
+                    mode: "insensitive",
+                },
+                deviceType: type,
+            },
+            select: {
+                device_id: true,
+                id: true,
+            },
+            take: ITEM_LIMIT,
+        });
+
+        searchResult.forEach((data) => {
+            const { device_id, id } = data;
+            results.push({ value: device_id, label: device_id });
+        });
+
+        return res.status(200).json(results);
+    } catch (error) {
+        return resError({
+            res,
+            title: "Cant get device information",
+            errors: error,
+        });
+    }
+};

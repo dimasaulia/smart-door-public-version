@@ -1,7 +1,7 @@
 const prisma = require("../../prisma/client");
 const { resSuccess, resError } = require("../../services/responseHandler");
-// const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
-const ITEM_LIMIT = 1;
+const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
+// const ITEM_LIMIT = 1;
 
 exports.gatewaySpotLinktoGatewayDevice = async (req, res) => {
     try {

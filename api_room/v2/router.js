@@ -50,6 +50,12 @@ router.get(
     allowedRole("ADMIN", "ADMIN TEKNIS"),
     room.deviceList
 );
+router.get(
+    "/device/autocomplate",
+    loginRequired,
+    allowedRole("ADMIN", "ADMIN TEKNIS"),
+    room.autocomplate
+);
 router.delete(
     "/device/delete/:duid",
     loginRequired,
