@@ -10,6 +10,8 @@ const {
     emailAcceptanceOfAccessRequestsTemplate,
     sendEmail,
 } = require("../../services/mailing");
+const { RabbitConnection } = require("../../connection/amqp");
+
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
 /**
@@ -130,11 +132,19 @@ exports.deviceDetail = async (req, res) => {
  */
 exports.onlineUpdate = async (req, res) => {
     const { duid } = req.params; // stands for room unique id
+    const responsesTime = req.body?.responsesTime;
     try {
         const detailRoom = await prisma.device.update({
             where: { device_id: duid },
             data: { lastOnline: new Date() },
         });
+        const dataToSend = {
+            duid,
+            deviceType: detailRoom.deviceType,
+            responsesTime: responsesTime.split(",").slice(0, -1),
+        };
+
+        RabbitConnection.sendMessage(JSON.stringify(dataToSend), "logger.save");
 
         return resSuccess({
             res,
@@ -142,6 +152,7 @@ exports.onlineUpdate = async (req, res) => {
             data: detailRoom,
         });
     } catch (err) {
+        console.log(err);
         return resError({ res, errors: err, code: 422 });
     }
 };

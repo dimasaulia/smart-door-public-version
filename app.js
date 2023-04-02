@@ -14,6 +14,7 @@ const http = require("http").Server(app);
 const io = require("socket.io")(http);
 const expbs = require("express-handlebars");
 const { urlErrorHandler } = require("./services/responseHandler");
+const { RabbitConnection } = require("./connection/amqp");
 app.io = io;
 
 const path = require("path");
@@ -62,7 +63,7 @@ io.on("connection", (socket) => {
 // https.listen(PORT, () => {
 //     console.log(`🤘 SERVER RUNNING IN PORT ${PORT}`);
 // });
-
+RabbitConnection.createConnection();
 http.listen(PORT, () => {
     console.log(`🤘 SERVER RUNNING IN PORT ${PORT}`);
 });
