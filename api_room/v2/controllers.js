@@ -138,13 +138,19 @@ exports.onlineUpdate = async (req, res) => {
             where: { device_id: duid },
             data: { lastOnline: new Date() },
         });
-        const dataToSend = {
-            duid,
-            deviceType: detailRoom.deviceType,
-            responsesTime: responsesTime.split(",").slice(0, -1),
-        };
 
-        RabbitConnection.sendMessage(JSON.stringify(dataToSend), "logger.save");
+        if (responsesTime !== undefined) {
+            const dataToSend = {
+                duid,
+                deviceType: detailRoom.deviceType,
+                responsesTime: responsesTime.split(",").slice(0, -1),
+            };
+
+            RabbitConnection.sendMessage(
+                JSON.stringify(dataToSend),
+                "logger.save"
+            );
+        }
 
         return resSuccess({
             res,
