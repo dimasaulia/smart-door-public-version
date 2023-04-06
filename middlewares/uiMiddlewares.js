@@ -99,9 +99,23 @@ const accountIsVerified = async (req, res, next) => {
     }
 };
 
+/** Memastikan halaman hanya bisa diakses oleh user yang belum terverifikasi */
+const userEmailNotVerify = async (req, res, next) => {
+    try {
+        const { emailIsVerified } = await prisma.user.findUnique({
+            where: { id: getUser(req) },
+        });
+        if (emailIsVerified) throw "Your email already verified";
+        return next();
+    } catch (error) {
+        return res.redirect("/");
+    }
+};
+
 module.exports = {
     loginRequired,
     allowedRole,
     logoutRequired,
     accountIsVerified,
+    userEmailNotVerify,
 };

@@ -7,7 +7,6 @@ const {
 } = require("../../services/auth");
 const { ErrorException } = require("../../services/responseHandler");
 const { resError, resSuccess } = require("../../services/responseHandler");
-const { random: stringGenerator } = require("@supercharge/strings");
 const {
     sendEmail,
     urlTokenGenerator,
@@ -77,6 +76,7 @@ exports.register = async (req, res) => {
     const { username, email, password } = req.body;
     try {
         const token = crypto.randomBytes(32).toString("hex");
+        const exp_time = 5;
         const newUser = await prisma.user.create({
             data: {
                 username,
@@ -107,7 +107,14 @@ exports.register = async (req, res) => {
             token
         );
 
-        await sendEmail(newUser.email, "Email Verification", url);
+        const subject = "Email Verification";
+        const template = emailVerificationTemplate({
+            username: newUser.username,
+            exp_time: exp_time + " minutes",
+            url,
+            subject,
+        });
+        await sendEmail(newUser.email, subject, template);
 
         setAuthCookie({ res, uuid: newUser.id });
 
