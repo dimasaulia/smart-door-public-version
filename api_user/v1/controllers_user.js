@@ -249,7 +249,8 @@ exports.profileUpdate = async (req, res) => {
             // if email already exist throw error
             if (checkUser) throw "Email already exist or register";
         }
-        const emailChange = email !== emailChange;
+        const emailChange = !(email === currentData.email);
+
         const newData = await prisma.user.update({
             where: {
                 id,
@@ -257,7 +258,7 @@ exports.profileUpdate = async (req, res) => {
             data: {
                 username,
                 email,
-                emailIsVerified: email === emailChange,
+                emailIsVerified: emailChange === true ? false : true, // jika email berubah maka email akan berubah menjadi tidak terverifikasi, sedangkan jika tetap maka email akan tetap terverifikasi
                 profil: {
                     update: {
                         full_name,
@@ -307,6 +308,7 @@ exports.profileUpdate = async (req, res) => {
             data: newData,
         });
     } catch (err) {
+        console.log(err);
         return resError({ res, errors: err, title: "Failed update profile" });
     }
 };

@@ -72,6 +72,7 @@ saveBtn.addEventListener("click", async (e) => {
         failedBody: "Sorry we couldn't update your profile",
         successBody: "Successfully update your profile",
     });
+    console.log(resp);
 
     if (resp.success) {
         usernameContainer.textContent = resp.data.username;

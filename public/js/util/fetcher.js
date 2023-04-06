@@ -43,10 +43,10 @@ async function setter({
             theme: "danger",
             title: data.message || failedMsg,
             desc:
+                data.data.errors ||
                 data.message ||
                 data.data.err ||
                 data.data.error ||
-                data.data.errors ||
                 failedBody,
         });
         return { success: false, data: data.data };
