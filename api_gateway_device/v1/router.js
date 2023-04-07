@@ -10,9 +10,10 @@ const {
     gatewayDeviceIsNotLinked,
 } = require("../../middlewares/gatewayDeviceMiddlewares");
 const gatewayDevice = require("./controller");
+const { apiJWTValidation } = require("../../middlewares/apiKeyMiddlewares");
 const router = require("express").Router();
 
-router.post("/h/init", gatewayDevice.createGatewayDevice); //HW
+router.post("/h/init", apiJWTValidation, gatewayDevice.createGatewayDevice); //HW
 router.get(
     "/list",
     loginRequired,

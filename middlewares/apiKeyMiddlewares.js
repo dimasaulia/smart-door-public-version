@@ -47,4 +47,11 @@ const apiValidation = async (req, res, next) => {
     }
 };
 
-module.exports = { apiIDIsExist, apiValidation };
+const apiJWTValidation = async (req, res, next) => {
+    try {
+        console.log("apiJWTValidation");
+        return next();
+    } catch (error) {}
+};
+
+module.exports = { apiIDIsExist, apiValidation, apiJWTValidation };

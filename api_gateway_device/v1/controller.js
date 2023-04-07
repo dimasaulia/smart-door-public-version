@@ -10,34 +10,36 @@ exports.createGatewayDevice = async (req, res) => {
         let gatewayShortId = stringGenerator(5);
         let generateID = true;
         const PIN = process.env.DEFAULT_HW_PIN;
-        while (generateID) {
-            const gatewayShortIdIsEmpty =
-                await prisma.gateway_Device.findUnique({
-                    where: {
-                        gateway_short_id: gatewayShortId,
-                    },
-                });
+        console.log("DD");
+        // while (generateID) {
+        //     const gatewayShortIdIsEmpty =
+        //         await prisma.gateway_Device.findUnique({
+        //             where: {
+        //                 gateway_short_id: gatewayShortId,
+        //             },
+        //         });
 
-            if (!gatewayShortIdIsEmpty) {
-                generateID = false;
-                break;
-            }
+        //     if (!gatewayShortIdIsEmpty) {
+        //         generateID = false;
+        //         break;
+        //     }
 
-            gatewayShortId = stringGenerator(5);
-        }
-        const gatewayDeviceData = await prisma.gateway_Device.create({
-            data: {
-                gateway_short_id: gatewayShortId,
-                lastOnline: new Date(),
-                pin: hasher(PIN),
-            },
-            select: {
-                gateway_short_id: true,
-            },
-        });
+        //     gatewayShortId = stringGenerator(5);
+        // }
+        // const gatewayDeviceData = await prisma.gateway_Device.create({
+        //     data: {
+        //         gateway_short_id: gatewayShortId,
+        //         lastOnline: new Date(),
+        //         pin: hasher(PIN),
+        //     },
+        //     select: {
+        //         gateway_short_id: true,
+        //     },
+        // });
+        const gatewayDeviceData = gatewayShortId;
         return resSuccess({
             res,
-            title: "Success initialize hardware",
+            title: "Success initialize hardwaresss",
             data: gatewayDeviceData,
         });
     } catch (error) {
