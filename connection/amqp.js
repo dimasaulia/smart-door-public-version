@@ -8,8 +8,8 @@ const RabbitSettings = {
     password: "guest",
     authMechanism: "AMQPLAIN",
     vhost: "/",
-    queue: "smartdoorlogger",
-    exchange: "logger",
+    exchange: "smartdoor",
+    loggerQueue: "smartdoorlogger",
 };
 
 class RabbitConnection {
@@ -33,25 +33,26 @@ class RabbitConnection {
                 `${RabbitSettings.protocol}://${RabbitSettings.hostname}`
             );
             this.channel = await this.connection.createChannel();
+            this.channel.assertExchange(RabbitSettings.exchange, "direct", {
+                durable: false,
+            });
             this.channel.assertQueue(
-                RabbitSettings.queue,
+                RabbitSettings.loggerQueue,
                 RabbitSettings.exchange,
                 ""
             );
-            this.channel.assertExchange(RabbitSettings.exchange, "topic", {
-                durable: false,
-            });
             console.log(" [i]: Connection to RabbitMQ established");
         } catch (error) {
             console.log(error);
         }
     }
-    //send message to rabbitmq queue
-    static async sendMessage(message, key) {
+
+    // send message to rabbitmq queue
+    static async sendMessage(message, bindingKey) {
         try {
             let msg = await this.channel.publish(
                 RabbitSettings.exchange,
-                key,
+                bindingKey,
                 Buffer.from(message)
             );
             // console.log(` [x]: "${message}" has been send to "${key}" exhange`);
@@ -59,6 +60,23 @@ class RabbitConnection {
         } catch (error) {
             console.log(error);
         }
+    }
+
+    // consume
+    static async consumeMessage({ channel, queue, key, callbackFn }) {
+        console.log(` [i]: Listening to "${key}" event`);
+        channel.bindQueue(queue, RabbitSettings.exchange, key);
+        channel.consume(queue, async (msg) => {
+            if (msg !== null) {
+                console.log(" [d]: Recieved", msg.content.toString());
+                channel.ack(msg);
+
+                // EXECUTE Callback Function To Do Something
+                callbackFn(msg.content.toString());
+            } else {
+                console.log("Consumer cancelled by server");
+            }
+        });
     }
 }
 
