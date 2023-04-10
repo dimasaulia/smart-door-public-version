@@ -1,4 +1,5 @@
 const prisma = require("../prisma/client");
+const { verifyJwt } = require("../services/auth");
 const { ErrorException, resError } = require("../services/responseHandler");
 const location = "API Key Middlewares";
 const apiIDIsExist = async (req, res, next) => {
@@ -49,9 +50,35 @@ const apiValidation = async (req, res, next) => {
 
 const apiJWTValidation = async (req, res, next) => {
     try {
-        console.log("apiJWTValidation");
+        const apiID = req.headers["x-api-id"];
+        const apiSecret = req.headers["x-api-secret"];
+
+        if (!apiID) throw "API ID Not Define"; // throw error when api id not define
+        if (!apiSecret) throw "API key Not Define"; // throw error when api key not define
+
+        const apiData = await prisma.api_Key.findUnique({
+            where: { id: apiID },
+        });
+
+        if (!apiData) throw "Cant find API Data"; // jika api id tidak ada di database maka throw error
+
+        const jwtPayload = verifyJwt(apiSecret, apiData.secret); // verifikasi jwt berdasarkan database secret
+        if (jwtPayload === undefined) throw "Cant Verify JWT Token"; // jika jwt tidak bisa di verifikasi maka throw error
+
+        if (
+            jwtPayload["api-id"] !== apiData.id &&
+            jwtPayload["api-key"] !== apiData.key
+        )
+            throw "Secret Payload not match"; // jika payload tidak sesuai maka throw error
+
         return next();
-    } catch (error) {}
+    } catch (error) {
+        return resError({
+            res,
+            title: "API Authentication Failed",
+            errors: error,
+        });
+    }
 };
 
 module.exports = { apiIDIsExist, apiValidation, apiJWTValidation };

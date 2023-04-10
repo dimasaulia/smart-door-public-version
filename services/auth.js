@@ -37,12 +37,8 @@ const getUser = (req) => {
 };
 
 /** Verify JwT */
-const verifyJwt = (data) => {
-    const payload = jwt.verify(
-        data,
-        process.env.SECRET,
-        (err, decode) => decode
-    );
+const verifyJwt = (data, secret = process.env.SECRET) => {
+    const payload = jwt.verify(data, secret, (err, decode) => decode);
     return payload;
 };
 

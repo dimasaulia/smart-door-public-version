@@ -35,6 +35,7 @@ router.get(
 );
 router.post(
     "/h/update-online-time/:gatewayShortId",
+    apiJWTValidation,
     gatewayShortIdIsExist,
     gatewayDevice.updateOnline
 ); //HW
@@ -53,6 +54,7 @@ router.get(
 );
 router.post(
     "/h/initialize-new-node",
+    apiJWTValidation,
     body("gatewayShortId")
         .notEmpty()
         .withMessage("Gateway Short Id is Requried"),

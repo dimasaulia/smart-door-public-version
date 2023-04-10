@@ -2,41 +2,41 @@ const prisma = require("../../prisma/client");
 const { resSuccess, resError } = require("../../services/responseHandler");
 const { random: stringGenerator } = require("@supercharge/strings");
 const { hasher, hashChecker } = require("../../services/auth");
-// const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
-const ITEM_LIMIT = 5;
+const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
+// const ITEM_LIMIT = 5;
 
 exports.createGatewayDevice = async (req, res) => {
     try {
         let gatewayShortId = stringGenerator(5);
         let generateID = true;
         const PIN = process.env.DEFAULT_HW_PIN;
-        console.log("DD");
-        // while (generateID) {
-        //     const gatewayShortIdIsEmpty =
-        //         await prisma.gateway_Device.findUnique({
-        //             where: {
-        //                 gateway_short_id: gatewayShortId,
-        //             },
-        //         });
 
-        //     if (!gatewayShortIdIsEmpty) {
-        //         generateID = false;
-        //         break;
-        //     }
+        while (generateID) {
+            const gatewayShortIdIsEmpty =
+                await prisma.gateway_Device.findUnique({
+                    where: {
+                        gateway_short_id: gatewayShortId,
+                    },
+                });
 
-        //     gatewayShortId = stringGenerator(5);
-        // }
-        // const gatewayDeviceData = await prisma.gateway_Device.create({
-        //     data: {
-        //         gateway_short_id: gatewayShortId,
-        //         lastOnline: new Date(),
-        //         pin: hasher(PIN),
-        //     },
-        //     select: {
-        //         gateway_short_id: true,
-        //     },
-        // });
-        const gatewayDeviceData = gatewayShortId;
+            if (!gatewayShortIdIsEmpty) {
+                generateID = false;
+                break;
+            }
+
+            gatewayShortId = stringGenerator(5);
+        }
+        const gatewayDeviceData = await prisma.gateway_Device.create({
+            data: {
+                gateway_short_id: gatewayShortId,
+                lastOnline: new Date(),
+                pin: hasher(PIN),
+            },
+            select: {
+                gateway_short_id: true,
+            },
+        });
+
         return resSuccess({
             res,
             title: "Success initialize hardwaresss",
