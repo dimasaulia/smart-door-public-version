@@ -2,6 +2,7 @@ const prisma = require("../../prisma/client");
 const { resSuccess, resError } = require("../../services/responseHandler");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 // const ITEM_LIMIT = 1;
+const { RabbitConnection } = require("../../connection/amqp");
 
 exports.gatewaySpotLinktoGatewayDevice = async (req, res) => {
     try {
@@ -16,6 +17,16 @@ exports.gatewaySpotLinktoGatewayDevice = async (req, res) => {
                 },
             },
         });
+
+        const dataToSend = {
+            name: data.name,
+            createdAt: data.createdAt,
+        };
+
+        RabbitConnection.sendMessage(
+            JSON.stringify(dataToSend),
+            `setup.${gatewayShortId}.gateway`
+        ); // broadcast info to gateway
 
         return resSuccess({
             res,
@@ -219,9 +230,31 @@ exports.list = async (req, res) => {
 exports.delete = async (req, res) => {
     try {
         const { id } = req.body;
-        const data = await prisma.gateway_Spot.delete({ where: { id } });
+        const data = await prisma.gateway_Spot.delete({
+            where: { id },
+            select: {
+                name: true,
+                id: true,
+                createdAt: true,
+                gatewayDevice: {
+                    select: {
+                        gateway_short_id: true,
+                    },
+                },
+            },
+        });
+        const dataToSend = {
+            name: data.name,
+            gatewayShortId: data.gatewayDevice.gateway_short_id,
+        };
+
+        RabbitConnection.sendMessage(
+            JSON.stringify(dataToSend),
+            `reset.${data.gatewayDevice.gateway_short_id}.gateway`
+        ); // broadcast info to gateway
         return resSuccess({ res, title: "Success delete gateway spot", data });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: "Failed to delete of gateway spot",

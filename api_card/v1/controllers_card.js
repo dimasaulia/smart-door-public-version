@@ -5,6 +5,7 @@ const {
     emailAcceptanceOfAccessRequestsTemplate,
     sendEmail,
 } = require("../../services/mailing");
+const { RabbitConnection } = require("../../connection/amqp");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 // const ITEM_LIMIT = 5;
 
@@ -716,6 +717,8 @@ exports.addAccessCardToRoom = async (req, res) => {
                 card_name: true,
                 card_number: true,
                 id: true,
+                pin: true,
+                isTwoStepAuth: true,
                 user: {
                     select: {
                         username: true,
@@ -726,19 +729,57 @@ exports.addAccessCardToRoom = async (req, res) => {
                     where: {
                         ruid,
                     },
+                },
+            },
+        });
+
+        const room = await prisma.room.findUnique({
+            where: {
+                ruid,
+            },
+            select: {
+                device: {
                     select: {
-                        name: true,
+                        deviceType: true,
+                        device_id: true,
+                        Gateway_Spot: {
+                            select: {
+                                gatewayDevice: {
+                                    select: {
+                                        gateway_short_id: true,
+                                    },
+                                },
+                            },
+                        },
                     },
                 },
             },
         });
-        const subject = "Room Access Permission Update";
-        const template = emailAcceptanceOfAccessRequestsTemplate({
-            username: data.user.username,
-            subject,
-            text_description: `We are pleased to inform you that we are giving you access to ${data.room[0].name}`,
-        });
-        await sendEmail(data.user.email, subject, template);
+
+        // const subject = "Room Access Permission Update";
+        // const template = emailAcceptanceOfAccessRequestsTemplate({
+        //     username: data.user.username,
+        //     subject,
+        //     text_description: `We are pleased to inform you that we are giving you access to ${data.room[0].name}`,
+        // });
+        // await sendEmail(data.user.email, subject, template);
+
+        // INFO: BROADCAST DATA TO GATEWAY
+        /*
+        if (room.device.deviceType === "MULTI_NETWORK") {
+            const dataToSend = {
+                cardNumber: data.card_number,
+                cardPin: data.pin,
+                isTwoStepAuth: data.isTwoStepAuth,
+                duid: room.device.device_id,
+            };
+
+            RabbitConnection.sendMessage(
+                JSON.stringify(dataToSend),
+                `addcard.${room.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+            );
+        }
+*/
         return resSuccess({
             res,
             title: "Success pair room to card",

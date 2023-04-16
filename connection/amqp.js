@@ -10,6 +10,7 @@ const RabbitSettings = {
     vhost: "/",
     exchange: "smartdoor",
     loggerQueue: "smartdoorlogger",
+    queues: ["smartdoorlogger", "smartdoorgateway"],
 };
 
 class RabbitConnection {
@@ -25,6 +26,7 @@ class RabbitConnection {
         }
         return RabbitConnection.instance;
     }
+
     //create connection to rabbitmq
     static async createConnection() {
         try {
@@ -36,11 +38,11 @@ class RabbitConnection {
             this.channel.assertExchange(RabbitSettings.exchange, "direct", {
                 durable: false,
             });
-            this.channel.assertQueue(
-                RabbitSettings.loggerQueue,
-                RabbitSettings.exchange,
-                ""
-            );
+
+            RabbitSettings.queues.forEach((data) => {
+                this.channel.assertQueue(data, RabbitSettings.exchange, "");
+            });
+
             console.log(" [i]: Connection to RabbitMQ established");
         } catch (error) {
             console.log(error);
@@ -55,7 +57,9 @@ class RabbitConnection {
                 bindingKey,
                 Buffer.from(message)
             );
-            // console.log(` [x]: "${message}" has been send to "${key}" exhange`);
+            console.log(
+                ` [x]: "${message}" has been send to "${bindingKey}" key`
+            );
             return msg;
         } catch (error) {
             console.log(error);
@@ -64,7 +68,9 @@ class RabbitConnection {
 
     // consume
     static async consumeMessage({ channel, queue, key, callbackFn }) {
-        console.log(` [i]: Listening to "${key}" event`);
+        console.log(
+            ` [i]: Listening to "${key}" event on "${channel}" channel`
+        );
         channel.bindQueue(queue, RabbitSettings.exchange, key);
         channel.consume(queue, async (msg) => {
             if (msg !== null) {

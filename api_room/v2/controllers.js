@@ -88,7 +88,41 @@ exports.createRoom = async (req, res) => {
                 },
                 buildingId,
             },
+            select: {
+                ruid: true,
+                name: true,
+                isActive: true,
+                buildingId: true,
+                device: {
+                    select: {
+                        deviceType: true,
+                        device_id: true,
+                        Gateway_Spot: {
+                            select: {
+                                gatewayDevice: {
+                                    select: {
+                                        gateway_short_id: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         });
+
+        if (newRoom.device.deviceType === "MULTI_NETWORK") {
+            const dataToSend = {
+                device_id: newRoom.device.device_id,
+                name: newRoom.name,
+            };
+            console.log(newRoom.device);
+
+            RabbitConnection.sendMessage(
+                JSON.stringify(dataToSend),
+                `setuproom.${newRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+            );
+        }
 
         return resSuccess({
             res,
@@ -446,7 +480,34 @@ exports.deviceDelete = async (req, res) => {
 
         const device = await prisma.device.delete({
             where: { device_id: duid },
+            select: {
+                id: true,
+                device_id: true,
+                deviceType: true,
+                Gateway_Spot: {
+                    select: {
+                        gatewayDevice: {
+                            select: {
+                                gateway_short_id: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
+
+        if (device.deviceType == "MULTI_NETWORK") {
+            const dataToSend = {
+                device_id: device.device_id,
+            };
+
+            console.log(device.device_id);
+
+            RabbitConnection.sendMessage(
+                JSON.stringify(dataToSend),
+                `removeroom.${device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+            );
+        }
 
         return resSuccess({
             res,
@@ -454,9 +515,10 @@ exports.deviceDelete = async (req, res) => {
             data: { device },
         });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
-            title: "Failed to validate pin",
+            title: "Failed to delete device",
             errors: error,
         });
     }

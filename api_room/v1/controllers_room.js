@@ -11,6 +11,8 @@ const {
 } = require("../../services/mailing");
 const { random: stringGenerator } = require("@supercharge/strings");
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 20;
+const { RabbitConnection } = require("../../connection/amqp");
+
 // const ITEM_LIMIT = 1;
 
 // INFO: Prisma middleware to encrypt default room pin
@@ -507,7 +509,40 @@ exports.delete = async (req, res) => {
             where: {
                 ruid: ruid,
             },
+            select: {
+                id: true,
+                ruid: true,
+                name: true,
+                device: {
+                    select: {
+                        deviceType: true,
+                        device_id: true,
+                        Gateway_Spot: {
+                            select: {
+                                gatewayDevice: {
+                                    select: {
+                                        gateway_short_id: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         });
+
+        if (deletedRoom.device.deviceType === "MULTI_NETWORK") {
+            const dataToSend = {
+                device_id: deletedRoom.device.device_id,
+            };
+            console.log(deletedRoom.device);
+
+            RabbitConnection.sendMessage(
+                JSON.stringify(dataToSend),
+                `resetroom.${deletedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+            );
+        }
+
         return resSuccess({
             res,
             data: deletedRoom,
@@ -548,6 +583,9 @@ exports.pairRoomToCard = async (req, res) => {
         });
 
         await prisma.room_Request.delete({ where: { id } });
+
+        // INFO: BROADCAST DATA TO GATEWAY
+
         return resSuccess({
             res,
             title: "Sukses memberi akses",
@@ -594,6 +632,8 @@ exports.grantAllAccess = async (req, res) => {
             },
         });
 
+        // INFO: BROADCAST DATA TO GATEWAY
+
         return resSuccess({
             res,
             title: "Success grant access to all request",
@@ -627,8 +667,32 @@ exports.unPairRoomToCard = async (req, res) => {
             },
             select: {
                 name: true,
+                card: {
+                    where: {
+                        card_number: cardNumber,
+                    },
+                    select: {
+                        card_number: true,
+                    },
+                },
+                device: {
+                    select: {
+                        deviceType: true,
+                        device_id: true,
+                        Gateway_Spot: {
+                            select: {
+                                gatewayDevice: {
+                                    select: {
+                                        gateway_short_id: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
         });
+
         const userData = await prisma.card.findUnique({
             where: {
                 card_number: cardNumber,
@@ -642,13 +706,29 @@ exports.unPairRoomToCard = async (req, res) => {
                 },
             },
         });
-        const subject = "Room Access Permission Update";
-        const template = emailDeclineOfAccessRequestsTemplate({
-            username: userData.user.username,
-            subject,
-            text_description: `We regret to inform you that we are removing your access to ${updatedRoom.name}.`,
-        });
-        await sendEmail(userData.user.email, subject, template);
+        /*
+        if (updatedRoom.device.deviceType === "MULTI_NETWORK") {
+            const dataToSend = {
+                duid: updatedRoom.device.device_id,
+                cardNumber: cardNumber,
+            };
+
+            RabbitConnection.sendMessage(
+                JSON.stringify(dataToSend),
+                `removecard.${updatedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+            );
+        }
+*/
+        // const subject = "Room Access Permission Update";
+        // const template = emailDeclineOfAccessRequestsTemplate({
+        //     username: userData.user.username,
+        //     subject,
+        //     text_description: `We regret to inform you that we are removing your access to ${updatedRoom.name}.`,
+        // });
+        // await sendEmail(userData.user.email, subject, template);
+
+        // INFO: BROADCAST DATA TO GATEWAY
+
         return resSuccess({
             res,
             title: "Success remove card access",
