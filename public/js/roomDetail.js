@@ -4,12 +4,14 @@ const roomNameContainer = document.querySelector("#room-name");
 const ruidContainer = document.querySelector("#ruid");
 const duidContainer = document.querySelector("#duid");
 const onlineContainer = document.querySelector("#online");
-const itemContainer = document.querySelector(".item-container");
+const itemContainer = document.querySelector(".data-container");
 const accessContainer = document.querySelector(".activity-access");
 const visitorContainer = document.querySelector("#visitor");
 const numberOfUserContainer = document.querySelector("#user");
 const numberOfRequestUserContainer = document.querySelector("#request-user");
 const showMoreBtn = document.querySelector("#logs-show-more");
+const addCardForm = document.getElementById("addCardForm");
+const searchCard = document.getElementById("searchCard");
 
 let mode = "USER"; // antoher value is LOG
 

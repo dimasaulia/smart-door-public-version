@@ -1,7 +1,7 @@
 const userBtn = document.querySelector("#user-btn");
 let addBtn = document.getElementById("addBtn");
-const searchCard = document.getElementById("searchCard");
 let newCardNumber;
+
 const deleteAccessHandler = (cardNumber) => {
     showAlertConfirm({
         theme: "warning",
@@ -63,7 +63,7 @@ generalDataLoader({
 
 userBtn.addEventListener("click", () => {
     itemContainer.textContent = "";
-    itemContainer.insertAdjacentHTML("beforeend", formTemplate());
+    // itemContainer.insertAdjacentHTML("beforeend", formTemplate());
     generalDataLoader({
         url: `/api/v1/room/accaptable-user/${ruid}`,
         func: accaptableUserLoader,
@@ -71,6 +71,7 @@ userBtn.addEventListener("click", () => {
     mode = "USER";
     logsBtn.classList.remove("active");
     userBtn.classList.add("active");
+    addCardForm.classList.remove("d-none");
 });
 
 showMoreBtn.addEventListener("click", (e) => {
@@ -93,30 +94,31 @@ $("body").on("click", "#searchCard", function () {
             event.preventDefault();
             $(event.target).val(ui.item.label);
             newCardNumber = ui.item.value;
-            document
-                .getElementById("addBtn")
-                .addEventListener("click", async (e) => {
-                    e.preventDefault();
-                    const resp = await setter({
-                        url: "/api/v1/card/add-access-card-to-room",
-                        body: {
-                            ruid,
-                            cardNumber: newCardNumber,
-                        },
-                    });
-
-                    if (resp.success) {
-                        numberOfUserContainer.textContent =
-                            Number(numberOfUserContainer.textContent) + 1;
-                        document.querySelector("#searchCard").value = "";
-                        document
-                            .querySelector(".data-container")
-                            .insertAdjacentHTML(
-                                "afterbegin",
-                                accaptableUserTemplate(resp.data)
-                            );
-                    }
-                });
+            searchCard.setAttribute("data-cardNumber", newCardNumber);
         },
     });
+});
+
+document.getElementById("addBtn").addEventListener("click", async (e) => {
+    e.preventDefault();
+    console.log(`${Date(new Date())}ADD NEW CARD`);
+    const resp = await setter({
+        url: "/api/v1/card/add-access-card-to-room",
+        body: {
+            ruid,
+            cardNumber: newCardNumber,
+        },
+    });
+
+    if (resp.success) {
+        numberOfUserContainer.textContent =
+            Number(numberOfUserContainer.textContent) + 1;
+        document.querySelector("#searchCard").value = "";
+        document
+            .querySelector(".data-container")
+            .insertAdjacentHTML(
+                "afterbegin",
+                accaptableUserTemplate(resp.data)
+            );
+    }
 });

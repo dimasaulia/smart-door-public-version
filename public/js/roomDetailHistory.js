@@ -24,8 +24,8 @@ const logsLoader = (data) => {
 logsBtn.addEventListener("click", () => {
     itemContainer.textContent = "";
     try {
-        document.querySelector(".ui-menu").remove();
-        document.querySelector(".ui-helper-hidden-accessible").remove();
+        // document.querySelector(".ui-menu").remove();
+        // document.querySelector(".ui-helper-hidden-accessible").remove();
     } catch (error) {}
     generalDataLoader({
         url: `/api/v1/room/logs/${ruid}`,
@@ -34,6 +34,8 @@ logsBtn.addEventListener("click", () => {
     mode = "LOG";
     userBtn.classList.remove("active");
     logsBtn.classList.add("active");
+    addCardForm.classList.add("d-none");
+    searchCard.value = "";
 });
 
 showMoreBtn.addEventListener("click", (e) => {
