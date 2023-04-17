@@ -113,8 +113,8 @@ const isTurePin = async (req, res, next) => {
     } catch (error) {
         return resError({
             res,
-            title: `${error.card.type} error at ${error.card.location}`,
-            errors: error.card.detail,
+            title: `Failed to update pin`,
+            errors: error,
         });
     }
 };

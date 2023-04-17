@@ -52,6 +52,12 @@ router.get(
     gatewayShortIdIsExist,
     gatewayDevice.accessCardForGateway
 );
+router.get(
+    "/h/access-card-for-gateway/:gatewayShortId",
+
+    gatewayShortIdIsExist,
+    gatewayDevice.accessCardForGateway
+);
 router.post(
     "/h/initialize-new-node",
     apiJWTValidation,

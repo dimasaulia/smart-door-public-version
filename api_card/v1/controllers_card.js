@@ -556,7 +556,68 @@ exports.update = async (req, res) => {
                 type,
                 isTwoStepAuth: isTwoStepAuth == "true" ? true : false,
             },
+            select: {
+                card_name: true,
+                card_number: true,
+                isTwoStepAuth: true,
+                pin: true,
+                type: true,
+                room: {
+                    where: {
+                        device: {
+                            deviceType: "MULTI_NETWORK",
+                        },
+                    },
+                    select: {
+                        device: {
+                            select: {
+                                deviceType: true,
+                                device_id: true,
+                                Gateway_Spot: {
+                                    select: {
+                                        gatewayDevice: {
+                                            select: {
+                                                gateway_short_id: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         });
+
+        const notDuplicateArray = [];
+        card.room.forEach((d) => {
+            // INFO: BROADCAST DATA TO GATEWAY
+
+            if (
+                d.device.deviceType === "MULTI_NETWORK" &&
+                !notDuplicateArray.includes(
+                    d.device.Gateway_Spot.gatewayDevice.gateway_short_id
+                )
+            ) {
+                const dataToSend = {
+                    cardNumber: card.card_number,
+                    cardPin: card.pin,
+                    isTwoStepAuth: card.isTwoStepAuth,
+                    duid: d.device.device_id,
+                    createdAt: new Date(),
+                };
+
+                RabbitConnection.sendMessage(
+                    JSON.stringify(dataToSend),
+                    `updatecard.${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                );
+            }
+
+            notDuplicateArray.push(
+                d.device.Gateway_Spot.gatewayDevice.gateway_short_id
+            );
+        });
+
         return resSuccess({
             res,
             title: "Success update card info",
@@ -581,6 +642,65 @@ exports.changePin = async (req, res) => {
             data: {
                 pin: hasher(newPin),
             },
+            select: {
+                card_name: true,
+                card_number: true,
+                isTwoStepAuth: true,
+                pin: true,
+                type: true,
+                room: {
+                    where: {
+                        device: {
+                            deviceType: "MULTI_NETWORK",
+                        },
+                    },
+                    select: {
+                        device: {
+                            select: {
+                                deviceType: true,
+                                device_id: true,
+                                Gateway_Spot: {
+                                    select: {
+                                        gatewayDevice: {
+                                            select: {
+                                                gateway_short_id: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        const notDuplicateArray = [];
+        card.room.forEach((d) => {
+            // INFO: BROADCAST DATA TO GATEWAY
+            if (
+                d.device.deviceType === "MULTI_NETWORK" &&
+                !notDuplicateArray.includes(
+                    d.device.Gateway_Spot.gatewayDevice.gateway_short_id
+                )
+            ) {
+                const dataToSend = {
+                    cardNumber: card.card_number,
+                    cardPin: card.pin,
+                    isTwoStepAuth: card.isTwoStepAuth,
+                    duid: d.device.device_id,
+                    createdAt: new Date(),
+                };
+
+                RabbitConnection.sendMessage(
+                    JSON.stringify(dataToSend),
+                    `updatecard.${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                );
+            }
+
+            notDuplicateArray.push(
+                d.device.Gateway_Spot.gatewayDevice.gateway_short_id
+            );
         });
 
         return resSuccess({
@@ -765,13 +885,13 @@ exports.addAccessCardToRoom = async (req, res) => {
         // await sendEmail(data.user.email, subject, template);
 
         // INFO: BROADCAST DATA TO GATEWAY
-        /*
         if (room.device.deviceType === "MULTI_NETWORK") {
             const dataToSend = {
                 cardNumber: data.card_number,
                 cardPin: data.pin,
                 isTwoStepAuth: data.isTwoStepAuth,
                 duid: room.device.device_id,
+                createdAt: new Date(),
             };
 
             RabbitConnection.sendMessage(
@@ -779,7 +899,7 @@ exports.addAccessCardToRoom = async (req, res) => {
                 `addcard.${room.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
             );
         }
-*/
+
         return resSuccess({
             res,
             title: "Success pair room to card",
@@ -814,7 +934,67 @@ exports.adminModifyCard = async (req, res) => {
                 isTwoStepAuth: isTwoStepAuth == "true" ? true : false,
                 banned: cardBannedStatus == "true" ? true : false,
             },
+            select: {
+                card_name: true,
+                card_number: true,
+                isTwoStepAuth: true,
+                pin: true,
+                type: true,
+                room: {
+                    where: {
+                        device: {
+                            deviceType: "MULTI_NETWORK",
+                        },
+                    },
+                    select: {
+                        device: {
+                            select: {
+                                deviceType: true,
+                                device_id: true,
+                                Gateway_Spot: {
+                                    select: {
+                                        gatewayDevice: {
+                                            select: {
+                                                gateway_short_id: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
         });
+
+        const notDuplicateArray = [];
+        card.room.forEach((d) => {
+            // INFO: BROADCAST DATA TO GATEWAY
+            if (
+                d.device.deviceType === "MULTI_NETWORK" &&
+                !notDuplicateArray.includes(
+                    d.device.Gateway_Spot.gatewayDevice.gateway_short_id
+                )
+            ) {
+                const dataToSend = {
+                    cardNumber: card.card_number,
+                    cardPin: card.pin,
+                    isTwoStepAuth: card.isTwoStepAuth,
+                    duid: d.device.device_id,
+                    createdAt: new Date(),
+                };
+
+                RabbitConnection.sendMessage(
+                    JSON.stringify(dataToSend),
+                    `updatecard.${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                );
+            }
+
+            notDuplicateArray.push(
+                d.device.Gateway_Spot.gatewayDevice.gateway_short_id
+            );
+        });
+
         return resSuccess({
             res,
             title: "Success update card info",
@@ -834,11 +1014,71 @@ exports.adminModifyCardPin = async (req, res) => {
     const { cardNumber: card_number } = req.params;
     const { newPin } = req.body;
     try {
+        console.log("ADMIN UPDATE");
         const card = await prisma.card.update({
             where: { card_number },
             data: {
                 pin: hasher(newPin),
             },
+            select: {
+                card_name: true,
+                card_number: true,
+                isTwoStepAuth: true,
+                pin: true,
+                type: true,
+                room: {
+                    where: {
+                        device: {
+                            deviceType: "MULTI_NETWORK",
+                        },
+                    },
+                    select: {
+                        device: {
+                            select: {
+                                deviceType: true,
+                                device_id: true,
+                                Gateway_Spot: {
+                                    select: {
+                                        gatewayDevice: {
+                                            select: {
+                                                gateway_short_id: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        const notDuplicateArray = [];
+        card.room.forEach((d) => {
+            // INFO: BROADCAST DATA TO GATEWAY
+            if (
+                d.device.deviceType === "MULTI_NETWORK" &&
+                !notDuplicateArray.includes(
+                    d.device.Gateway_Spot.gatewayDevice.gateway_short_id
+                )
+            ) {
+                const dataToSend = {
+                    cardNumber: card.card_number,
+                    cardPin: card.pin,
+                    isTwoStepAuth: card.isTwoStepAuth,
+                    duid: d.device.device_id,
+                    createdAt: new Date(),
+                };
+
+                RabbitConnection.sendMessage(
+                    JSON.stringify(dataToSend),
+                    `updatecard.${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                );
+            }
+
+            notDuplicateArray.push(
+                d.device.Gateway_Spot.gatewayDevice.gateway_short_id
+            );
         });
 
         return resSuccess({

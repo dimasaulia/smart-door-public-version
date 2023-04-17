@@ -615,12 +615,6 @@ exports.grantAllAccess = async (req, res) => {
             },
         });
 
-        await prisma.room_Request.deleteMany({
-            where: {
-                room: { ruid },
-            },
-        });
-
         const updatedRoom = await prisma.room.update({
             where: {
                 ruid,
@@ -630,9 +624,65 @@ exports.grantAllAccess = async (req, res) => {
                     connect: [...requestForRoom.map((data) => data.card)],
                 },
             },
+            select: {
+                card: {
+                    where: {
+                        card_number: {
+                            in: [
+                                ...requestForRoom.map(
+                                    (data) => data.card.card_number
+                                ),
+                            ],
+                        },
+                    },
+                    select: {
+                        card_number: true,
+                        pin: true,
+                        isTwoStepAuth: true,
+                    },
+                },
+                ruid: true,
+                device: {
+                    select: {
+                        device_id: true,
+                        deviceType: true,
+                        Gateway_Spot: {
+                            select: {
+                                gatewayDevice: {
+                                    select: {
+                                        gateway_short_id: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        await prisma.room_Request.deleteMany({
+            where: {
+                room: { ruid },
+            },
         });
 
         // INFO: BROADCAST DATA TO GATEWAY
+        if (updatedRoom.device.deviceType === "MULTI_NETWORK") {
+            updatedRoom.card.forEach((card) => {
+                const dataToSend = {
+                    cardNumber: card.card_number,
+                    cardPin: card.pin,
+                    isTwoStepAuth: card.isTwoStepAuth,
+                    duid: updatedRoom.device.device_id,
+                    createdAt: new Date(),
+                };
+
+                RabbitConnection.sendMessage(
+                    JSON.stringify(dataToSend),
+                    `addcard.${updatedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                );
+            });
+        }
 
         return resSuccess({
             res,
@@ -640,6 +690,7 @@ exports.grantAllAccess = async (req, res) => {
             data: updatedRoom,
         });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: "Failed to give access",
@@ -706,11 +757,13 @@ exports.unPairRoomToCard = async (req, res) => {
                 },
             },
         });
-        /*
+
+        // INFO: BROADCAST DATA TO GATEWAY
         if (updatedRoom.device.deviceType === "MULTI_NETWORK") {
             const dataToSend = {
                 duid: updatedRoom.device.device_id,
                 cardNumber: cardNumber,
+                createdAt: new Date(),
             };
 
             RabbitConnection.sendMessage(
@@ -718,7 +771,7 @@ exports.unPairRoomToCard = async (req, res) => {
                 `removecard.${updatedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
             );
         }
-*/
+
         // const subject = "Room Access Permission Update";
         // const template = emailDeclineOfAccessRequestsTemplate({
         //     username: userData.user.username,
@@ -726,8 +779,6 @@ exports.unPairRoomToCard = async (req, res) => {
         //     text_description: `We regret to inform you that we are removing your access to ${updatedRoom.name}.`,
         // });
         // await sendEmail(userData.user.email, subject, template);
-
-        // INFO: BROADCAST DATA TO GATEWAY
 
         return resSuccess({
             res,

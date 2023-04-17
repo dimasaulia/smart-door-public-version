@@ -570,12 +570,30 @@ exports.pairRoomToCard = async (req, res) => {
             },
             select: {
                 name: true,
+                device: {
+                    select: {
+                        device_id: true,
+                        deviceType: true,
+                        Gateway_Spot: {
+                            select: {
+                                gatewayDevice: {
+                                    select: {
+                                        gateway_short_id: true,
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
                 card: {
                     where: {
                         card_number: cardNumber,
                     },
                     select: {
                         card_name: true,
+                        card_number: true,
+                        pin: true,
+                        isTwoStepAuth: true,
                         user: {
                             select: {
                                 username: true,
@@ -590,6 +608,24 @@ exports.pairRoomToCard = async (req, res) => {
         await prisma.room_Request.deleteMany({
             where: { card: { card_number: cardNumber }, room: { ruid } },
         });
+
+        // INFO: BROADCAST DATA TO GATEWAY
+        if (updatedRoom.device.deviceType === "MULTI_NETWORK") {
+            const dataToSend = {
+                cardNumber: cardNumber,
+                cardPin: updatedRoom.card[0].pin,
+                isTwoStepAuth: updatedRoom.card[0].isTwoStepAuth,
+                duid: updatedRoom.device.device_id,
+                createdAt: new Date(),
+            };
+
+            RabbitConnection.sendMessage(
+                JSON.stringify(dataToSend),
+                `addcard.${updatedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+            );
+        }
+
+        /*
         const subject = "Acceptance of Access Requests";
         const template = emailAcceptanceOfAccessRequestsTemplate({
             username: updatedRoom.card[0].user.username,
@@ -597,6 +633,7 @@ exports.pairRoomToCard = async (req, res) => {
             text_description: `We are pleased to inform you that your request for access to ${updatedRoom.name} has been approved.`,
         });
         await sendEmail(updatedRoom.card[0].user.email, subject, template);
+        */
 
         return resSuccess({
             res,

@@ -276,36 +276,60 @@ exports.autocomplate = async (req, res) => {
 exports.accessCardForGateway = async (req, res) => {
     try {
         const { gatewayShortId } = req.params;
-        const accessCard = await prisma.gateway_Spot.findMany({
+        const rooms = await prisma.gateway_Spot.findMany({
             where: {
                 gatewayDevice: {
                     gateway_short_id: gatewayShortId,
                 },
             },
             select: {
-                gatewayDevice: {
-                    select: {
-                        gateway_short_id: true,
-                    },
-                },
                 nodeDevice: {
                     select: {
                         device_id: true,
-                        deviceType: true,
                         room: {
                             select: {
-                                name: true,
-                                card: {
-                                    select: {
-                                        card_number: true,
-                                    },
-                                },
+                                ruid: true,
                             },
                         },
                     },
                 },
             },
         });
+
+        const ruidArray = rooms[0].nodeDevice
+            .map((room) => room.room?.ruid)
+            .filter((ruid) => ruid != undefined);
+
+        const accessCard = await prisma.card.findMany({
+            where: {
+                room: {
+                    some: {
+                        ruid: { in: ruidArray },
+                    },
+                },
+            },
+            select: {
+                id: true,
+                card_number: true,
+                pin: true,
+                isTwoStepAuth: true,
+                room: {
+                    where: {
+                        ruid: {
+                            in: ruidArray,
+                        },
+                    },
+                    select: {
+                        device: {
+                            select: {
+                                device_id: true,
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
         return resSuccess({
             res,
             title: "Success get Access Card For Gateway",
