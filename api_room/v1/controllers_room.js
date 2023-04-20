@@ -535,8 +535,8 @@ exports.delete = async (req, res) => {
             const dataToSend = {
                 device_id: deletedRoom.device.device_id,
             };
-            console.log(deletedRoom.device);
 
+            // INFO: BROADCAST DATA TO GATEWAY
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
                 `resetroom.${deletedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
@@ -583,8 +583,6 @@ exports.pairRoomToCard = async (req, res) => {
         });
 
         await prisma.room_Request.delete({ where: { id } });
-
-        // INFO: BROADCAST DATA TO GATEWAY
 
         return resSuccess({
             res,
@@ -639,6 +637,8 @@ exports.grantAllAccess = async (req, res) => {
                         card_number: true,
                         pin: true,
                         isTwoStepAuth: true,
+                        card_status: true,
+                        banned: true,
                     },
                 },
                 ruid: true,
@@ -673,6 +673,8 @@ exports.grantAllAccess = async (req, res) => {
                     cardNumber: card.card_number,
                     cardPin: card.pin,
                     isTwoStepAuth: card.isTwoStepAuth,
+                    cardStatus: card.card_status,
+                    isBanned: card.banned,
                     duid: updatedRoom.device.device_id,
                     createdAt: new Date(),
                 };

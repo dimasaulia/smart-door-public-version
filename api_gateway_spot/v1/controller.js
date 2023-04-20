@@ -23,6 +23,7 @@ exports.gatewaySpotLinktoGatewayDevice = async (req, res) => {
             createdAt: data.createdAt,
         };
 
+        // INFO: BROADCAST DATA TO GATEWAY
         RabbitConnection.sendMessage(
             JSON.stringify(dataToSend),
             `setup.${gatewayShortId}.gateway`
@@ -248,6 +249,7 @@ exports.delete = async (req, res) => {
             gatewayShortId: data.gatewayDevice.gateway_short_id,
         };
 
+        // INFO: BROADCAST DATA TO GATEWAY
         RabbitConnection.sendMessage(
             JSON.stringify(dataToSend),
             `reset.${data.gatewayDevice.gateway_short_id}.gateway`

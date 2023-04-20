@@ -313,6 +313,8 @@ exports.accessCardForGateway = async (req, res) => {
                 card_number: true,
                 pin: true,
                 isTwoStepAuth: true,
+                banned: true,
+                card_status: true,
                 room: {
                     where: {
                         ruid: {

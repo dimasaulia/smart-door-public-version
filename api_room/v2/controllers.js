@@ -116,8 +116,8 @@ exports.createRoom = async (req, res) => {
                 device_id: newRoom.device.device_id,
                 name: newRoom.name,
             };
-            console.log(newRoom.device);
 
+            // INFO: BROADCAST DATA TO GATEWAY
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
                 `setuproom.${newRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
@@ -496,6 +496,7 @@ exports.deviceDelete = async (req, res) => {
             },
         });
 
+        // INFO: BROADCAST DATA TO GATEWAY
         if (device.deviceType == "MULTI_NETWORK") {
             const dataToSend = {
                 device_id: device.device_id,
@@ -594,6 +595,8 @@ exports.pairRoomToCard = async (req, res) => {
                         card_number: true,
                         pin: true,
                         isTwoStepAuth: true,
+                        card_status: true,
+                        banned: true,
                         user: {
                             select: {
                                 username: true,
@@ -615,6 +618,8 @@ exports.pairRoomToCard = async (req, res) => {
                 cardNumber: cardNumber,
                 cardPin: updatedRoom.card[0].pin,
                 isTwoStepAuth: updatedRoom.card[0].isTwoStepAuth,
+                cardStatus: updatedRoom.card[0].card_status,
+                isBanned: updatedRoom.card[0].banned,
                 duid: updatedRoom.device.device_id,
                 createdAt: new Date(),
             };

@@ -14,6 +14,7 @@ const {
     emailResetPasswordTemplate,
 } = require("../../services/mailing");
 const { days } = require("../../services/timeformater");
+const { RabbitConnection } = require("../../connection/amqp");
 const crypto = require("crypto");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 const FS = require("fs");
@@ -404,6 +405,81 @@ exports.pairUserToCard = async (req, res) => {
                 },
             },
         },
+    });
+
+    const card = await prisma.card.findUnique({
+        where: { card_number: cardNumber },
+        select: {
+            card_name: true,
+            card_number: true,
+            id: true,
+            pin: true,
+            isTwoStepAuth: true,
+            card_status: true,
+            banned: true,
+            user: {
+                select: {
+                    username: true,
+                    email: true,
+                },
+            },
+            room: {
+                where: {
+                    card: {
+                        some: {
+                            card_number: cardNumber,
+                        },
+                    },
+                },
+                select: {
+                    device: {
+                        select: {
+                            device_id: true,
+                            deviceType: true,
+                            Gateway_Spot: {
+                                select: {
+                                    gatewayDevice: {
+                                        select: {
+                                            gateway_short_id: true,
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    const notDuplicateArray = [];
+    card.room.forEach((data) => {
+        // INFO: BROADCAST DATA TO GATEWAY
+        if (
+            data?.device?.deviceType === "MULTI_NETWORK" &&
+            !notDuplicateArray.includes(
+                data.device.Gateway_Spot.gatewayDevice.gateway_short_id
+            )
+        ) {
+            const dataToSend = {
+                cardNumber: card.card_number,
+                cardPin: card.pin,
+                cardStatus: card.card_status,
+                isBanned: card.banned,
+                isTwoStepAuth: card.isTwoStepAuth,
+                duid: data.device.device_id,
+                createdAt: new Date(),
+            };
+
+            RabbitConnection.sendMessage(
+                JSON.stringify(dataToSend),
+                `updatecard.${data.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+            );
+        }
+
+        notDuplicateArray.push(
+            data.device.Gateway_Spot.gatewayDevice.gateway_short_id
+        );
     });
 
     return resSuccess({ res, title: "Success pair card" });

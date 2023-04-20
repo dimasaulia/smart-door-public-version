@@ -560,6 +560,8 @@ exports.update = async (req, res) => {
                 card_name: true,
                 card_number: true,
                 isTwoStepAuth: true,
+                card_status: true,
+                banned: true,
                 pin: true,
                 type: true,
                 room: {
@@ -603,6 +605,8 @@ exports.update = async (req, res) => {
                     cardNumber: card.card_number,
                     cardPin: card.pin,
                     isTwoStepAuth: card.isTwoStepAuth,
+                    cardStatus: card.card_status,
+                    isBanned: card.banned,
                     duid: d.device.device_id,
                     createdAt: new Date(),
                 };
@@ -646,6 +650,8 @@ exports.changePin = async (req, res) => {
                 card_name: true,
                 card_number: true,
                 isTwoStepAuth: true,
+                card_status: true,
+                banned: true,
                 pin: true,
                 type: true,
                 room: {
@@ -688,6 +694,8 @@ exports.changePin = async (req, res) => {
                     cardNumber: card.card_number,
                     cardPin: card.pin,
                     isTwoStepAuth: card.isTwoStepAuth,
+                    cardStatus: card.card_status,
+                    isBanned: card.banned,
                     duid: d.device.device_id,
                     createdAt: new Date(),
                 };
@@ -775,9 +783,81 @@ exports.unpairUserToCard = async (req, res) => {
                 },
                 card_status: "UNREGISTER",
             },
+            select: {
+                card_name: true,
+                card_number: true,
+                id: true,
+                pin: true,
+                isTwoStepAuth: true,
+                card_status: true,
+                banned: true,
+                user: {
+                    select: {
+                        username: true,
+                        email: true,
+                    },
+                },
+                room: {
+                    where: {
+                        card: {
+                            some: {
+                                card_number: cardNumber,
+                            },
+                        },
+                    },
+                    select: {
+                        device: {
+                            select: {
+                                device_id: true,
+                                deviceType: true,
+                                Gateway_Spot: {
+                                    select: {
+                                        gatewayDevice: {
+                                            select: {
+                                                gateway_short_id: true,
+                                            },
+                                        },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        });
+
+        const notDuplicateArray = [];
+        card.room.forEach((data) => {
+            // INFO: BROADCAST DATA TO GATEWAY
+            if (
+                data.device.deviceType === "MULTI_NETWORK" &&
+                !notDuplicateArray.includes(
+                    data.device.Gateway_Spot.gatewayDevice.gateway_short_id
+                )
+            ) {
+                const dataToSend = {
+                    cardNumber: card.card_number,
+                    cardPin: card.pin,
+                    cardStatus: card.card_status,
+                    isBanned: card.banned,
+                    isTwoStepAuth: card.isTwoStepAuth,
+                    duid: data.device.device_id,
+                    createdAt: new Date(),
+                };
+
+                RabbitConnection.sendMessage(
+                    JSON.stringify(dataToSend),
+                    `updatecard.${data.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                );
+            }
+
+            notDuplicateArray.push(
+                data.device.Gateway_Spot.gatewayDevice.gateway_short_id
+            );
         });
         return resSuccess({ res, title: "Success unpair card", data: card });
     } catch (error) {
+        console.log(error);
         return resError({ res, errors: error, title: "Failed unpair card" });
     }
 };
@@ -839,6 +919,8 @@ exports.addAccessCardToRoom = async (req, res) => {
                 id: true,
                 pin: true,
                 isTwoStepAuth: true,
+                card_status: true,
+                banned: true,
                 user: {
                     select: {
                         username: true,
@@ -889,6 +971,8 @@ exports.addAccessCardToRoom = async (req, res) => {
             const dataToSend = {
                 cardNumber: data.card_number,
                 cardPin: data.pin,
+                cardStatus: data.card_status,
+                isBanned: data.banned,
                 isTwoStepAuth: data.isTwoStepAuth,
                 duid: room.device.device_id,
                 createdAt: new Date(),
@@ -937,6 +1021,8 @@ exports.adminModifyCard = async (req, res) => {
             select: {
                 card_name: true,
                 card_number: true,
+                card_status: true,
+                banned: true,
                 isTwoStepAuth: true,
                 pin: true,
                 type: true,
@@ -980,6 +1066,8 @@ exports.adminModifyCard = async (req, res) => {
                     cardNumber: card.card_number,
                     cardPin: card.pin,
                     isTwoStepAuth: card.isTwoStepAuth,
+                    cardStatus: card.card_status,
+                    isBanned: card.banned,
                     duid: d.device.device_id,
                     createdAt: new Date(),
                 };
@@ -1024,6 +1112,8 @@ exports.adminModifyCardPin = async (req, res) => {
                 card_name: true,
                 card_number: true,
                 isTwoStepAuth: true,
+                card_status: true,
+                banned: true,
                 pin: true,
                 type: true,
                 room: {
@@ -1053,9 +1143,9 @@ exports.adminModifyCardPin = async (req, res) => {
             },
         });
 
+        // INFO: BROADCAST DATA TO GATEWAY
         const notDuplicateArray = [];
         card.room.forEach((d) => {
-            // INFO: BROADCAST DATA TO GATEWAY
             if (
                 d.device.deviceType === "MULTI_NETWORK" &&
                 !notDuplicateArray.includes(
@@ -1066,6 +1156,8 @@ exports.adminModifyCardPin = async (req, res) => {
                     cardNumber: card.card_number,
                     cardPin: card.pin,
                     isTwoStepAuth: card.isTwoStepAuth,
+                    cardStatus: card.card_status,
+                    isBanned: card.banned,
                     duid: d.device.device_id,
                     createdAt: new Date(),
                 };
