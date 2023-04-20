@@ -192,7 +192,6 @@ exports.onlineUpdate = async (req, res) => {
             data: detailRoom,
         });
     } catch (err) {
-        console.log(err);
         return resError({ res, errors: err, code: 422 });
     }
 };
@@ -502,8 +501,6 @@ exports.deviceDelete = async (req, res) => {
                 device_id: device.device_id,
             };
 
-            console.log(device.device_id);
-
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
                 `removeroom.${device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
@@ -516,7 +513,6 @@ exports.deviceDelete = async (req, res) => {
             data: { device },
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Failed to delete device",
@@ -646,7 +642,6 @@ exports.pairRoomToCard = async (req, res) => {
             data: updatedRoom,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Gagal memberi akses ruangan",

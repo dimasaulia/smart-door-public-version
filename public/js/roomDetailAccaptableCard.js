@@ -101,7 +101,6 @@ $("body").on("click", "#searchCard", function () {
 
 document.getElementById("addBtn").addEventListener("click", async (e) => {
     e.preventDefault();
-    console.log(`${Date(new Date())}ADD NEW CARD`);
     const resp = await setter({
         url: "/api/v1/card/add-access-card-to-room",
         body: {

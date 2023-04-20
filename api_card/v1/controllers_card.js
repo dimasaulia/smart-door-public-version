@@ -857,7 +857,6 @@ exports.unpairUserToCard = async (req, res) => {
         });
         return resSuccess({ res, title: "Success unpair card", data: card });
     } catch (error) {
-        console.log(error);
         return resError({ res, errors: error, title: "Failed unpair card" });
     }
 };
@@ -1102,7 +1101,6 @@ exports.adminModifyCardPin = async (req, res) => {
     const { cardNumber: card_number } = req.params;
     const { newPin } = req.body;
     try {
-        console.log("ADMIN UPDATE");
         const card = await prisma.card.update({
             where: { card_number },
             data: {

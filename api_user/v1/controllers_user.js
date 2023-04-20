@@ -316,7 +316,6 @@ exports.profileUpdate = async (req, res) => {
             data: newData,
         });
     } catch (err) {
-        console.log(err);
         return resError({ res, errors: err, title: "Failed update profile" });
     }
 };

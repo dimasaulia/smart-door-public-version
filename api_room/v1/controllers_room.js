@@ -692,7 +692,6 @@ exports.grantAllAccess = async (req, res) => {
             data: updatedRoom,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Failed to give access",
@@ -788,7 +787,6 @@ exports.unPairRoomToCard = async (req, res) => {
             data: updatedRoom,
         });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Failed remove card access",

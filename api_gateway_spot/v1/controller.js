@@ -256,7 +256,6 @@ exports.delete = async (req, res) => {
         ); // broadcast info to gateway
         return resSuccess({ res, title: "Success delete gateway spot", data });
     } catch (error) {
-        console.log(error);
         return resError({
             res,
             title: "Failed to delete of gateway spot",
