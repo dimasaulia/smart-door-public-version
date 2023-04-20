@@ -1,1 +1,1 @@
-// showFlashToast();
+showFlashToast();

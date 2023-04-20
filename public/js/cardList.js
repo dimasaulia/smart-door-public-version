@@ -59,8 +59,7 @@ const unpairHandler = (id) => {
         desc: `Are you sure you want to unpair this card ${id}`,
         link: "#",
         btn: "Unpair",
-        exec: () =>
-            unpairFunction({ url: `/api/v1/card/delete/${id}`, element: id }),
+        exec: () => unpairFunction({ url: ``, element: id }),
     });
 };
 

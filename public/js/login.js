@@ -22,11 +22,11 @@ submit.addEventListener("click", async (e) => {
         })
         .then((data) => {
             if (!data.success) throw data;
-            // setToast({
-            //     status: "success",
-            //     title: "Login Success",
-            //     msg: "Success authenticate user",
-            // });
+            setToast({
+                status: "success",
+                title: "Login Success",
+                msg: "Success authenticate user",
+            });
             return (window.location = "/dashboard");
         })
         .catch((err) => {

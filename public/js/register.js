@@ -26,11 +26,11 @@ submit.addEventListener("click", async (e) => {
         .then((data) => {
             closeLoader();
             if (!data.success) throw data;
-            // setToast({
-            //     status: "success",
-            //     title: "Berhasil Mendaftar",
-            //     msg: "Berhasil mendaftarkan dan mengauntentikasi user",
-            // });
+            setToast({
+                status: "success",
+                title: "Berhasil Mendaftar",
+                msg: "Berhasil mendaftarkan dan mengauntentikasi user",
+            });
             return (window.location = "/dashboard/");
         })
         .catch((err) => {

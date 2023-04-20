@@ -25,8 +25,8 @@ exports.dashboard = async (req, res) => {
 
     const data = {
         dashboard: "bg-neutral-4",
-        styles: ["list.css"],
-        scripts: ["/js/gatewayList.js", "/js/dashboard.js"],
+        styles: [],
+        scripts: ["/js/dashboard.js"],
         unRegisterCard,
         registerCard,
         userCount,

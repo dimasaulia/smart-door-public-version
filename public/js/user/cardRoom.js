@@ -89,10 +89,8 @@ generalDataLoader({
 });
 
 loadMoreRoomList.addEventListener("click", () => {
-    console.log(buildingId);
     const cursor = lastCursorFinder(".hardware--list-item", "id");
     if (searchValue.value.length === 0 && buildingId === "all") {
-        console.log("JIKA TIDAK MENCARI DAN BANGUNAN ADALAH SEMUA");
         generalDataLoader({
             url: `/api/v1/room/u/list?cursor=${cursor}`,
             func: firstRoomListLoader,
@@ -100,7 +98,6 @@ loadMoreRoomList.addEventListener("click", () => {
     }
 
     if (searchValue.value.length > 0 && buildingId === "all") {
-        console.log("JIKA MENCARI DAN BANGUNAN ADALAH SEMUA");
         generalDataLoader({
             url: `/api/v1/room/u/list?cursor=${cursor}&search=${searchValue.value}`,
             func: firstRoomListLoader,
@@ -112,7 +109,6 @@ loadMoreRoomList.addEventListener("click", () => {
         buildingId !== "all" &&
         buildingId.length > 0
     ) {
-        console.log("JIKA TIDAK MENCARI DAN BANGUNAN ADALAH TERTENTU");
         generalDataLoader({
             url: `/api/v1/room/u/list?cursor=${cursor}&building=${buildingId}`,
             func: firstRoomListLoader,
@@ -124,9 +120,6 @@ loadMoreRoomList.addEventListener("click", () => {
         buildingId !== "all" &&
         buildingId.length > 0
     ) {
-        console.log(
-            `/api/v1/room/u/list?search=${searchValue.value}&building=${buildingId}&cursor=${cursor}`
-        );
         generalDataLoader({
             url: `/api/v1/room/u/list?search=${searchValue.value}&building=${buildingId}&cursor=${cursor}`,
             func: firstRoomListLoader,
