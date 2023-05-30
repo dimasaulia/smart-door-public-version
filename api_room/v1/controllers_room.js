@@ -503,6 +503,7 @@ exports.update = async (req, res) => {
  * Fungsi untuk menghapus ruangan tertentu
  */
 exports.delete = async (req, res) => {
+    console.log("DELETE ROOM");
     const ruid = req.params.ruid; // stands for room unique id
     try {
         const deletedRoom = await prisma.room.delete({
@@ -517,6 +518,7 @@ exports.delete = async (req, res) => {
                     select: {
                         deviceType: true,
                         device_id: true,
+                        deviceLastGateway: true,
                         Gateway_Spot: {
                             select: {
                                 gatewayDevice: {
@@ -535,11 +537,17 @@ exports.delete = async (req, res) => {
             const dataToSend = {
                 device_id: deletedRoom.device.device_id,
             };
+            let gatewayShortId =
+                deletedRoom?.device?.Gateway_Spot?.gatewayDevice
+                    ?.gateway_short_id;
+            if (!gatewayShortId) {
+                gatewayShortId = deletedRoom?.device?.deviceLastGateway;
+            }
 
             // INFO: BROADCAST DATA TO GATEWAY
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
-                `resetroom.${deletedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                `resetroom.${gatewayShortId}.gateway`
             );
         }
 
@@ -549,6 +557,7 @@ exports.delete = async (req, res) => {
             title: "Successfull delete the room",
         });
     } catch (err) {
+        console.log("DELETE ROOM ERROR", err);
         return resError({ res, errors: err, code: 422 });
     }
 };

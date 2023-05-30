@@ -463,6 +463,7 @@ exports.deviceList = async (req, res) => {
 
 /** Fungsi untuk menghapus device */
 exports.deviceDelete = async (req, res) => {
+    console.log("DEVICE DELETE");
     const { duid } = req.params;
     try {
         const deviceInfo = await prisma.device.findUnique({
@@ -483,6 +484,7 @@ exports.deviceDelete = async (req, res) => {
                 id: true,
                 device_id: true,
                 deviceType: true,
+                deviceLastGateway: true,
                 Gateway_Spot: {
                     select: {
                         gatewayDevice: {
@@ -501,9 +503,15 @@ exports.deviceDelete = async (req, res) => {
                 device_id: device.device_id,
             };
 
+            let gatewayShortId =
+                device?.Gateway_Spot?.gatewayDevice?.gateway_short_id;
+            if (!gatewayShortId) {
+                gatewayShortId = device?.deviceLastGateway;
+            }
+
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
-                `removeroom.${device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                `removeroom.${gatewayShortId}.gateway`
             );
         }
 
@@ -513,6 +521,7 @@ exports.deviceDelete = async (req, res) => {
             data: { device },
         });
     } catch (error) {
+        console.log("ERROR", error);
         return resError({
             res,
             title: "Failed to delete device",

@@ -95,18 +95,19 @@ model Building {
 }
 
 model Device {
-  id              String        @id @default(cuid())
-  device_id       String        @unique
-  pin             String        @default("$2b$10$93H.6AQWHWxlq4IQuT1cgu2oCi7OtgyTjYuWlgcq9beN2xPLSgFUW")
-  lastOnline      DateTime?
-  firmwareVersion String?
-  deviceType      DEVICE_TYPE?  @default(SINGLE_NETWORK)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  roomId          String?       @unique
-  room            Room?         @relation(fields: [roomId], references: [id], onDelete: SetNull)
-  Gateway_Spot    Gateway_Spot? @relation(fields: [gateway_SpotId], references: [id])
-  gateway_SpotId  String?
+  id                String        @id @default(cuid())
+  device_id         String        @unique
+  pin               String        @default("$2b$10$93H.6AQWHWxlq4IQuT1cgu2oCi7OtgyTjYuWlgcq9beN2xPLSgFUW")
+  lastOnline        DateTime?
+  firmwareVersion   String?
+  deviceType        DEVICE_TYPE?  @default(SINGLE_NETWORK)
+  deviceLastGateway String?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+  roomId            String?       @unique
+  room              Room?         @relation(fields: [roomId], references: [id], onDelete: SetNull)
+  Gateway_Spot      Gateway_Spot? @relation(fields: [gateway_SpotId], references: [id])
+  gateway_SpotId    String?
 }
 
 model Gateway_Device {

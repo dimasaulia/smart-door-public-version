@@ -287,6 +287,19 @@ exports.update = async (req, res) => {
             },
         });
 
+        // update last gateway pada setiap device id
+        duid.forEach(async (d) => {
+            await prisma.device.update({
+                where: {
+                    device_id: d,
+                },
+                data: {
+                    deviceLastGateway: data.gatewayDevice.gateway_short_id,
+                },
+            });
+        });
+
+        // mengubah gateway device
         if (data.gatewayDevice.gateway_short_id !== gatewayShortId) {
             await prisma.gateway_Device.update({
                 where: {

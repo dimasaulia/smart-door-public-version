@@ -366,19 +366,20 @@ exports.gatewayInitializeNode = async (req, res) => {
             duid = stringGenerator(5);
         }
 
-        const { id: gateway_DeviceId } = await prisma.gateway_Device.findUnique(
-            {
+        const { id: gateway_DeviceId, gateway_short_id } =
+            await prisma.gateway_Device.findUnique({
                 where: { gateway_short_id: gatewayShortId },
                 select: {
                     id: true,
+                    gateway_short_id: true,
                 },
-            }
-        );
+            });
         const newDevice = await prisma.device.create({
             data: {
                 device_id: duid,
                 lastOnline: new Date(),
                 deviceType: "MULTI_NETWORK",
+                deviceLastGateway: gateway_short_id,
                 Gateway_Spot: {
                     connect: {
                         gateway_DeviceId,
