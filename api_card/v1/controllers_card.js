@@ -237,6 +237,7 @@ exports.detail = async (req, res) => {
                 type: true,
                 isTwoStepAuth: true,
                 banned: true,
+                createdAt: true,
                 user: {
                     select: {
                         username: true,

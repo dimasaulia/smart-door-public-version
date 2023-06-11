@@ -13,7 +13,7 @@ const basicInfoLoader = (data) => {
     const { card_number, card_name, type, isTwoStepAuth, banned } = data;
     form.cardNumber.value = card_number;
     form.cardName.value = card_name;
-    username.value = data.user.username;
+    username.value = data?.user?.username || "NOT LINKED ⚠️";
     for (let index = 0; index < cardTypeForm.length; index++) {
         if (cardTypeForm.options[index].value === type) {
             cardTypeForm.options.selectedIndex = index;

@@ -101,7 +101,7 @@ const unpairCardTemplate = (data) => {
     }" data-id="${data.id}">
         <span class="table-data text-center text-neutral-2">${
             data.card_number
-        }<br>${data.user.username}</span>
+        }<br>${data?.user?.username || "NOT LINKED ⚠️"}</span>
         <p class="table-data text-center text-neutral-2">
             ${days(data.createdAt)} WIB</p>
         <div class="table-data d-flex justify-content-center">
