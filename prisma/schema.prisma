@@ -56,7 +56,7 @@ model Card {
   id            String          @id @default(cuid())
   card_number   String          @unique
   card_name     String?         @default("Kartu Saya")
-  pin           String
+  pin           String?
   card_status   CARD_STATUS     @default(UNREGISTER)
   type          CARD_TYPE       @default(card_id)
   banned        Boolean         @default(false)

@@ -44,7 +44,7 @@ Table Card {
   id String [pk]
   card_number String [unique, not null]
   card_name String [default: 'Kartu Saya']
-  pin String [not null]
+  pin String
   card_status CARD_STATUS [not null, default: 'UNREGISTER']
   type CARD_TYPE [not null, default: 'card_id']
   banned Boolean [not null, default: false]

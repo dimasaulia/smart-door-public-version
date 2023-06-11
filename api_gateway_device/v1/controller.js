@@ -463,3 +463,79 @@ exports.gatewayNodeOnlineUpdate = async (req, res) => {
         return resError({ res, errors: err, code: 422 });
     }
 };
+
+/**
+ * Fungsi untuk mendaftarkan kartu melalui gateway
+ */
+exports.registerCard = async (req, res) => {
+    try {
+        const { cardNumber, pin, username } = req.body;
+
+        // Register card to db
+        let registeredCard = await prisma.card.create({
+            data: {
+                card_number: cardNumber.replaceAll(" ", ""),
+                isTwoStepAuth: false,
+            },
+        });
+        req.app.io.emit("newRegisteredCard", cardNumber);
+
+        if (String(pin).length == 6) {
+            // Update card to use two step auth
+            registeredCard = await prisma.card.update({
+                where: {
+                    card_number: cardNumber,
+                },
+                data: {
+                    pin: hasher(pin),
+                    isTwoStepAuth: true,
+                },
+            });
+        }
+
+        if (String(username).length > 0) {
+            // check the user exist
+            await prisma.user.findFirstOrThrow({
+                where: {
+                    username,
+                },
+            });
+
+            // update card and pair with a user
+            registeredCard = await prisma.card.update({
+                where: {
+                    card_number: cardNumber,
+                },
+                data: {
+                    user: {
+                        connect: {
+                            username,
+                        },
+                    },
+                    card_status: "REGISTER",
+                },
+            });
+        }
+
+        return resSuccess({
+            res,
+            title: "Success register new card",
+            data: registeredCard,
+        });
+    } catch (error) {
+        let cardAlreadyRegisterError;
+        let userNotFoundError;
+        if (error?.meta?.target && error?.meta?.target[0] == "card_number") {
+            cardAlreadyRegisterError = "Card Already Exist";
+        }
+        if (error?.name == "NotFoundError") {
+            userNotFoundError = "User not exist";
+        }
+        return resError({
+            res,
+            errors: cardAlreadyRegisterError || userNotFoundError || error,
+            code: 422,
+            title: "Failed to register new card",
+        });
+    }
+};

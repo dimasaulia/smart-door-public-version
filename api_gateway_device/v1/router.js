@@ -77,6 +77,14 @@ router.post(
     deviceIsExist,
     gatewayDevice.gatewayNodeOnlineUpdate
 ); //HW
+router.post(
+    "/h/register-card",
+    apiJWTValidation,
+    body("cardNumber").notEmpty().withMessage("Card Number is Requried"),
+    formChacker,
+    deviceIsExist,
+    gatewayDevice.registerCard
+); //HW
 router.delete(
     "/delete/",
     loginRequired,
