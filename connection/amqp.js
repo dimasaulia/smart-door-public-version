@@ -2,12 +2,12 @@ const amqp = require("amqplib");
 
 const RabbitSettings = {
     protocol: "amqp",
-    hostname: "localhost",
+    hostname: process.env.AMQP_HOST,
     port: 5672,
-    username: "guest",
-    password: "guest",
+    username: process.env.AMQP_USERNAME,
+    password: process.env.AMQP_PASSWORD,
     authMechanism: "AMQPLAIN",
-    vhost: "/",
+    vhost: "0.0.0.0",
     exchange: "smartdoor",
     loggerQueue: "smartdoorlogger",
     queues: ["smartdoorlogger", "smartdoorgateway"],
@@ -31,8 +31,8 @@ class RabbitConnection {
     static async createConnection() {
         try {
             this.connection = await amqp.connect(
-                // `${RabbitSettings.protocol}://${RabbitSettings.username}:${RabbitSettings.password}@${RabbitSettings.hostname}:${RabbitSettings.port}${RabbitSettings.vhost}`
-                `${RabbitSettings.protocol}://${RabbitSettings.hostname}`
+                `${RabbitSettings.protocol}://${RabbitSettings.username}:${RabbitSettings.password}@${RabbitSettings.hostname}/${RabbitSettings.vhost}`
+                // `${RabbitSettings.protocol}://${RabbitSettings.hostname}`
             );
             this.channel = await this.connection.createChannel();
             this.channel.assertExchange(RabbitSettings.exchange, "direct", {

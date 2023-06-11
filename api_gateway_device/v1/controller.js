@@ -2,6 +2,7 @@ const prisma = require("../../prisma/client");
 const { resSuccess, resError } = require("../../services/responseHandler");
 const { random: stringGenerator } = require("@supercharge/strings");
 const { hasher, hashChecker } = require("../../services/auth");
+const { RabbitConnection } = require("../../connection/amqp");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 // const ITEM_LIMIT = 5;
 
@@ -425,5 +426,40 @@ exports.deleteGateway = async (req, res) => {
             title: "Cant delete gateway device",
             errors: error,
         });
+    }
+};
+
+/**
+ * Fungsi untuk melakukan update kapan terkahir kalinya perangkat dalam kondisi online
+ */
+exports.gatewayNodeOnlineUpdate = async (req, res) => {
+    const { duid } = req.body; // stands for room unique id
+    const responsesTime = req.body?.responsesTime;
+    try {
+        const detailRoom = await prisma.device.update({
+            where: { device_id: duid },
+            data: { lastOnline: new Date() },
+        });
+
+        if (responsesTime !== undefined) {
+            const dataToSend = {
+                duid,
+                deviceType: detailRoom.deviceType,
+                responsesTime: responsesTime.split(",").slice(0, -1),
+            };
+
+            RabbitConnection.sendMessage(
+                JSON.stringify(dataToSend),
+                "logger.save"
+            );
+        }
+
+        return resSuccess({
+            res,
+            title: "Succes update node last online information",
+            data: detailRoom,
+        });
+    } catch (err) {
+        return resError({ res, errors: err, code: 422 });
     }
 };

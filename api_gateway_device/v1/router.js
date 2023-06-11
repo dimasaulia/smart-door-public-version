@@ -11,6 +11,7 @@ const {
 } = require("../../middlewares/gatewayDeviceMiddlewares");
 const gatewayDevice = require("./controller");
 const { apiJWTValidation } = require("../../middlewares/apiKeyMiddlewares");
+const { deviceIsExist } = require("../../middlewares/roomMiddlewares");
 const router = require("express").Router();
 
 router.post("/h/init", apiJWTValidation, gatewayDevice.createGatewayDevice); //HW
@@ -54,7 +55,6 @@ router.get(
 );
 router.get(
     "/h/access-card-for-gateway/:gatewayShortId",
-
     gatewayShortIdIsExist,
     gatewayDevice.accessCardForGateway
 );
@@ -68,6 +68,14 @@ router.post(
     gatewayShortIdIsExist,
     gatewayDeviceIsLinked,
     gatewayDevice.gatewayInitializeNode
+); //HW
+router.post(
+    "/h/node-online-update",
+    apiJWTValidation,
+    body("duid").notEmpty().withMessage("Device Unique ID (DUID) is Requried"),
+    formChacker,
+    deviceIsExist,
+    gatewayDevice.gatewayNodeOnlineUpdate
 ); //HW
 router.delete(
     "/delete/",
