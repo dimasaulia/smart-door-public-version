@@ -433,12 +433,14 @@ exports.deleteGateway = async (req, res) => {
  * Fungsi untuk melakukan update kapan terkahir kalinya perangkat dalam kondisi online
  */
 exports.gatewayNodeOnlineUpdate = async (req, res) => {
-    const { duid } = req.body; // stands for room unique id
+    const { duid, lastOnline } = req.body; // stands for room unique id
     const responsesTime = req.body?.responsesTime;
     try {
         const detailRoom = await prisma.device.update({
             where: { device_id: duid },
-            data: { lastOnline: new Date() },
+            data: {
+                lastOnline: lastOnline != null ? new Date(lastOnline) : null,
+            },
         });
 
         if (responsesTime !== undefined) {
@@ -536,6 +538,153 @@ exports.registerCard = async (req, res) => {
             errors: cardAlreadyRegisterError || userNotFoundError || error,
             code: 422,
             title: "Failed to register new card",
+        });
+    }
+};
+
+/**
+ * Fungsi untuk login melalui gateway, fungsi ini digunakan pada hardware tujuannya adalah mengautentikasi pengguna yang tepat
+ */
+exports.login = async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        // try find the user
+        const user = await prisma.user.findUnique({
+            where: {
+                username,
+            },
+            select: {
+                id: true,
+                username: true,
+                password: true,
+                email: true,
+                role: {
+                    select: {
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        // give response if cant find the user
+        if (user === null) throw "Cant find the user";
+
+        // compare user and password
+        const auth = hashChecker(password, user.password);
+
+        // give response if password not match
+        if (!auth) throw "Username and Password didn't match";
+
+        // If user role is USER, they cant continuou the action
+        if (user.role.name === "USER") throw "User cant performe this action";
+
+        return resSuccess({
+            res,
+            title: "Success login to system",
+            data: {
+                username: user.username,
+                email: user.email,
+            },
+        });
+    } catch (err) {
+        return resError({ res, title: "Gagal Login", errors: err, code: 401 });
+    }
+};
+
+/**
+ * Fungsi untuk melakukan pencatatan sipa yang mengakses node / mengunjungi suatu ruangan
+ */
+exports.history = async (req, res) => {
+    try {
+        const { cardNumber, duid, isSuccess, time } = req.body;
+        const {
+            room: { ruid },
+        } = await prisma.device.findUnique({
+            where: { device_id: duid },
+            select: { room: true },
+        });
+        const data = await prisma.rooms_Records.create({
+            data: {
+                Card: {
+                    connect: {
+                        card_number: cardNumber.replaceAll(" ", ""),
+                    },
+                },
+                room: {
+                    connect: {
+                        ruid,
+                    },
+                },
+                isSuccess,
+                createdAt: time != null ? new Date(time) : new Date(Date.now()),
+                updatedAt: time != null ? new Date(time) : new Date(Date.now()),
+            },
+        });
+
+        setTimeout(() => {
+            return resSuccess({
+                res,
+                title: "Success save node history",
+                data: data,
+            });
+        }, 2500);
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            errors: error,
+            code: 422,
+            title: "Failed to create new history record",
+        });
+    }
+};
+
+/**
+ * Fungsi untuk melakukan pencatatan sipa yang mengakses node / mengunjungi suatu ruangan, pencatatan ini dilakukan untuk data yang banyak. Kasus ini bisa terjadi ketika katika gateway masuk dalam kondisi offline dan baru akan mengirimkan data ketika kembali terhubung ke jaringan
+ */
+exports.bulkCreateHistory = async (req, res) => {
+    try {
+        const { historys } = req.body;
+        for (const history in historys) {
+            const { cardNumber, duid, isSuccess, time } = historys[history];
+            const {
+                room: { ruid },
+            } = await prisma.device.findUnique({
+                where: { device_id: duid },
+                select: { room: true },
+            });
+            await prisma.rooms_Records.create({
+                data: {
+                    Card: {
+                        connect: {
+                            card_number: cardNumber.replaceAll(" ", ""),
+                        },
+                    },
+                    room: {
+                        connect: {
+                            ruid,
+                        },
+                    },
+                    isSuccess,
+                    createdAt:
+                        time != null ? new Date(time) : new Date(Date.now()),
+                    updatedAt:
+                        time != null ? new Date(time) : new Date(Date.now()),
+                },
+            });
+        }
+        return resSuccess({
+            res,
+            title: "Success create bulk history",
+        });
+    } catch (error) {
+        console.log(error);
+        return resError({
+            res,
+            errors: error,
+            code: 422,
+            title: "Failed to create new history record",
         });
     }
 };

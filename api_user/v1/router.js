@@ -90,7 +90,7 @@ router.post(
     body("username")
         .notEmpty()
         .isLength({ min: 3 })
-        .withMessage("Username minimal 3 character")
+        .withMessage("Username minimum have 3 character")
         .not()
         .contains(" ")
         .withMessage("Username can't contain space"),

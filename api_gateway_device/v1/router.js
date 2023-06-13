@@ -85,6 +85,37 @@ router.post(
     deviceIsExist,
     gatewayDevice.registerCard
 ); //HW
+router.post(
+    "/h/login",
+    apiJWTValidation,
+    body("username")
+        .notEmpty()
+        .isLength({ min: 3 })
+        .withMessage("Username minimum have 3 character")
+        .not()
+        .contains(" ")
+        .withMessage("Username can't contain space"),
+    body("password").isLength({ min: "8" }),
+    formChacker,
+    gatewayDevice.login
+); //HW
+router.post(
+    "/h/history",
+    apiJWTValidation,
+    body("cardNumber").notEmpty().withMessage("Card Number is Requried"),
+    body("isSuccess")
+        .notEmpty()
+        .withMessage("Action status (isSuccess) is Requried"),
+    body("duid").notEmpty().withMessage("Room Unique ID (ruid) is Requried"),
+    formChacker,
+    deviceIsExist,
+    gatewayDevice.history
+); //HW
+router.post(
+    "/h/history/bulk",
+    apiJWTValidation,
+    gatewayDevice.bulkCreateHistory
+); //HW
 router.delete(
     "/delete/",
     loginRequired,
