@@ -1,12 +1,17 @@
 const logsBtn = document.querySelector("#logs");
 
 const roomLogsTemplate = ({ Card, id, createdAt, isSuccess }) => {
+    const cardName = Card?.user?.username
+        ? Card?.card_name
+            ? Card.card_name
+            : "not identify"
+        : Card.card_number;
     return `
     <div
         class="room-log d-flex mt-2 flex-column flex-sm-row justify-content-between p-2 bg-neutral-7 rounded-5" data-room-log=${id}>
-        <p href="" class="text-neutral-1">${
-            Card?.card_name ? Card.card_name : "not identify"
-        }@${Card?.user.username || "not found"}</p>
+        <p href="" class="text-neutral-1">${cardName}@${
+        Card?.user?.username || "not found/not linked ⚠️"
+    }</p>
         <a href="" class="text-neutral-2">${
             isSuccess ? "Berhasil " : "Gagal "
         }Mengakses ruangan pada    ${days(createdAt)}

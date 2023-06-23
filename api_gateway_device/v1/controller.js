@@ -622,13 +622,11 @@ exports.history = async (req, res) => {
             },
         });
 
-        setTimeout(() => {
-            return resSuccess({
-                res,
-                title: "Success save node history",
-                data: data,
-            });
-        }, 2500);
+        return resSuccess({
+            res,
+            title: "Success save node history",
+            data: data,
+        });
     } catch (error) {
         console.log(error);
         return resError({
