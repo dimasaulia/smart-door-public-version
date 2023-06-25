@@ -120,7 +120,7 @@ exports.createRoom = async (req, res) => {
             // INFO: BROADCAST DATA TO GATEWAY
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
-                `setuproom.${newRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                `setuproom/${newRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
             );
         }
 
@@ -511,7 +511,7 @@ exports.deviceDelete = async (req, res) => {
 
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
-                `removeroom.${gatewayShortId}.gateway`
+                `removeroom/${gatewayShortId}/gateway`
             );
         }
 
@@ -631,7 +631,7 @@ exports.pairRoomToCard = async (req, res) => {
 
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
-                `addcard.${updatedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                `addcard/${updatedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
             );
         }
 

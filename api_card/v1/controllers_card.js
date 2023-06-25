@@ -614,7 +614,7 @@ exports.update = async (req, res) => {
 
                 RabbitConnection.sendMessage(
                     JSON.stringify(dataToSend),
-                    `updatecard.${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                    `updatecard/${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
                 );
             }
 
@@ -703,7 +703,7 @@ exports.changePin = async (req, res) => {
 
                 RabbitConnection.sendMessage(
                     JSON.stringify(dataToSend),
-                    `updatecard.${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                    `updatecard/${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
                 );
             }
 
@@ -848,7 +848,7 @@ exports.unpairUserToCard = async (req, res) => {
 
                 RabbitConnection.sendMessage(
                     JSON.stringify(dataToSend),
-                    `updatecard.${data.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                    `updatecard/${data.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
                 );
             }
 
@@ -980,7 +980,7 @@ exports.addAccessCardToRoom = async (req, res) => {
 
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
-                `addcard.${room.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                `addcard/${room.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
             );
         }
 
@@ -1074,7 +1074,7 @@ exports.adminModifyCard = async (req, res) => {
 
                 RabbitConnection.sendMessage(
                     JSON.stringify(dataToSend),
-                    `updatecard.${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                    `updatecard/${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
                 );
             }
 
@@ -1163,7 +1163,7 @@ exports.adminModifyCardPin = async (req, res) => {
 
                 RabbitConnection.sendMessage(
                     JSON.stringify(dataToSend),
-                    `updatecard.${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                    `updatecard/${d.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
                 );
             }
 

@@ -26,7 +26,7 @@ exports.gatewaySpotLinktoGatewayDevice = async (req, res) => {
         // INFO: BROADCAST DATA TO GATEWAY
         RabbitConnection.sendMessage(
             JSON.stringify(dataToSend),
-            `setup.${gatewayShortId}.gateway`
+            `setup/${gatewayShortId}/gateway`
         ); // broadcast info to gateway
 
         return resSuccess({
@@ -252,7 +252,7 @@ exports.delete = async (req, res) => {
         // INFO: BROADCAST DATA TO GATEWAY
         RabbitConnection.sendMessage(
             JSON.stringify(dataToSend),
-            `reset.${data.gatewayDevice.gateway_short_id}.gateway`
+            `reset/${data.gatewayDevice.gateway_short_id}/gateway`
         ); // broadcast info to gateway
         return resSuccess({ res, title: "Success delete gateway spot", data });
     } catch (error) {

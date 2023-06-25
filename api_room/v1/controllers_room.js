@@ -547,7 +547,7 @@ exports.delete = async (req, res) => {
             // INFO: BROADCAST DATA TO GATEWAY
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
-                `resetroom.${gatewayShortId}.gateway`
+                `resetroom/${gatewayShortId}/gateway`
             );
         }
 
@@ -690,7 +690,7 @@ exports.grantAllAccess = async (req, res) => {
 
                 RabbitConnection.sendMessage(
                     JSON.stringify(dataToSend),
-                    `addcard.${updatedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                    `addcard/${updatedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
                 );
             });
         }
@@ -778,7 +778,7 @@ exports.unPairRoomToCard = async (req, res) => {
 
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
-                `removecard.${updatedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                `removecard/${updatedRoom.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
             );
         }
 

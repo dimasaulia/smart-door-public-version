@@ -472,7 +472,7 @@ exports.pairUserToCard = async (req, res) => {
 
             RabbitConnection.sendMessage(
                 JSON.stringify(dataToSend),
-                `updatecard.${data.device.Gateway_Spot.gatewayDevice.gateway_short_id}.gateway`
+                `updatecard/${data.device.Gateway_Spot.gatewayDevice.gateway_short_id}/gateway`
             );
         }
 
