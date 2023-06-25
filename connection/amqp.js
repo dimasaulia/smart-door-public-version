@@ -1,4 +1,13 @@
 const amqp = require("amqplib");
+const winston = require("winston");
+const { generateCuid } = require("../services/cuidgenerator");
+const logger = winston.createLogger({
+    level: "info", // Minimum level of logs to be written
+    format: winston.format.simple(), // Format of the log messages
+    transports: [
+        new winston.transports.File({ filename: "logs.log" }), // Specify the log file name
+    ],
+});
 
 const RabbitSettings = {
     protocol: "amqp",
@@ -52,13 +61,23 @@ class RabbitConnection {
     // send message to rabbitmq queue
     static async sendMessage(message, bindingKey) {
         try {
+            const payload = {
+                ...JSON.parse(message),
+                messageId: generateCuid(),
+                broadcastTimeAt: new Date(),
+            };
             let msg = await this.channel.publish(
                 RabbitSettings.exchange,
                 bindingKey,
-                Buffer.from(message)
+                Buffer.from(JSON.stringify(payload))
             );
             console.log(
                 ` [x]: "${message}" has been send to "${bindingKey}" key`
+            );
+            logger.info(
+                `AMQP - "${JSON.stringify(
+                    payload
+                )}" has been send to "${bindingKey}" key`
             );
             return msg;
         } catch (error) {
@@ -76,6 +95,7 @@ class RabbitConnection {
             if (msg !== null) {
                 console.log(" [d]: Recieved", msg.content.toString());
                 channel.ack(msg);
+                logger.info(`AMQP - Recieved data "${msg.content.toString()}"`);
 
                 // EXECUTE Callback Function To Do Something
                 callbackFn(msg.content.toString());
