@@ -885,6 +885,7 @@ exports.autocomplate = async (req, res) => {
                 card_number: true,
                 card_name: true,
             },
+            take: ITEM_LIMIT,
         });
         data.forEach((d) => {
             arrayOfCard.push({
