@@ -45,7 +45,7 @@ class RabbitConnection {
             );
             this.channel = await this.connection.createChannel();
             this.channel.assertExchange(RabbitSettings.exchange, "direct", {
-                durable: false,
+                durable: true,
             });
 
             RabbitSettings.queues.forEach((data) => {
