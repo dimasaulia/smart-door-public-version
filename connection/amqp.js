@@ -49,7 +49,9 @@ class RabbitConnection {
             });
 
             RabbitSettings.queues.forEach((data) => {
-                this.channel.assertQueue(data, RabbitSettings.exchange, "");
+                this.channel.assertQueue(data, {
+                    durable: true,
+                });
             });
 
             console.log(" [i]: Connection to RabbitMQ established");
