@@ -96,11 +96,16 @@ const isTurePin = async (req, res, next) => {
     const { cardNumber: card_number } = req.params;
 
     try {
-        const { pin } = await prisma.card.findUnique({
+        const { pin, isTwoStepAuth } = await prisma.card.findUnique({
             where: {
                 card_number,
             },
         });
+
+        if (isTwoStepAuth == false && pin == null) {
+            return next();
+        }
+
         const matchPin = hashChecker(oldPin, pin);
 
         if (!matchPin)
@@ -111,6 +116,7 @@ const isTurePin = async (req, res, next) => {
             });
         return next();
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             title: `Failed to update pin`,

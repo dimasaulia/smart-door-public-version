@@ -720,7 +720,7 @@ exports.changePin = async (req, res) => {
     } catch (error) {
         return resError({
             res,
-            title: "Cant get user's cards logs",
+            title: "Cant update user pin",
             errors: error,
         });
     }

@@ -105,7 +105,6 @@ router.post(
         .notEmpty()
         .isNumeric()
         .isLength({ min: "6", max: "6" }),
-    body("oldPin").notEmpty().isNumeric().isLength({ min: "6", max: "6" }),
     formChacker,
     cardIsExist,
     isUserCard,
