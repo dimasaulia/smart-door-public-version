@@ -362,11 +362,18 @@ exports.userCardsDetail = async (req, res) => {
                 card_number: true,
                 type: true,
                 isTwoStepAuth: true,
+                pin: true,
             },
         });
         const data = {
             info: userCardDetail,
         };
+        if (
+            userCardDetail.isTwoStepAuth == false &&
+            userCardDetail.pin == null
+        ) {
+            data["allowEmptyPin"] = true;
+        }
         return resSuccess({ res, title: "Success get card detail", data });
     } catch (error) {
         return resError({
