@@ -439,7 +439,16 @@ exports.gatewayNodeOnlineUpdate = async (req, res) => {
         const detailRoom = await prisma.device.update({
             where: { device_id: duid },
             data: {
-                lastOnline: lastOnline != null ? new Date(lastOnline) : null,
+                lastOnline:
+                    lastOnline != null
+                        ? String(lastOnline).endsWith("Z")
+                            ? new Date(
+                                  new Date(lastOnline).setHours(
+                                      new Date(lastOnline).getHours() - 7
+                                  )
+                              )
+                            : new Date(lastOnline)
+                        : null,
             },
         });
 
@@ -462,6 +471,7 @@ exports.gatewayNodeOnlineUpdate = async (req, res) => {
             data: detailRoom,
         });
     } catch (err) {
+        console.log(err);
         return resError({ res, errors: err, code: 422 });
     }
 };
@@ -666,9 +676,26 @@ exports.bulkCreateHistory = async (req, res) => {
                     },
                     isSuccess,
                     createdAt:
-                        time != null ? new Date(time) : new Date(Date.now()),
+                        time != null
+                            ? String(time).endsWith("Z")
+                                ? new Date(
+                                      new Date(time).setHours(
+                                          new Date(time).getHours() - 7
+                                      )
+                                  )
+                                : new Date(time)
+                            : null,
+
                     updatedAt:
-                        time != null ? new Date(time) : new Date(Date.now()),
+                        time != null
+                            ? String(time).endsWith("Z")
+                                ? new Date(
+                                      new Date(time).setHours(
+                                          new Date(time).getHours() - 7
+                                      )
+                                  )
+                                : new Date(time)
+                            : null,
                 },
             });
         }
