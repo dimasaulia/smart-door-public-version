@@ -435,7 +435,7 @@ exports.deleteGateway = async (req, res) => {
 exports.gatewayNodeOnlineUpdate = async (req, res) => {
     const { duid, lastOnline } = req.body; // stands for room unique id
     const responsesTime = req.body?.responsesTime;
-    console.log(responsesTime);
+    console.log(lastOnline);
     try {
         const detailRoom = await prisma.device.update({
             where: { device_id: duid },
