@@ -435,20 +435,17 @@ exports.deleteGateway = async (req, res) => {
 exports.gatewayNodeOnlineUpdate = async (req, res) => {
     const { duid, lastOnline } = req.body; // stands for room unique id
     const responsesTime = req.body?.responsesTime;
-    console.log(lastOnline);
     try {
         const detailRoom = await prisma.device.update({
             where: { device_id: duid },
             data: {
                 lastOnline:
                     lastOnline != null
-                        ? String(lastOnline).endsWith("Z")
-                            ? new Date(
-                                  new Date(lastOnline).setHours(
-                                      new Date(lastOnline).getHours() - 7
-                                  )
+                        ? new Date(
+                              new Date(lastOnline).setHours(
+                                  new Date(lastOnline).getHours() - 7
                               )
-                            : new Date(lastOnline)
+                          )
                         : null,
             },
         });
@@ -657,7 +654,7 @@ exports.bulkCreateHistory = async (req, res) => {
         const { historys } = req.body;
         for (const history in historys) {
             const { cardNumber, duid, isSuccess, time } = historys[history];
-            console.log(time);
+
             const {
                 room: { ruid },
             } = await prisma.device.findUnique({
@@ -679,24 +676,20 @@ exports.bulkCreateHistory = async (req, res) => {
                     isSuccess,
                     createdAt:
                         time != null
-                            ? String(time).endsWith("Z")
-                                ? new Date(
-                                      new Date(time).setHours(
-                                          new Date(time).getHours() - 7
-                                      )
+                            ? new Date(
+                                  new Date(lastOnline).setHours(
+                                      new Date(lastOnline).getHours() - 7
                                   )
-                                : new Date(time)
+                              )
                             : null,
 
                     updatedAt:
                         time != null
-                            ? String(time).endsWith("Z")
-                                ? new Date(
-                                      new Date(time).setHours(
-                                          new Date(time).getHours() - 7
-                                      )
+                            ? new Date(
+                                  new Date(lastOnline).setHours(
+                                      new Date(lastOnline).getHours() - 7
                                   )
-                                : new Date(time)
+                              )
                             : null,
                 },
             });
