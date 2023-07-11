@@ -435,6 +435,7 @@ exports.deleteGateway = async (req, res) => {
 exports.gatewayNodeOnlineUpdate = async (req, res) => {
     const { duid, lastOnline } = req.body; // stands for room unique id
     const responsesTime = req.body?.responsesTime;
+    console.log(responsesTime);
     try {
         const detailRoom = await prisma.device.update({
             where: { device_id: duid },
@@ -656,6 +657,7 @@ exports.bulkCreateHistory = async (req, res) => {
         const { historys } = req.body;
         for (const history in historys) {
             const { cardNumber, duid, isSuccess, time } = historys[history];
+            console.log(time);
             const {
                 room: { ruid },
             } = await prisma.device.findUnique({
