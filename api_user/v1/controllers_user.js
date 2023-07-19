@@ -716,6 +716,7 @@ exports.sendVerificationEmail = async (req, res) => {
             data: [],
         });
     } catch (error) {
+        console.log(error);
         return resError({ res, errors: error });
     }
 };
