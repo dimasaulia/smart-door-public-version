@@ -612,23 +612,48 @@ exports.history = async (req, res) => {
             where: { device_id: duid },
             select: { room: true },
         });
-        const data = await prisma.rooms_Records.create({
-            data: {
-                Card: {
-                    connect: {
-                        card_number: cardNumber.replaceAll(" ", ""),
-                    },
-                },
-                room: {
-                    connect: {
-                        ruid,
-                    },
-                },
-                isSuccess,
-                createdAt: time != null ? new Date(time) : new Date(Date.now()),
-                updatedAt: time != null ? new Date(time) : new Date(Date.now()),
+        let data = "";
+
+        const card = await prisma.card.findUnique({
+            where: {
+                card_number: cardNumber.replaceAll(" ", ""),
             },
         });
+
+        if (card) {
+            data = await prisma.rooms_Records.create({
+                data: {
+                    Card: {
+                        connect: {
+                            card_number: cardNumber.replaceAll(" ", ""),
+                        },
+                    },
+                    room: {
+                        connect: {
+                            ruid,
+                        },
+                    },
+                    isSuccess,
+                    createdAt:
+                        time != null ? new Date(time) : new Date(Date.now()),
+                    updatedAt:
+                        time != null ? new Date(time) : new Date(Date.now()),
+                },
+            });
+        }
+
+        if (!card) {
+            data = await prisma.rooms_Records.create({
+                data: {
+                    unregisteredCard: cardNumber,
+                    isSuccess,
+                    createdAt:
+                        time != null ? new Date(time) : new Date(Date.now()),
+                    updatedAt:
+                        time != null ? new Date(time) : new Date(Date.now()),
+                },
+            });
+        }
 
         return resSuccess({
             res,
@@ -661,38 +686,64 @@ exports.bulkCreateHistory = async (req, res) => {
                 where: { device_id: duid },
                 select: { room: true },
             });
-            await prisma.rooms_Records.create({
-                data: {
-                    Card: {
-                        connect: {
-                            card_number: cardNumber.replaceAll(" ", ""),
-                        },
-                    },
-                    room: {
-                        connect: {
-                            ruid,
-                        },
-                    },
-                    isSuccess,
-                    createdAt:
-                        time != null
-                            ? new Date(
-                                  new Date(lastOnline).setHours(
-                                      new Date(lastOnline).getHours() - 7
-                                  )
-                              )
-                            : null,
 
-                    updatedAt:
-                        time != null
-                            ? new Date(
-                                  new Date(lastOnline).setHours(
-                                      new Date(lastOnline).getHours() - 7
-                                  )
-                              )
-                            : null,
+            const card = await prisma.card.findUnique({
+                where: {
+                    card_number: cardNumber.replaceAll(" ", ""),
                 },
             });
+
+            if (!card) {
+                data = await prisma.rooms_Records.create({
+                    data: {
+                        unregisteredCard: cardNumber,
+                        isSuccess,
+                        createdAt:
+                            time != null
+                                ? new Date(time)
+                                : new Date(Date.now()),
+                        updatedAt:
+                            time != null
+                                ? new Date(time)
+                                : new Date(Date.now()),
+                    },
+                });
+            }
+
+            if (card) {
+                await prisma.rooms_Records.create({
+                    data: {
+                        Card: {
+                            connect: {
+                                card_number: cardNumber.replaceAll(" ", ""),
+                            },
+                        },
+                        room: {
+                            connect: {
+                                ruid,
+                            },
+                        },
+                        isSuccess,
+                        createdAt:
+                            time != null
+                                ? new Date(
+                                      new Date(time).setHours(
+                                          new Date(time).getHours() - 7
+                                      )
+                                  )
+                                : null,
+
+                        updatedAt:
+                            time != null
+                                ? new Date(
+                                      new Date(time).setHours(
+                                          new Date(time).getHours() - 7
+                                      )
+                                  )
+                                : null,
+                    },
+                });
+            }
         }
         return resSuccess({
             res,

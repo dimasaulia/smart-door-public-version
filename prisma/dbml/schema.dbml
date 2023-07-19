@@ -137,6 +137,7 @@ Table Room_Request {
 
 Table Rooms_Records {
   id String [pk]
+  unregisteredCard String
   room Room
   roomId String
   Card Card
