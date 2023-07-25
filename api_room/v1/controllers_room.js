@@ -12,6 +12,9 @@ const {
 const { random: stringGenerator } = require("@supercharge/strings");
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 20;
 const { RabbitConnection } = require("../../connection/amqp");
+const FEATURE_ROOM_NOTIFICATION = Boolean(
+    process.env.FEATURE_ROOM_NOTIFICATION
+);
 
 // const ITEM_LIMIT = 1;
 
@@ -782,13 +785,15 @@ exports.unPairRoomToCard = async (req, res) => {
             );
         }
 
-        // const subject = "Room Access Permission Update";
-        // const template = emailDeclineOfAccessRequestsTemplate({
-        //     username: userData.user.username,
-        //     subject,
-        //     text_description: `We regret to inform you that we are removing your access to ${updatedRoom.name}.`,
-        // });
-        // await sendEmail(userData.user.email, subject, template);
+        if (FEATURE_ROOM_NOTIFICATION === true) {
+            const subject = "Room Access Permission Update";
+            const template = emailDeclineOfAccessRequestsTemplate({
+                username: userData.user.username,
+                subject,
+                text_description: `We regret to inform you that we are removing your access to ${updatedRoom.name}.`,
+            });
+            await sendEmail(userData.user.email, subject, template);
+        }
 
         return resSuccess({
             res,

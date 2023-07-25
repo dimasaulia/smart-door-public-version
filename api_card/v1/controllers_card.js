@@ -9,6 +9,10 @@ const { RabbitConnection } = require("../../connection/amqp");
 const ITEM_LIMIT = Number(process.env.CARD_ITEM_LIMIT) || 10;
 // const ITEM_LIMIT = 5;
 
+const FEATURE_ROOM_NOTIFICATION = Boolean(
+    process.env.FEATURE_ROOM_NOTIFICATION
+);
+
 exports.listOfUnRegisterCard = async (req, res) => {
     let cardList;
     const { search, cursor } = req.query;
@@ -966,13 +970,15 @@ exports.addAccessCardToRoom = async (req, res) => {
             },
         });
 
-        // const subject = "Room Access Permission Update";
-        // const template = emailAcceptanceOfAccessRequestsTemplate({
-        //     username: data.user.username,
-        //     subject,
-        //     text_description: `We are pleased to inform you that we are giving you access to ${data.room[0].name}`,
-        // });
-        // await sendEmail(data.user.email, subject, template);
+        if (FEATURE_ROOM_NOTIFICATION === true) {
+            const subject = "Room Access Permission Update";
+            const template = emailAcceptanceOfAccessRequestsTemplate({
+                username: data.user.username,
+                subject,
+                text_description: `We are pleased to inform you that we are giving you access to ${data.room[0].name}`,
+            });
+            await sendEmail(data.user.email, subject, template);
+        }
 
         // INFO: BROADCAST DATA TO GATEWAY
         if (room.device.deviceType === "MULTI_NETWORK") {
@@ -998,6 +1004,7 @@ exports.addAccessCardToRoom = async (req, res) => {
             data,
         });
     } catch (error) {
+        console.log(error);
         return resError({
             res,
             errors: error,
