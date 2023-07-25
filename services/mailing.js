@@ -119,7 +119,7 @@ const sendEmail = async (user_mail, subject, template) => {
 
     let info = await transporter.sendMail({
         from: '"Smart Room Authentication Service" <no-replay@smartroom.id>', // sender address
-        to: `<${user_mail}>`, // list of receivers
+        to: `${user_mail}`, // list of receivers
         subject,
         html: template,
     });
