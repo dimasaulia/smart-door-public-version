@@ -782,7 +782,7 @@ exports.unPairRoomToCard = async (req, res) => {
             );
         }
 
-        if (FEATURE_ROOM_NOTIFICATION == true) {
+        if (FEATURE_ROOM_NOTIFICATION == "true") {
             const subject = "Room Access Permission Update";
             const template = emailDeclineOfAccessRequestsTemplate({
                 username: userData.user.username,

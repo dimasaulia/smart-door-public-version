@@ -968,7 +968,8 @@ exports.addAccessCardToRoom = async (req, res) => {
             },
         });
 
-        if (FEATURE_ROOM_NOTIFICATION == true) {
+        if (FEATURE_ROOM_NOTIFICATION == "true") {
+            console.log("SENDING MAIL");
             const subject = "Room Access Permission Update";
             const template = emailAcceptanceOfAccessRequestsTemplate({
                 username: data.user.username,

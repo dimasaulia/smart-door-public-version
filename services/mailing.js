@@ -107,7 +107,6 @@ const emailDeclineOfAccessRequestsTemplate = ({
  * @param {string} template Message for use
  */
 const sendEmail = async (user_mail, subject, template) => {
-    console.log(`Sending Mail To ${user_mail} With Subject ${subject}`);
     let transporter = nodemailer.createTransport({
         host: process.env.MAIL_SERVER,
         port: Number(process.env.MAIL_PORT),
