@@ -11,6 +11,7 @@ const {
     sendEmail,
 } = require("../../services/mailing");
 const { RabbitConnection } = require("../../connection/amqp");
+const FEATURE_ROOM_NOTIFICATION = process.env.FEATURE_ROOM_NOTIFICATION;
 
 const ITEM_LIMIT = Number(process.env.ITEM_LIMIT) || 10;
 
@@ -635,15 +636,15 @@ exports.pairRoomToCard = async (req, res) => {
             );
         }
 
-        /*
-        const subject = "Acceptance of Access Requests";
-        const template = emailAcceptanceOfAccessRequestsTemplate({
-            username: updatedRoom.card[0].user.username,
-            subject,
-            text_description: `We are pleased to inform you that your request for access to ${updatedRoom.name} has been approved.`,
-        });
-        await sendEmail(updatedRoom.card[0].user.email, subject, template);
-        */
+        if (FEATURE_ROOM_NOTIFICATION == "true") {
+            const subject = "Acceptance of Access Requests";
+            const template = emailAcceptanceOfAccessRequestsTemplate({
+                username: updatedRoom.card[0].user.username,
+                subject,
+                text_description: `We are pleased to inform you that your request for access to ${updatedRoom.name} has been approved.`,
+            });
+            await sendEmail(updatedRoom.card[0].user.email, subject, template);
+        }
 
         return resSuccess({
             res,
